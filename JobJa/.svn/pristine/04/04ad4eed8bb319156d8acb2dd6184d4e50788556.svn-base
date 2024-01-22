@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.mypage.enterprise.mapper.EntProfileMapper">
+
+	<resultMap type="enterpriseVO" id="enterpriseMap">
+		<result property="entAddr" column="ENT_ADDR" />
+		<result property="entAddr2" column="ENT_ADDR2" />
+		<result property="entNo" column="ENT_NO" />
+		<result property="entNm" column="ENT_NM" />
+		<result property="entAprv" column="ENT_APRV" />
+		<result property="entRegDt" column="ENT_REG_DT" />
+		<result property="entAprvDt" column="ENT_APRV_DT" />
+		<result property="entIntrcn" column="ENT_INTRCN" />
+		<result property="entUrl" column="ENT_URL" />
+		<result property="entSales" column="ENT_SALES" />
+		<result property="entSector" column="ENT_SECTOR" />
+		<result property="entEmpcnt" column="ENT_EMPCNT" />
+		<result property="entBday" column="ENT_BDAY" />
+		<result property="entFax" column="ENT_FAX" />
+		<result property="entCeonm" column="ENT_CEONM" />
+		<result property="entLogo" column="ENT_LOGO" />
+		<result property="entIntWord" column="ENT_INT_WORD" />
+		<result property="entPostno" column="ENT_POSTNO" />
+		
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+		<collection property="comCodeInfoVOList" resultMap="comCodeInfoMap"></collection>
+		<collection property="comDetCodeInfoVOList" resultMap="comDetCodeInfoMap"></collection>
+	</resultMap>
+
+	<resultMap type="memberVO" id="memberMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="memMgPosition" column="MEM_MG_POSITION"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memIntWord" column="MEM_INT_WORD"/>
+				
+		<collection property="atchfileDetailVO" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="comCodeInfoVO" id="comCodeInfoMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+	</resultMap>
+
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoMap">
+		<result property="comDetCd" column="COM_DET_CD" />
+		<result property="comCd" column="COM_CD" />
+		<result property="comDetCdNm" column="COM_DET_CD_NM" />
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS" />
+	</resultMap>
+
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID" />
+		<result property="afCreatDt" column="AF_CREAT_DT" />
+		<result property="afYn" column="AF_YN" />
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ" />
+		<result property="afId" column="AF_ID" />
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM" />
+		<result property="afdSaveNm" column="AFD_SAVE_NM" />
+		<result property="afdFileSize" column="AFD_FILE_SIZE" />
+		<result property="afdSavePath" column="AFD_SAVE_PATH" />
+		<result property="afdExtsn" column="AFD_EXTSN" />
+		<result property="afdCntnt" column="AFD_CNTNT" />
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT" />
+	</resultMap>
+
+	<resultMap type="entAprvVO" id="entAprvMap">
+		<result property="entAprvNo" column="ENT_APRV_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entYn" column="ENT_YN"/>
+		<result property="entMgPosition" column="ENT_MG_POSITION"/>
+		
+		<collection property="memberVOList" resultMap="memberMap"></collection>
+		<collection property="enterpriseVOList" resultMap="enterpriseMap"></collection>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+		<collection property="comDetCodeInfoVOList" resultMap="comDetCodeInfoMap"></collection>
+	</resultMap>
+
+	<!-- 공통상세 코드 - 직급 가져오기 -->
+	<select id="comDetCode" resultMap="comDetCodeInfoMap">
+
+		SELECT	COM_DET_CD,
+				COM_CD,
+				COM_DET_CD_NM,
+				COM_DET_DESCRIPTIONS
+		FROM 	COM_DET_CODE_INFO
+		WHERE 	COM_DET_CD LIKE 'EHG01%'
+
+	</select>
+
+	<!-- 공통상세 코드 - 산업군 가져오기 -->
+	<select id="comSector" resultMap="comCodeInfoMap">
+		
+		SELECT  COM_CD,
+				COM_CD_NM,
+				COM_CD_DESCRIPTIONS
+		FROM 	COM_CODE_INFO
+		WHERE 	COM_CD LIKE 'MWJ010%'
+
+	</select>
+
+	<!-- 공통상세 코드 - 관심키워드 가져오기 -->
+	<select id="comIntWord" resultMap="comDetCodeInfoMap">
+
+		SELECT	COM_DET_CD,
+				COM_CD,
+				COM_DET_CD_NM,
+				COM_DET_DESCRIPTIONS
+		FROM 	COM_DET_CODE_INFO
+		WHERE 	COM_DET_CD LIKE 'IKW01%'
+
+	</select>
+
+	<!-- 일반 정보 가져오기 -->
+	<select id="detail" parameterType="String" resultMap="memberMap">
+	/* DETAIL */
+	
+		SELECT  A.MEM_ID, A.MEM_PASS, A.MEM_NM, A.MEM_POSTNO, A.MEM_ADDR, A.MEM_ADDR2, A.MEM_TEL,
+				A.MEM_REG_DT, A.MEM_OPEN_RESUME, A.MEM_STATE_CD, A.MEM_BIRTH, A.MEM_GEN, A.MEM_EMAIL,
+				A.MEM_CD, A.MEM_YN, A.MEM_INTRCN, A.MEM_NCNM, A.MEM_AF_ID,
+				A.MEM_WISH_JOB_CATE, A.MEM_WISH_JOB, A.ENABLED, A.MEM_INT_WORD, A.MEM_MG_POSITION,
+		        B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM, B.AFD_FILE_SIZE,
+		        B.AFD_SAVE_PATH, B.AFD_EXTSN, B.AFD_CNTNT, B.AFD_UPLOAD_DT
+		FROM    MEMBER A, ATCH_FILE_DETAIL B
+		WHERE   A.MEM_ID = B.AF_ID(+)
+		AND     A.MEM_ID = #{memId}
+		
+	</select>
+
+	<!-- 기업 정보 가져오기 -->
+	<select id="entDetail" parameterType="String" resultMap="enterpriseMap">
+	/* ENT DETAIL */
+
+		SELECT  A.MEM_ID,
+		        B.ENT_NO, B.ENT_NM, B.ENT_APRV, B.ENT_REG_DT, B.ENT_APRV_DT, B.ENT_INTRCN,
+		        B.ENT_URL, B.ENT_SALES, B.ENT_SECTOR, B.ENT_EMPCNT, B.ENT_BDAY, B.ENT_FAX, B.ENT_CEONM,
+		        B.ENT_LOGO, B.ENT_INT_WORD, B.ENT_POSTNO, B.ENT_ADDR, B.ENT_ADDR2,
+		        D.ENT_APRV_NO, D.ENT_YN, D.ENT_MG_POSITION
+		FROM    MEMBER A,  ENTERPRISE B, ENT_APRV D
+		WHERE   A.MEM_ID = D.MEM_ID
+		AND     B.ENT_NO = D.ENT_NO
+		AND     A.MEM_ID = #{memId}
+
+	</select>
+	
+	<!-- 일반정보 수정 -->
+	<update id="updatePost" parameterType="memberVO">
+	/* UPDATE POST */
+	
+		UPDATE 	 MEMBER
+		   SET   MEM_NM 			= #{memNm},
+			     MEM_POSTNO 		= #{memPostno},
+			     MEM_ADDR 			= #{memAddr},
+			     MEM_ADDR2			= #{memAddr2},
+			     MEM_TEL			= #{memTel},
+			     MEM_BIRTH			= #{memBirth},
+			     MEM_GEN			= #{memGen},
+			     MEM_EMAIL			= #{memEmail},
+			     MEM_INTRCN			= #{memIntrcn},
+			     MEM_NCNM			= #{memNcnm},
+			     MEM_WISH_JOB_CATE 	= #{memWishJobCate},
+			     MEM_INT_WORD		= #{memIntWord},
+			     <if test="memAfId!=null and memAfId!=''">
+			     	MEM_AF_ID			= #{memAfId},	
+			     </if>
+			     MEM_MG_POSITION	= #{memMgPosition}	
+			     
+		WHERE 	 MEM_ID				= #{memId}
+	
+	</update>
+	
+	<!-- 기업정보 수정 -->
+	<update id="entUpdatePost" parameterType="enterpriseVO">
+	/* ENT UPDATE POST */
+	
+		UPDATE	ENTERPRISE   
+		         
+		   SET	ENT_INTRCN   = #{entIntrcn},        
+			    ENT_URL      = #{entUrl},      
+			    ENT_SECTOR   = #{entSector},       
+			    ENT_EMPCNT   = #{entEmpcnt},
+			    ENT_FAX      = #{entFax},    
+			    ENT_CEONM    = #{entCeonm},
+			    <if test="entLogo!=null and entLogo!=''">
+			    	ENT_LOGO     = #{entLogo},  
+			    </if>
+			    ENT_SALES    = #{entSales},  
+			    ENT_INT_WORD = #{entIntWord}, 
+			    ENT_POSTNO   = #{entPostno},   
+			    ENT_ADDR     = #{entAddr}, 
+			    ENT_ADDR2    = #{entAddr2},  
+			    ENT_BDAY     = #{entBday}  
+			     
+		WHERE	ENT_NO 		 = #{entNo}
+	
+	</update>
+	
+	<!-- 기업 프로필 사진 update 썸네일로 -->
+	<update id="updateThumb" parameterType="memberVO">
+	
+		UPDATE	MEMBER
+		SET		MEM_AF_ID	= #{memAfId}
+		WHERE	MEM_ID		= #{memId}
+	
+	</update>
+	
+	<!-- 기업 로고 사진 update 썸네일로 -->
+	<update id="entUpdateThumb" parameterType="enterpriseVO">
+	
+		UPDATE	ENTERPRISE
+		SET		ENT_LOGO	= #{entLogo}
+		WHERE	ENT_NO 		= #{entNo}
+	
+	</update>
+
+</mapper>

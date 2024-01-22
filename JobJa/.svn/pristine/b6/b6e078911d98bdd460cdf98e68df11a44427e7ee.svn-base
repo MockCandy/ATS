@@ -1,0 +1,27 @@
+package jobJa.likes.mapper;
+
+import java.util.List;
+
+import jobJa.board.vo.BoardEntReviewVO;
+import jobJa.board.vo.BoardQNAVO;
+import jobJa.likes.vo.LikesVO;
+
+public interface LikesMapper {
+
+	int like(BoardQNAVO boardQNAVO);
+	
+	int unlike(BoardQNAVO boardQNAVO);
+
+	int getCount(BoardQNAVO boardQNAVO);
+
+	List<LikesVO> getLikes(String boardId);
+
+	int getEntReviewCount(BoardEntReviewVO boardEntReviewVO);
+
+	int entReviewUnlike(BoardEntReviewVO boardEntReviewVO);
+
+	int entReviewLike(BoardEntReviewVO boardEntReviewVO);
+
+	
+	
+}

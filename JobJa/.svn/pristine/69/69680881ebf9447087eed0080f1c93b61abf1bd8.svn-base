@@ -1,0 +1,20 @@
+package jobJa.myPage.member.mapper;
+
+import java.util.List;
+
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.common.vo.ComDetCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface MemProfileMapper {
+
+	//회원상세정보가져오기.
+	public MemberVO detail(String memId);
+	
+	//직군, 관심키워드 가져오기.
+	public List<ComDetCodeInfoVO> comDetCode();
+	
+	//프로필 수정
+	public int mypagePost(MemberVO memberVO);
+
+}

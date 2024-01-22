@@ -1,0 +1,46 @@
+package jobja.board.vo;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.atchfile.vo.AtchFileVO;
+import jobja.common.vo.ComCodeInfoVO;
+import lombok.Data;
+
+/**
+ * 강의 클래스 VO
+ **/
+@Data
+public class BoardClassVO {
+	
+	@NotBlank
+	private String boardId;
+	private String memId;
+	private String boardTitle;
+	private String boardCntnt;
+	private Date boardWritingDt;
+	private Date boardUpdtDt;
+	private String classAfId;
+	private String classUrl;
+	private int boardCnt;
+	private String jobCategoryCd;
+	
+	// 파일 객체들
+	private MultipartFile[] uploadFile;
+	
+	private AtchFileVO atchFileVO;
+	
+	// 파일 불러오기
+	private List<AtchFileDetailVO> atchFileDetailVOList;
+	
+	// 직군 코드 가져오기
+	private List<ComCodeInfoVO> comCodeInfoVOList;
+	
+	//직군 이름
+	private String comNm;
+
+}

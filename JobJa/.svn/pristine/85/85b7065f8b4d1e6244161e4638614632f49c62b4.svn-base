@@ -1,0 +1,46 @@
+package jobJa.myPage.enterprise.mapper;
+
+import java.util.List;
+
+import jobJa.atchFile.vo.AtchFileDetailVO;
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.common.vo.ComDetCodeInfoVO;
+import jobJa.member.vo.EnterpriseVO;
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface EntProfileMapper {
+
+	// 직급 가져오기
+	public List<ComDetCodeInfoVO> comDetCode();
+	
+	// 산업군 가져오기
+	public List<ComCodeInfoVO> comSector();
+	
+	// 관심키워드 가져오기
+	public List<ComDetCodeInfoVO> comIntWord();
+	
+	// 일반회원 정보 가져오기
+	public MemberVO detail(String memId);
+
+	// 기업정보 가져오기
+	public EnterpriseVO entDetail(String memId);
+
+	// 일반정보 수정
+	public int updatePost(MemberVO memberVO);
+
+	// 기업정보 수정
+	public int entUpdatePost(EnterpriseVO enterpriseVO);
+
+	// 첨부파일 삭제
+	public int delAtch(String memId);
+
+	// 프로필 등록
+	public int insertAtch(String memId);
+	
+	// 기업 로고 등록
+	public int entInsertAtch(String entNo);
+
+	// 회원테이블 - 파일 저장명 추가
+	public int updateFile(AtchFileDetailVO atchFileDetailVO);
+
+}

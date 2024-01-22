@@ -1,0 +1,46 @@
+package jobja.item.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jobja.mypage.member.vo.MemberVO;
+import lombok.Data;
+
+@Data
+public class ConsultantLogVO {
+	private String cnsltntNo;			//상담기록번호	
+	private String payNo;				//결제번호
+	private String conMemId;			//상담사ID
+	private String cnsltntTitle;		//상담제목
+	private String cnsltntCntnt;		//상담내용
+	private int cnsltntTimes;			//상담회차
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date cnsltntDt;			    //상담일시
+	private String memId;				//일반회원ID
+	
+	private PaymentVO paymentVO;
+	private MemberVO buyerVO;
+	
+	private ComCodeInfoVO comCodeInfoVO;
+	private ComDetCodeInfoVO comDetCodeInfoVO;
+	
+	//마이페이지 VO 한번에 받아오기 위해
+	private String memNm;				//내 이름
+	private String memAfId;				//상담사프로필사진
+	private String conNm;				//상담사 이름
+	
+	private String itemNo;				//상품번호
+	
+}
+	

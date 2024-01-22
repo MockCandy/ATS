@@ -1,0 +1,49 @@
+package jobja.compare.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jobja.member.service.EnterpriseService;
+import jobja.member.vo.EnterpriseVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("compare")
+public class CompareController {
+
+	@Autowired
+	EnterpriseService enterpriseService;
+	
+	@GetMapping("index")
+	public String compare(EnterpriseVO enterpriseVO, Model model) throws JsonProcessingException {
+		
+		log.info("enterpriseVO : " + enterpriseVO);
+		
+		enterpriseVO = enterpriseService.getAjaxEntOne(enterpriseVO);
+
+		log.info("enterpriseVO : " + enterpriseVO);
+		
+		String datas = new ObjectMapper().writeValueAsString(enterpriseVO);
+		
+		List<EnterpriseVO> entVOList = enterpriseService.ajaxGetEntOneYearly(enterpriseVO);
+		
+		String yearlyRate = new ObjectMapper().writeValueAsString(entVOList);
+
+		model.addAttribute("datas" , datas);
+		model.addAttribute("yearlyRate" , yearlyRate);
+		
+		return "compare/index";
+	}
+	
+	
+}

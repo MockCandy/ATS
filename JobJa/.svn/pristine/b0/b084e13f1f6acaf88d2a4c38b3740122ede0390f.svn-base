@@ -1,0 +1,75 @@
+package jobJa.board.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.board.mapper.BoardEntReviewMapper;
+import jobJa.board.service.BoardEntReviewService;
+import jobJa.board.vo.BoardEntReviewVO;
+import jobJa.likes.mapper.LikesMapper;
+import jobJa.member.vo.EnterpriseVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class BoardEntReviewServiceImpl implements BoardEntReviewService {
+	
+	@Autowired
+	BoardEntReviewMapper boardEntReviewMapper;
+
+	@Autowired
+	LikesMapper likesMapper;
+	
+	@Override
+	public int createPost(BoardEntReviewVO boardEntReviewVO) {
+		return boardEntReviewMapper.createPost(boardEntReviewVO);
+	}
+
+	@Override
+	public List<BoardEntReviewVO> getByEntNo(Map<String, Object> map) {
+		return boardEntReviewMapper.getByEntNo(map);
+	}
+	
+
+	@Override
+	public int ajaxLikeUp(BoardEntReviewVO boardEntReviewVO) {
+
+		log.info("ajaxLikeUp -> boardEntReviewVO : " + boardEntReviewVO);
+		
+		int count = likesMapper.getEntReviewCount(boardEntReviewVO);
+		
+		log.info("ajaxLikeUp -> count : " + count);
+		
+		int result = 0;
+		
+		if(count >= 1) {
+			result += boardEntReviewMapper.ajaxLikeCancel(boardEntReviewVO);
+			result += likesMapper.entReviewUnlike(boardEntReviewVO);
+		}else {
+			result = boardEntReviewMapper.ajaxLikeUp(boardEntReviewVO);
+			result += likesMapper.entReviewLike(boardEntReviewVO);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int getTotalCount(String entNo) {
+		return boardEntReviewMapper.getTotalCount(entNo);
+	}
+
+	@Override
+	public EnterpriseVO ajaxGetEntInfo(EnterpriseVO enterpriseVO) {
+		return boardEntReviewMapper.ajaxGetEntInfo(enterpriseVO);
+	}
+
+	@Override
+	public List<BoardEntReviewVO> getRecent() {
+		return boardEntReviewMapper.getRecent();
+	}
+
+
+}

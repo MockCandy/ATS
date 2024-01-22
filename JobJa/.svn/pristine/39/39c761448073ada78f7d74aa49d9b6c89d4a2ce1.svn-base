@@ -1,0 +1,94 @@
+package jobja.sort.vo;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.member.vo.JobOfferVO;
+import jobja.member.vo.MemberAuthVO;
+import jobja.member.vo.PortfolioVO;
+import jobja.mypage.member.vo.AcademicCareerVO;
+import jobja.mypage.member.vo.ResumeVO;
+import lombok.Data;
+
+@Data
+public class JobOfferFilterVO {
+
+	@NotBlank
+	private String memId;			//회원아이디
+	@NotBlank
+	private String memPass;			//회원비밀번호
+	@NotBlank
+	private String memNm;			//회원이름
+	private String memPostno;		//우편번호
+	private String memAddr;			//주소
+	private String memAddr2;		//상세주소
+	private String memTel;			//전화번호
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+	private Date memRegDt;			//가입일
+	private String memOpenResume;	//이력서공개여부
+	private String memStateCd;		//회원분류코드 (정상회원,탈퇴회원,블랙리스트)
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date memBirth;			//생년월일
+	private String memGen;			//성별
+	private String memEmail;		//이메일
+	private String memCd;			//회원구분 공통코드(일반회원,기업회원,상담사,관리자)
+	private String memYn;			//승인여부
+	private String memIntrcn;		//소개글
+	private String memNcnm;			//닉네임
+	private String memAfId;			//회원사진첨부파일ID
+	private String memWishJobCate;	//희망직군
+	private String memWishJob;		//희망직엄
+	private String enabled;			//ID사용여부(시큐리티)
+	private String memIntWord;		//관심키워드
+	private String entNo;         	//기업회원일 경우 기업회원 사업자번호
+	private String memMgPosition;   //기업회원일 경우 기업회원 직급
+	private String sort ;
+	private String keyword; 
+	
+	//MEMBER : AUTH = 1 : N
+	private List<MemberAuthVO> memberAuthVOList;
+	
+	// MEMBER : RESUME = 1 : N
+	private List<ResumeVO> resumeVOList;
+	
+	// MEMBER : PORTFOLIO = 1 : N
+	private List<PortfolioVO> portfolioVOList;
+	
+	// MEMBER : ACADEMIC_CAREER = 1 : N
+	private List<AcademicCareerVO> academicCareerVOList;
+
+	// MEMBER : JOBOFFER = 1 : N
+	private List<JobOfferVO> jobOfferVOList;
+	
+	private ComCodeInfoVO comCodeInfoVO;
+	
+	private ComDetCodeInfoVO comDetCodeInfoVO;
+	
+	
+	//MEMBER ATCHFILEDETAIL 1 : N
+	private List<AtchFileDetailVO> atchfileDetailVO;
+	
+	//MEMBER COMDETCODEINFOVO = 1 : N
+	private List<ComDetCodeInfoVO> comDetCodeInfoVOList;
+	
+	//프로필 사진 파일객체
+	private MultipartFile[] uploadFile;
+
+	private List<String> wishJobs; 
+	private List<String> livingLocation;
+	private List<String> acdmCrs;
+	
+}

@@ -1,0 +1,39 @@
+package jobja.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import jobja.mypage.member.mapper.MemberMapper;
+import jobja.mypage.member.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@ControllerAdvice
+public class ModelAttributeUtil {
+	
+	@Autowired
+	MemberMapper memberMapper;
+	
+    @ModelAttribute("getCurrentLoginVO")
+    public MemberVO getCurrentLoginName() {
+       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+        	String username = authentication.getName();
+            log.info("로그인된 아이디 : " + authentication.getName());
+            MemberVO memberVO = memberMapper.detail(username);
+
+            log.info("memberVO : " + memberVO);
+            
+            return memberVO;
+        }
+        
+        return new MemberVO();
+    }
+    
+    
+}

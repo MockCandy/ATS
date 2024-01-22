@@ -1,0 +1,417 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<link rel="stylesheet" href="/resources/css/boardEntReview.css">
+
+    <div class="cen" style="margin: 30px auto;">
+    
+        <div class="ent-review-header">
+            <span class="logo normal txt-sig pt-5">날 JOB아줘</span>
+            <span class="ml-7">기업 리뷰 작성</span>
+        </div>
+
+
+		<form id="ent-review-form" action="/boardEntReview/createPost?${_csrf.parameterName}=${_csrf.token}" method="post">
+			
+		  	<div class="focus-green mb-45 auto-complete-area">
+			  	<p class="p-20 bold mb-20">리뷰를 작성할 기업을 선택해 주세요</p>
+		  		<input class="input01 mb-0" id="ent-srch" value="${entNm}">
+				<div id="ent-srch-list">
+
+				</div>
+		  	</div>
+		  	
+		  	<input type="hidden" id="memId" name="memId" value="${getCurrentLoginVO.memId }" />
+		  	<input type="hidden" id="entNo" name="entNo" value="${param.entNo}" />
+		  	
+		  	<div class="focus-green">
+			  	<p class="name-label">근무 상태</p>
+			  	<select class="input01" name="entRevWorkYn" id="entRevWorkYn">
+			  		<option value="Y">전 직장</option>
+			  		<option value="N">현 직장</option>
+			  	</select>
+		  	</div>
+		  	
+		  	<div class="div-harf">
+		  		<div class="focus-green">
+				  	<p class="name-label">직종</p>
+				  	<select class="input01" id="jobCategoryCd" name="jobCategoryCd">
+						<c:forEach var="comDetCodeInfoVO" items="${comCodeInfoVO.comDetCodeInfoVO }">
+							<option value="${comDetCodeInfoVO.comDetCd }">${comDetCodeInfoVO.comDetCdNm }</option>
+						</c:forEach>
+				  	</select>
+		  		</div>
+		  		<div class="focus-green">
+				  	<p class="name-label">직종 상세</p>
+				  	<select class="input01" id="jobCd" name="jobCd">
+				  		<option value="MWJ0100001">개발.소프트웨어 엔지니어</option>
+				  		<option value="MWJ0100002">개발.프론트엔드 개발자</option>
+				  		<option value="MWJ0100003">개발.웹 개발자</option>
+				  		<option value="MWJ0100004">개발.서버 개발자</option>
+				  		<option value="MWJ0100005">개발.자바 개발자</option>
+				  		<option value="MWJ0100006">개발.C/C++ 개발자</option>
+				  		<option value="MWJ0100007">개발.파이썬 개발자</option>
+				  		<option value="MWJ0100008">개발.머신러닝 엔지니어</option>
+				  		<option value="MWJ0100009">개발.데이터 엔지니어</option>
+				  		<option value="MWJ0100010">개발.시스템/ 네트워크 관리자</option>
+				  		<option value="MWJ0100011">개발.Node js 개발자</option>
+				  		<option value="MWJ0100012">개발.안드로이드 개발자</option>
+				  		<option value="MWJ0100013">개발.IOS 개발자</option>
+				  		<option value="MWJ0100014">개발.DBA</option>
+				  		<option value="MWJ0100015">개발.빅데이터 엔지니어</option>
+			  		</select>
+		  		</div>
+		  	</div>
+		  	
+		  	<div class="focus-green">
+			  	<p class="name-label">근무 지역</p>
+				<select class="input01" id="entRevWorkLoc" name="entRevWorkLoc">
+					<option value="none">선택해 주세요</option>
+					<option value="서울">서울</option>
+					<option value="경기">경기</option>
+					<option value="인천">인천</option>
+					<option value="부산">부산</option>
+					<option value="대구">대구</option>
+					<option value="대전">대전</option>
+					<option value="광주">광주</option>
+					<option value="울산">울산</option>
+					<option value="세종">세종</option>
+					<option value="강원">강원</option>
+					<option value="경남">경남</option>
+					<option value="경북">경북</option>
+					<option value="전남">전남</option>
+					<option value="전북">전북</option>
+					<option value="충남">충남</option>
+					<option value="충북">충북</option>
+					<option value="제주">제주</option>
+					<option value="해외">해외</option>
+					<option value="기타">기타</option>
+				</select>  	
+		  	</div>
+			
+		  	<div class="focus-green">
+			  	<p class="name-label">고용 형태</p>
+				<select class="input01" id="entRevEmplType" name="entRevEmplType">
+					<option value="none">선택해 주세요</option>
+					<option value="1">정규직</option>
+					<option value="2">비정규직</option>
+				</select>
+		  	</div>
+			
+			<div class="focus-green">
+			  	<p class="name-label">기업  한 줄 평</p>
+		  		<p class="sub-label">근무 환경에 대한 총평을 한 줄로 남겨주세요</p>
+			  	<input class="input01" name="entRevShortReview" id="entRevShortReview" placeholder="기업에 대해 작성해 주세요" >
+			</div>
+		  	
+			<div class="focus-green">
+			  	<p class="name-label">기업의 장점</p>
+		  		<p class="sub-label">이 기업을 다니며 좋았던 점을 남겨주세요</p>
+			  	<input class="input01" id="entRevPros" name="entRevPros" placeholder="만족스러운 점을 작성해 주세요" >
+			</div>
+			
+			<div class="focus-green">
+			  	<p class="name-label">기업의 단점</p>
+		  		<p class="sub-label">기업의 단점을 객관적인 시각에서 적어주세요</p>
+			  	<input class="input01" id="entRevCons" name="entRevCons" placeholder="아쉬운 점을 작성해 주세요" >
+			</div>
+			
+			<div class="focus-green">
+			  	<p class="name-label">경영진에 바라는 점</p>
+		  		<p class="sub-label">더 나은 기업이 될 수 있도록 조언해 주세요</p>
+			  	<input class="input01" id="entRevWishes" name="entRevWishes" placeholder="경영진에 바라는 점을 작성해 주세요" >
+			</div>
+			
+			<div class="mt-20 rate-area">
+				<p class="name-label">승진 기회 및 가능성</p>
+                <span class="star mb-20 ml-30">
+                   	 ★★★★★
+                    <span style="width: 20%;">★★★★★</span>
+                    <input type="range" id="entRevChances" name="entRevChances" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                </span>
+			</div>
+			
+			<div class="mt-20 rate-area">
+				<p class="name-label">복지 및 급여</p>
+                <span class="star mb-20 ml-30">
+                   	 ★★★★★
+                    <span style="width: 20%;">★★★★★</span>
+                    <input type="range" id="entRevWelfare" name="entRevWelfare" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                </span>
+			</div>
+			
+			<div class="mt-20 rate-area">
+				<p class="name-label">업무와 삶의 균형</p>
+                <span class="star mb-20 ml-30">
+                   	 ★★★★★
+                    <span style="width: 20%;">★★★★★</span>
+                    <input type="range" id="entRevBalance" name="entRevBalance" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                </span>
+			</div>
+			
+			<div class="mt-20 rate-area">
+				<p class="name-label">사내문화</p>
+                <span class="star mb-20 ml-30">
+                   	 ★★★★★
+                    <span style="width: 20%;">★★★★★</span>
+                    <input type="range" id="entRevCulture" name="entRevCulture" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                </span>
+			</div>
+			
+			<div class="mt-20 rate-area mb-40">
+				<p class="name-label">경영진</p>
+                <span class="star mb-20 ml-30">
+                   	 ★★★★★
+                    <span style="width: 20%;">★★★★★</span>
+                    <input type="range" id="entRevManager" name="entRevManager" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+                </span>
+			</div>
+			
+			
+			<p class="name-label">CEO에 대한 견해</p>
+            <fieldset>
+                <label>
+                    <input type="radio" name="entRevCeoView" value="1" checked />
+                    <span>지지한다</span>
+                </label>
+                <label>
+                    <input type="radio" name="entRevCeoView" value="0" />
+                    <span>지지하지 않는다</span>
+                </label>
+            </fieldset>
+			
+			<p class="name-label">기업의 전망</p>
+            <fieldset>
+                <label>
+                    <input type="radio" name="entRevPotential" value="2" checked />
+                    <span>성장할 것이다</span>
+                </label>
+                <label>
+                    <input type="radio" name="entRevPotential" value="1" />
+                    <span>비슷할 것이다</span>
+                </label>
+                <label>
+                    <input type="radio" name="entRevPotential" value="0" />
+                    <span>하락할 것이다</span>
+                </label>
+            </fieldset>
+			
+			<p class="name-label">기업 추천 여부</p>
+            <fieldset>
+                <label>
+                    <input type="radio" name="entRevRecomendYn" value="1" checked />
+                    <span>추천한다</span>
+                </label>
+                <label>
+                    <input type="radio" name="entRevRecomendYn" value="0" />
+                    <span>추천하지 않는다</span>
+                </label>
+            </fieldset>
+            
+            <div class="flex mt-40 justify-center">
+            	<button onclick="history.back()" class="btn">이전으로</button>
+            	<button type="submit" class="btn bg-sig color-white ml-15">작성완료</button>
+            	<button type="button" class="btn bg-sig color-white ml-15" id="REV-complete">자동완성</button>
+           	</div>
+		  	
+			<sec:csrfInput/>
+		</form>
+        <p>&nbsp; </p>
+    </div>
+<!-- <script src="/resources/js/sign-up.js"></script> -->
+
+<script type="text/javascript">
+	//JAVASCRIPT CODE
+	const drawStar = (target) => {
+		console.log(target.value)
+		console.dir(target.previousElementSibling);
+		target.previousElementSibling.style.width = target.value * 20 + "%";
+	}
+	document.querySelector(".star input").addEventListener("change", function(e){
+	    console.dir(e.target.value);
+	})
+
+	
+	let jobCategoryCd = document.querySelector("#jobCategoryCd");
+	console.log(jobCategoryCd);
+	
+	let jobCd = document.querySelector("#jobCd");
+	console.log(jobCd)
+	
+	jobCategoryCd.addEventListener("change", function(e){
+		
+		console.log(e.target.value);
+		
+		data = {
+			"comCd" : e.target.value
+		}
+		
+		console.log(data);
+		
+		$.ajax({
+			url:"/boardEntReview/ajaxGetComDetCode",
+			contentType:"application/json;charset=utf-8",
+			data:JSON.stringify(data),
+			type:"post",
+// 			dataType:"json",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+			},
+			success:function(res){
+				console.log("res : ", res);
+				
+				let str = "";
+				
+				for(let i = 0; i < res.comDetCodeInfoVO.length; i++){
+					str += '<option value="'+ res.comDetCodeInfoVO[i].comDetCd +'">'+res.comDetCodeInfoVO[i].comDetCdNm+'</option>';
+				}
+				
+				console.log(str);
+				
+				jobCd.innerHTML = str;
+				
+			},
+			error:function(request,status,error){
+				console.log("request : ", request);
+				console.log("status : ", status);
+				console.log("error : ", error);
+			}
+
+			
+		})
+		
+	})
+	
+	function debounce(callback, limit = 100) {
+	    let timeout;
+	    return function(...args) {
+		        clearTimeout(timeout)
+		        timeout = setTimeout(() => {
+		            callback.apply(this, args)
+		        }, limit)
+	    }
+	}
+	
+	
+	let entSrch = document.querySelector("#ent-srch");
+	console.log(entSrch);
+	let entSrchList = document.querySelector("#ent-srch-list");
+	console.log(entSrchList);
+	
+	function inpVal(e){
+		
+		console.dir(e.children.entNo.value);
+		
+		let entNm = e.children[1].children[0].textContent;
+		entSrch.value = entNm;
+		
+		let entNo = document.querySelector("#entNo");
+		entNo.value = e.children.entNo.value;
+		
+		entSrchList.innerHTML = "";
+		entSrchList.style.display = "none";
+		
+	}
+	
+	entSrch.addEventListener("keyup", debounce(function(){
+				
+		let data = {
+ 				"entNm" : entSrch.value
+		}
+		
+		console.log(data);
+
+		$.ajax({
+			url : "/boardEntReview/ajaxGetEnt",
+			contentType : "application/json; charset=UTF-8",
+			data : JSON.stringify(data),
+			dataType : "json",
+			type : "post",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+			},
+			success : function(res) {
+				let list = document.querySelector("#ent-srch-list");
+				console.log(list);
+				
+				if(entSrch.value == "" || entSrch.value == null){
+					list.style.display = "none";
+				}else{
+					list.style.display = "block";					
+					console.log(res);
+					
+					if(res.length == 0){
+						list.innerHTML = `<span class="bold p-25">해당 검색 결과가 없습니다</span>`; 
+						return;
+					}
+					
+					let str = "";
+					
+					for(let i = 0 ; i < res.length; i++){
+
+						str += '<div class="ent-srch-list-item" onclick="inpVal(this)">';
+						str += '	<img src="/resources/upload/'+res[i].entLogo+'">';
+						str += '	<div>';
+						str += '		<p class="ent-srch-list-ent-name">'+res[i].entNm+'</p>';
+						str += '		<p class="ent-srch-list-ent-cont">';
+						str += '			<span class="ent-sector">'+res[i].comCodeInfoVOList[0].comCdNm+'</span>';
+						str += '			<span class="ent-ceoNm">'+res[i].entCeonm+'</span>';
+						str += '		</p>';
+						str += '	</div>';
+						str += '	<input type="hidden" name="entNo" value="'+res[i].entNo+'" />';
+						str += '</div>';
+					};
+					
+					list.innerHTML = str;
+					
+				}
+				
+			}
+		})
+	}, 500))
+	
+	// 리뷰 남기기 자동완성
+	$(document).on("click", "#REV-complete", function() {
+		
+// 		$('input[name=acdmcrNm]').attr('value',"한남대학교");
+// 		$('select[name=acdmcrAttnd]').val("1");
+// 		$('select[name=acdmcrEducation]').val("2");
+// 		$('select[name=acdmcrDegree]').val("학사");
+// 		$('input[name=acdmcrMajor]').attr('value',"컴퓨터공학");
+// 		$('input[name=acdmcrEntranceDt]').attr('value',"2011-03-01");
+// 		$('input[name=acdmcrPoint]').attr('value',"4.0");
+// 		$('input[name=acdmcrGrdtnDt]').attr('value',"2016-12-31");
+// 		$('input[name=acdmcrYn]').attr('checked',true);
+
+		
+		$('select[name=entRevWorkYn]').val("N");
+		$('select[name=jobCategoryCd]').val("MWJ01000");
+		$('select[name=jobCd]').val("MWJ0100001");
+		$('select[name=entRevWorkLoc]').val("대전");
+		$('select[name=entRevEmplType]').val("1");
+		$('input[name=entRevShortReview]').attr('value', "개발자 대우가 나쁘지 않으며 자기계발의 기회를 많이 제공.");
+		$('input[name=entRevPros]').attr('value', "합리적인 워라밸 및 보상. 체계화된 조직 시스템 그리고 조직 문화.");
+		$('input[name=entRevCons]').attr('value', "사내 시험에 대한 중요도가 높아 업무 역전 현상 발생.");
+		$('input[name=entRevWishes]').attr('value', "미래 먹거리도 중요하지만 인재 확보 및 양성에 좀 더 집중 필요하다고 생각.");
+		
+		$('input[name=entRevChances]').val("5");
+		$('input[name=entRevWelfare]').val("4");
+		$('input[name=entRevBalance]').val("3");
+		$('input[name=entRevCulture]').val("4");
+		$('input[name=entRevManager]').val("2");
+		
+		let tempRange = document.querySelectorAll('input[type="range"]');
+		
+		console.log("tempRange : ", tempRange);
+		
+		for(let i = 0; i < tempRange.length; ++i) {
+			
+			drawStar(tempRange[i]);
+		}
+		
+	});
+	
+	
+</script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>

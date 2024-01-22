@@ -1,0 +1,29 @@
+package jobja.report.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobja.report.mapper.ReportMapper;
+import jobja.report.vo.ReportVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class ReportServiceImpl implements jobja.report.service.ReportService {
+
+	@Autowired
+	ReportMapper reportMapper;
+	
+	@Override
+	public int report(ReportVO reportVO) {
+		return reportMapper.report(reportVO);
+	}
+
+	@Override
+	public List<ReportVO> getReportListById(String memId) {
+		return reportMapper.getReportListById(memId);
+	}
+
+}

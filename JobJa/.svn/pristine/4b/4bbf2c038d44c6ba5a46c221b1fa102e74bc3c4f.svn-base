@@ -1,0 +1,97 @@
+<%@page import="jobJa.board.vo.BoardNewsVO"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<link rel="stylesheet" href="/resources/css/news.css">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<div class="mk_body_news_group">
+	<div class="set_inner">
+		<div class="grid grid_custom type_2">
+			<div class="col main_col">
+				<section class="news_sec latest_news_sec">
+
+					<h2 class="main-h1">취업 뉴스</h2>
+
+					<div class="sec_body cen">
+						<div class="latest_news_wrap">
+							<c:forEach var="boardNewsVO" items="${data}" varStatus="stat">
+								<div class="news_list">
+									<div class="content_box">
+										<a href="/news/detail?boardId=${boardNewsVO.boardId}" class="title">${boardNewsVO.boardTitle}</a>
+										<p class="detail">${boardNewsVO.boardCntnt}</p>
+										<div class="log_time">조회수 : ${boardNewsVO.boardCnt}</div>
+									</div>
+									<div class="img_box">
+										<c:forEach var="fileNm"
+											items="${boardNewsVO.atchFileVO.atchFileDetailVOList}">
+											<img class="photo"
+												src="/resources/upload/${fileNm.afdSaveNm}" alt="">
+										</c:forEach>
+									</div>
+									<div class="news_date">
+										<br> <br>
+
+
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${boardNewsVO.boardWritingDt}" />
+
+										<br>
+
+										<fmt:formatDate pattern="hh시 mm분"
+											value="${boardNewsVO.boardWritingDt}" />
+										<br> <br> ${boardNewsVO.passedTime}
+
+									</div>
+
+								</div>
+							</c:forEach>
+						</div>
+					</div>
+				</section>
+				<div class="pagez">
+					${info.getPagingArea()}
+				</div>
+			</div>
+			<div class="col sub_col">
+			<section class="news_sec best_view_news_sec">
+				<h2 class="main-h1">많이 본 기사</h2>
+				<div class="sec_body1 cen">
+					<div class="best_view_news">
+						<!-- <div class="news_list type_num best_view_news_list"> -->
+						<ul class="best_wrap">
+							<c:forEach var="dataOrderBy" items="${dataOrderBy}"
+								varStatus="stat">
+								<c:if test="${stat.count <= 10}">
+									<li class="news_node"><a href="" class="news_item"> <em
+											class="num c_point">${dataOrderBy.boardTitle}</em>
+											<h3 class="news_ttl">${dataOrderBy.boardCntnt}</h3>
+											<div>
+												<c:forEach var="fileNm"
+													items="${dataOrderBy.atchFileVO.atchFileDetailVOList}">
+													<img class="imga" src="/resources/upload/${fileNm.afdSaveNm}">
+												</c:forEach>
+											</div>
+									</a></li>
+								</c:if>
+							</c:forEach>
+						</ul>
+						<!-- </div> -->
+					</div>
+				</div>
+			</section>
+			<div id="MR_rectangle" class="ad_wrap"
+				data-google-query-id="CISOs-S_6oIDFWPZFgUd5IwBaw">
+
+				<div
+					id="google_ads_iframe_/7450/www.mk.co.kr/news/business/section_list_1__container__"
+					style="border: 0pt none; margin: auto; text-align: center;">
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>

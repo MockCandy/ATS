@@ -1,0 +1,168 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<script src="/resources/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<!-- lecture CSS 파일 링크 -->
+<link rel="stylesheet" type="text/css" href="/resources/css/lecture.css">
+<style>
+body {
+	font-weight: 400;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: #052c52;
+	text-rendering: optimizelegibility;
+	background-color: #fff;
+}
+
+.col-lg-9 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.justify-content-center {
+	-ms-flex-pack: center !important;
+	justify-content: center !important;
+}
+
+img {
+	max-width: 90%;
+	height: auto;
+	padding: 20px;
+}
+
+#form-edit {
+	background-color: #0000; 
+	border: none;
+}
+
+.low-btn{
+	text-align-last: justify;
+	padding:20px;
+	border-top:1px solid gray
+}
+
+.ck.ck-editor {
+   	max-width: 500px;
+}
+
+.ck-editor__editable {
+    min-height: 300px;
+}
+
+.ck-contnt{
+	margin-bottom: 20px;
+}
+.boardTop {
+	padding:25px 20px;
+	border-bottom: 2px solid gray;
+}
+
+pre {
+	padding:40px 20px; 
+}
+</style>
+
+<div class="lectureCen">
+	<div class="lectureBoard">
+		<h1 class="lecture-main-tit">공지사항</h1>
+		<div class="lec-h-div-line"></div>
+		<form class="form-main" id="frm" name="frm" action="/noticeBoard/detailUpdate" method="get" enctype="multipart/form-data">
+			<div class="boardTop">
+				<div class="flex">
+					<p class="mr-auto bold talign-left">${data.boardTitle}</p>
+					<button type="submit" id="update" class="list-btn">수정</button>
+					<button type="button" id="delete" class="list-btn">삭제</button>
+					<input type="hidden" name="boardId" value="${data.boardId}" />
+				</div>
+			</div>
+			
+			<div class="form-edit">
+				<c:forEach var="detailVO" items="${data.atchFileVO.atchFileDetailVOList}">
+				    <img src="/resources/upload/${detailVO.afdSaveNm}" />
+				</c:forEach>
+			</div>
+			
+			<pre id="editor" class="">${data.boardCntnt}</pre>
+			
+		<sec:csrfInput />
+		</form>
+		<div class="low-btn">
+		<!-- 정렬때문인가..? btnNext이 이전글 막아줌  -->
+			<button type="button" class="list-btn" id="btnNext" onclick="location.href=''">&laquo; 이전 글</button>
+			<button onclick="location.href='/noticeBoard/list'" class="list-btn"> 목록 </button>
+			<button type="button" class="list-btn" id="btnPrev" onclick="location.href=''">다음 글 &raquo;</button>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+$(function () {
+
+    let data = {
+        "boardId": "${param.boardId}"
+    };
+
+    console.log("data : ", data);
+
+    // 공지사항 이전글, 다음글 처리
+    $.ajax({
+        url: "/noticeBoard/detailPreNext",
+        contentType: "application/json;charset=utf-8",
+        data: JSON.stringify(data),
+        dataType: "json",
+        type: "post",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+        },
+        success: function (result) {
+            console.log("result : ", result);
+
+            let prevno = result.prevno;
+            let nextno = result.nextno;
+
+            console.log("nextno : " + nextno + ", prevno : " + prevno);
+
+         	// 이전글 버튼 처리
+            if (prevno != null && prevno != "") {
+                $("#btnPrev").attr("onclick", "location.href='/noticeBoard/detail?boardId=" + prevno + "'");
+            } else {
+                $("#btnPrev").attr("disabled", true);
+            }
+
+            // 다음글 버튼 처리
+			if (nextno != null && nextno != "") {
+			    $("#btnNext").attr("onclick", "location.href='/noticeBoard/detail?boardId=" + nextno + "'");
+			} else {
+			    $("#btnNext").attr("disabled", true);
+			}
+		}
+    });
+
+	
+    // 삭제
+    $("#delete").on("click", function(){
+    	
+       let result = confirm("삭제하시겠습니까?");
+       console.log("Confirm 결과:", result);
+
+     // 확인 선택 시 form을 submit
+        if (result) {
+                $("#frm").attr("method", "post");
+                $("#frm").attr("action", "/noticeBoard/deletePost?${_csrf.parameterName}=${_csrf.token}");
+                $("#frm").submit();
+        } else {
+            alert("삭제가 취소되었습니다");
+        }
+    });
+    });
+    
+    
+
+</script>

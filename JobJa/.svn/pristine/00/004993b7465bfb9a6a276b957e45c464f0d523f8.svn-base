@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.application.mapper.ApplicationMapper">
+
+	<sql id="where">
+		<if test="keyword!=null and keyword!=''">
+			AND  (RECRUIT_TITLE LIKE '%' || #{keyword} || '%')
+	    </if>  
+	</sql>
+
+	<resultMap type="applicationVO" id="applicationMap">
+	
+		<result property="memId" column="MEM_ID"/>
+		<result property="ptflNo" column="PTFL_NO"/>
+		<result property="appNo" column="APP_NO"/>
+		<result property="recruitNo" column="RECRUIT_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="appStdt" column="APP_STDT"/>
+		<result property="appStateCd" column="APP_STATE_CD"/>
+		<result property="appStateDt" column="APP_STATE_DT"/>
+		<result property="appApplyDt" column="APP_APPLY_DT"/>
+		<result property="rnum" column="RNUM"/>
+		<result property="resumeTitle" column="RESUME_TITLE"/>
+		<result property="ptflTitle" column="PTFL_TITLE"/>
+		<result property="gubun" column="GUBUN"/>
+	
+	</resultMap>
+	
+	<resultMap type="recruitVO" id="recruitMap">
+	
+		<result property="recruitNo" column="RECRUIT_NO"/>
+		<result property="recruitStdt" column="RECRUIT_STDT"/>
+		<result property="recruitEddt" column="RECRUIT_EDDT"/>
+		<result property="recruitTitle" column="RECRUIT_TITLE"/>
+		<result property="recruitCntnt" column="RECRUIT_CNTNT"/>
+		<result property="recruitWork" column="RECRUIT_WORK"/>
+		<result property="recruitQlf" column="RECRUIT_QLF"/>
+		<result property="recruitPrefer" column="RECRUIT_PREFER"/>
+		<result property="recruitPart" column="RECRUIT_PART"/>
+		<result property="recruitSalary" column="RECRUIT_SALARY"/>
+		<result property="recruitLocation" column="RECRUIT_LOCATION"/>
+		<result property="recruitAfId" column="RECRUIT_AF_ID"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="recruitLevel" column="RECRUIT_LEVEL"/>
+		<result property="recruitWorkType" column="RECRUIT_WORK_TYPE"/>
+		<result property="recruitAcdmCr" column="RECRUIT_ACDM_CR"/>
+		<result property="recruitCareer" column="RECRUIT_CAREER"/>
+		<result property="recruitCount" column="RECRUIT_COUNT"/>
+		<result property="recruitThumb" column="RECRUIT_THUMB"/>
+		<result property="recruitOtt" column="RECRUIT_OTT"/>
+		<result property="recruitJob" column="RECRUIT_JOB"/>
+		<result property="recruitSkill" column="RECRUIT_SKILL"/>
+
+	</resultMap>
+
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoMap">
+	
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	
+	</resultMap>
+
+	<insert id="insert" parameterType="applicationVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="appNo">
+			SELECT 'APP' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(APP_NO),4) + 1,'00000')),'00001')
+			FROM   APPLICATION
+		</selectKey>
+		
+		INSERT INTO APPLICATION 
+		(
+			APP_NO, 
+			RECRUIT_NO, 
+			RESUME_NO, 
+			PTFL_NO, 
+			APP_STATE_CD, 
+			APP_APPLY_DT,
+			MEM_ID
+		)
+		VALUES
+		(
+			#{appNo},
+			#{recruitNo},
+			#{resumeNo},
+			#{ptflNo},
+			'APP01001',
+			SYSDATE,
+			#{memId}
+		)
+	</insert>
+
+	<select id="isApplicated" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) FROM APPLICATION 
+		WHERE RECRUIT_NO = #{recruitNo} AND MEM_ID=#{memId}
+	</select>
+	
+	
+	<!-- 마이페이지 내가 입사지원한 목록 가져오기 -->
+	<select id="myApplication" parameterType="hashMap" resultType="applicationVO">
+		SELECT T.* FROM (
+		    SELECT
+		        ROW_NUMBER() OVER(ORDER BY A.ENT_NO DESC) RNUM,
+		                A.RECRUIT_TITLE AS RECRUIT_TITLE
+					   , A.RECRUIT_NO
+				       , B.APP_NO
+				       , B.RESUME_NO
+				       , B.APP_STDT
+				       , B.APP_STATE_CD
+				       , B.APP_STATE_DT
+				       , B.APP_APPLY_DT
+				       , B.MEM_ID
+				       , B.PTFL_NO
+		               , C.COM_DET_CD_NM AS APP_STATE_NM
+				FROM     RECRUIT A, APPLICATION B, COM_DET_CODE_INFO c
+				WHERE    A.RECRUIT_NO = B.RECRUIT_NO
+		        AND      B.APP_STATE_CD = C.COM_DET_CD
+				AND      B.MEM_ID = #{memId}
+		        ) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT    COUNT(*)
+		FROM      APPLICATION
+		WHERE     MEM_ID = #{memId}
+	</select>
+	
+	<!-- 지원자 상태코드 가져오기 -->
+	<select id="comDetCdState" resultMap="comDetCodeInfoMap">
+	
+		SELECT	COM_DET_CD,
+			    COM_CD,
+			    COM_DET_CD_NM,
+			    COM_DET_DESCRIPTIONS
+			    
+		FROM	COM_DET_CODE_INFO
+		
+		WHERE 	COM_DET_CD LIKE 'APP01%'
+	
+	</select>
+	
+	<select id="applicationVOList" resultType="applicationVO">
+		/* APPLICATIONLIST */
+		
+		SELECT T.*
+			FROM
+			(
+				SELECT	ROW_NUMBER() OVER(ORDER BY APP_NO) RNUM,
+					    A.APP_NO,
+					    A.RECRUIT_NO,
+				        (SELECT B.RESUME_TITLE FROM RESUME B WHERE B.RESUME_NO = A.RESUME_NO) RESUME_NO,
+					    A.APP_STDT,
+					    A.APP_STATE_CD,
+					    A.APP_STATE_DT,
+					    A.APP_APPLY_DT,
+					    A.MEM_ID,
+				        (SELECT C.PTFL_TITLE FROM PORTFOLIO C WHERE C.PTFL_NO = A.PTFL_NO) PTFL_NO
+				FROM
+					    APPLICATION A
+					    
+				WHERE  1 = 1
+				<include refid="where"></include>
+		
+			) T
+			
+		WHERE T.RNUM BETWEEN (#{currentPage} * 10) - (10-1) AND (#{currentPage} * 10)
+				
+	</select>
+	
+	<!-- 지원자 상태 수정
+	{
+		"appNo":APP00014,
+		"appStateCd":APP01004
+	}
+	 -->
+	<update id="updatePost" parameterType="applicationVO">
+	
+	/* updatePost */
+		UPDATE 	APPLICATION
+		SET		
+				APP_STATE_CD	= #{appStateCd},
+				APP_STATE_DT	= SYSDATE
+		WHERE	APP_NO			= #{appNo}
+		
+	</update>
+	
+	<!-- 지원자 목록 -->
+	<select id="applicationList" parameterType="String" resultMap="applicationMap">
+	
+		SELECT T.*
+			FROM
+			(
+			
+		SELECT  ROW_NUMBER() OVER(ORDER BY APP_NO) RNUM,
+		        A.APP_NO,
+		        A.RECRUIT_NO,
+		        (SELECT C.RESUME_TITLE FROM RESUME C WHERE C.RESUME_NO = A.RESUME_NO) RESUME_TITLE,
+		        A.RESUME_NO,
+		        A.APP_STDT,
+		        A.APP_STATE_CD,
+		        A.APP_STATE_DT,
+		        A.APP_APPLY_DT,
+		        A.MEM_ID,
+		        (SELECT D.PTFL_TITLE FROM PORTFOLIO D WHERE D.PTFL_NO = A.PTFL_NO) PTFL_TITLE,
+		        A.PTFL_NO,
+		        B.RECRUIT_STDT,
+		        B.RECRUIT_EDDT,
+		        B.RECRUIT_TITLE,
+		        B.RECRUIT_CNTNT,
+		        B.RECRUIT_WORK,
+		        B.RECRUIT_QLF,
+		        B.RECRUIT_PREFER,
+		        B.RECRUIT_SALARY,
+		        B.RECRUIT_LOCATION,
+		        B.RECRUIT_AF_ID,
+		        B.ENT_NO,
+		        B.RECRUIT_LEVEL,
+		        B.RECRUIT_WORK_TYPE,
+		        B.RECRUIT_ACDM_CR,
+		        B.RECRUIT_CAREER,
+		        B.RECRUIT_COUNT,
+		        B.RECRUIT_PART,
+		        B.RECRUIT_THUMB,
+		        B.RECRUIT_OTT,
+		        B.RECRUIT_JOB,
+		        B.RECRUIT_SKILL,
+                FN_GET_GUBUN(A.MEM_ID,A.PTFL_NO) GUBUN
+		        
+		FROM    APPLICATION A
+		
+		JOIN    RECRUIT B ON A.RECRUIT_NO = B.RECRUIT_NO
+		
+		WHERE 	1 = 1
+		AND     A.RECRUIT_NO = #{recruitNo}	
+		
+		<include refid="where"></include>
+		
+			) T
+			
+		WHERE T.RNUM BETWEEN (#{currentPage} * 10) - (10-1) AND (#{currentPage} * 10)
+		
+	</select>
+	
+	<!-- 총 페이지 수 가져오기 -->
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+	
+		SELECT 	COUNT(*)
+		FROM 	APPLICATION
+		WHERE 	1 = 1
+        
+   </select>	
+	
+	<!-- 지원자 수 가져오기 -->
+	<select id="appTotal" parameterType="hashMap" resultType="int">
+	
+		SELECT	COUNT(*) AS appTotal
+	    FROM 	APPLICATION
+	    WHERE 	RECRUIT_NO = #{recruitNo}
+        
+   </select>	
+   
+   <!-- 공고당 입사지원 목록 가져오기 -->
+   <select id="getOneEntapplicationList" parameterType="String" resultType="applicationVO">
+   SELECT   A.APP_NO, A.RECRUIT_NO, A.RESUME_NO, A.APP_STDT, A.APP_STATE_CD, A.APP_STATE_DT, A.APP_APPLY_DT, A.MEM_ID, A.PTFL_NO,
+	        (SELECT B.MEM_NM FROM MEMBER B WHERE B.MEM_ID = A.MEM_ID) AS MEM_NM,
+	        (SELECT C.MEM_GEN FROM MEMBER C WHERE C.MEM_ID = A.MEM_ID) AS MEM_GEN,
+	        (SELECT D.MEM_TEL FROM MEMBER D WHERE D.MEM_ID = A.MEM_ID) AS MEM_TEL
+	FROM APPLICATION A
+	WHERE RECRUIT_NO = #{recruitNo}
+   </select>
+   
+</mapper>

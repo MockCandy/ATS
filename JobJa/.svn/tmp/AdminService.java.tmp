@@ -1,0 +1,129 @@
+package jobJa.admin.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.recruit.vo.RecruitVO;
+
+public interface AdminService {
+
+	//일반회원 리스트
+	public List<MemberVO> getMember(Map<String,Object> map);
+
+	//일반회원 총 수
+	 public int getTotalMem(Map<String,Object> map);
+	 
+	//멤버 디테일
+	public MemberVO getMem(Map<String,Object> map);
+
+	//멤버 삭제
+	public int deleteAjax(String memId);
+
+	//멤버 일정관리 삭제
+	public int deleteSchedule(String memId);
+
+	//관심기업테이블 멤버 삭제
+	public int deleteInterestEnt(String memId);
+
+	//알림 테이블 멤버 삭제
+	public int deleteAlarm(String memId);
+
+	//자격증 테이블 멤버 삭제
+	public int deleteCertificate(String memId);
+
+	//자기소개서 테이블 멤버 삭제
+	public int deletePortfolio(String memId);
+
+	//관심공고 테이블 멤버 삭제
+	public int deleteInterestRecruit(String memId);
+
+	//권한 테이블 멤버 삭제
+	public int deleteAuth(String memId);
+	
+	//상품결제 테이블 멤버 삭제
+	public int deleteProduct(String memId);
+
+	//상담사회원 총 카운트수
+	public int getTotalCounsel(Map<String, Object> map);
+
+	//상담사회원 리스트 
+	public List<MemberVO> getCounselor(Map<String, Object> map);
+
+	//상담사회원 신청한 회원 총원수
+	public int getTotalCounselOffer(Map<String, Object> map);
+
+	//상담사회원 신청하거나 한적이있는 회원 리스트
+	public List<MemberVO> getCounselorOffer(Map<String, Object> map);
+
+	//상담사회원 승인상태 변경
+	public int updateYn(Map<String,Object> map);
+
+	//상담사 회원 신청 승인된 인원수
+	public int getcsCompleTeCount(Map<String, Object> map);
+
+	//상담사 회원 대기 인원수
+	public int getcsWaitCount(Map<String, Object> map);
+
+	//상담사 신청 승인취소 인원수
+	public int getcsFalseCount(Map<String, Object> map);
+
+	//상담사 신청 승인된 회원의 리스트
+	public List<MemberVO> getCounselorSuccess(Map<String, Object> map);
+
+	//상담사 신청 대기인 회원의 리스트
+	public List<MemberVO> getCounselorWaiting(Map<String, Object> map);
+
+	//상담사 신청 취소된 회원의 리스트
+	List<MemberVO> getAdminFalseList(Map<String, Object> map);
+
+	//기업회원 총 카운트수
+	public int getTotalEnter(Map<String, Object> map);
+
+	//기업회원 리스트
+	public List<MemberVO> getEnter(Map<String, Object> map);
+
+	//기업회원신청한 총 인원수
+	public int getTotalEnterOffer(Map<String, Object> map);
+
+	//기업회원 신청대기 총 인원
+	public int getEnterWaitCount(Map<String, Object> map);
+
+	//기업회원 신청취소 총 인원
+	public int getEnterFalseCount(Map<String, Object> map);
+
+	//기업회원 신청한 총 리스트
+	public List<MemberVO> getEnterOffer(Map<String, Object> map);
+
+	//기업회원 승인 변경시에 yn바꾸는 코드
+	public int updateYn2(Map<String, Object> map);
+
+	//기업회원 승인 대기 리스트 
+	public List<MemberVO> getEnterWaiting(Map<String, Object> map);
+
+	//기업회원 승인 거절 리스트
+	public List<MemberVO> getAdminEnterFalseList(Map<String, Object> map);
+
+	//총 공고수 가지고오는거
+	public int getTotalRecruit(Map<String, Object> map);
+
+	//총 공고 리스트 가지고오는거 
+	public List<RecruitVO> getRecruitVOList(Map<String, Object> map);
+
+	//각 채용공고의 직군 직업 가지고오기
+	public ComCodeInfoVO getComCode(Map<String, Object> map);
+
+	//선택한 채용공고 삭제하기 
+	public int deleteRecruitAjax(String recruitNo);
+
+	//마감임박순 채용공고 리스트
+	public List<RecruitVO> getDeadLineRecruitVOList(Map<String, Object> map);
+
+	//연봉순 채용공고 리스트
+	public List<RecruitVO> getMoneyRecruitVOList(Map<String, Object> map);
+
+
+
+
+}

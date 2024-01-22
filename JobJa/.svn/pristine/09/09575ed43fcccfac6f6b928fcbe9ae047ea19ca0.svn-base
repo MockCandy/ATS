@@ -1,0 +1,129 @@
+package jobja.util.collection;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+
+import com.fasterxml.jackson.databind.util.BeanUtil;
+
+public class Manager {
+
+	private List<People> peopleList = new ArrayList<People>();
+	
+	public void insert(People people) {
+		if(!peopleList.contains(people)) {
+			peopleList.add(people);
+		}			
+	}
+
+	public int update(People people) throws IllegalAccessException, InvocationTargetException {
+		int cnt = 0;
+		System.out.println("peopleList.indexOf(people) : " + peopleList.indexOf(people));
+		System.out.println("peopleList.get(peopleList.indexOf(people)) : " + peopleList.get(peopleList.indexOf(people)));
+		People listPeople = peopleList.get(peopleList.indexOf(people));
+		System.out.println("listPeople : " + listPeople);
+		System.out.println("people : " + people);
+//		System.out.println("listPeople : " + listPeople);
+		// listPeople이 주소를 참조하고 있다
+		// -> 그 주소값 자체를 BeanUtils.copyProperties(people, listPeople)로 바꿔주기 때문에
+		// 따로 add의 과정이 없더라도 list의 값이 바뀌는 것
+		BeanUtils.copyProperties(people, listPeople);
+		
+		return cnt;
+	}
+	
+	// 삭제 구현 : peopleId가 같으면 삭제
+	public int delete(People people) {
+		int cnt = 0;
+		
+		System.out.println("people : " + people);
+		
+		if(peopleList.remove(people)) {
+			cnt++;
+		}
+		
+		return cnt;
+	}
+	
+	// 삭제 구현 : 같은 클래스 종류이면 삭제
+	public int deleteList(People people) {
+		
+		int cnt = 0;
+
+		Object clazz = people.getClass().getName();
+		System.out.println(clazz);
+
+		Iterator<People> iter = peopleList.iterator();
+		while(iter.hasNext()) {
+		    if(clazz.equals(iter.next().getClass().getName())) {
+		        iter.remove();
+		        cnt++;
+		    }
+		}
+		
+		return cnt;
+	}
+	
+	public void printPeopleList() {
+
+		for(People people : peopleList) {
+			System.out.println(people);
+		}
+		
+	}
+	
+	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException {
+		Manager manager = new Manager();
+		
+		People people1 = new Student("S001", "김학생", "남자", 13, 3, 1, 15);
+		People people2 = new Student("S002", "최학생", "남자", 12, 6, 3, 20);
+		People people3 = new Student("S003", "박학생", "여자", 11, 1, 5, 10);
+		
+		People people4 = new Teacher("T001", "박선생", "여자", 31, Teacher.OPERATE_TYPE_A, Teacher.MANAGE_TYPE_B);
+		People people5 = new Teacher("T002", "이선생", "남자", 41, Teacher.OPERATE_TYPE_B, Teacher.MANAGE_TYPE_A);
+		People people6 = new Teacher("T002", "김선생", "남자", 61, Teacher.OPERATE_TYPE_B, Teacher.MANAGE_TYPE_A);
+		
+		manager.insert(people1);
+		manager.insert(people2);
+		manager.insert(people3);
+		manager.insert(people4);
+		manager.insert(people5);
+		manager.insert(people6);
+		
+		// 등록된 인력 정보 출력
+		manager.printPeopleList();
+
+		People paramPeople = new People();
+		paramPeople.setPeopleId("S003");
+		
+		System.out.println("paramPeople : " + paramPeople);
+		
+//		int deleteCnt = manager.delete(paramPeople);
+//		System.out.println("deleteCnt : " + deleteCnt);
+		
+//		int deleteCnt = manager.deleteList(people4);
+//		System.out.println(deleteCnt);
+
+		int updateCnt = manager.update(people6);
+		System.out.println("updateCnt : " + updateCnt);
+		
+		// 등록된 인력 정보 출력
+		manager.printPeopleList();
+		
+//		People people1 = new Student();
+//		people1.setName("김학생");
+//		people1.setAge(13);
+//		people1.setSex("남자");
+//		((Student) people1).setHak(3);
+//		((Student) people1).setBan(1);
+//		((Student) people1).setNo(15);
+//		
+//		System.out.println(people1);
+	}
+	
+	
+}

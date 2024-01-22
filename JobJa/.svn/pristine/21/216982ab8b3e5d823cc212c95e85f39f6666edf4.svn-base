@@ -1,0 +1,502 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+
+<link rel="stylesheet" type="text/css"
+	href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<link href="/resources/css/myPageaside.css" rel="stylesheet" >
+<link rel="stylesheet" href="/resources/css/mypage.css"></link>
+<link rel="stylesheet" type="text/css" href="/resources/css/enterprise.css">
+<script src="/resources/js/jquery-3.6.3.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<!-- PortOne SDK -->
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<!-- 결제 API위한 js -->
+<script type="text/javascript"
+	src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+
+<style>
+.modal-title {
+	text-align: center;
+	font-size: 24px;
+	font-weight: 800;
+}
+
+#modal-custom {
+	max-width: 640px !important;
+}
+
+.iziModal-wrap {
+	width: 240px;
+}
+
+.modal-con {
+	padding: 20px;
+}
+
+.btn-parent {
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 24px;
+	padding-bottom: 24px;
+}
+
+.payment-modal-inner {
+	margin-bottom: 24px;
+}
+</style>
+
+
+
+<div class="mypage-div">
+	<div class="mypage-left">
+		<div class="mypage-left-tit">프리미엄</div>
+		<ul>
+			<li class="active"><a href="/entPremium/itemList">기업 상품 목록</a></li>
+			<li><a href="/entPremium/payitems">상품결제 목록</a></li>
+		</ul>
+	</div>
+	
+	
+	
+
+		
+	<div class="mypage-body-con">
+		<div class="sub-title-area flex">
+				<div class="body-sub-title">기업 상품 목록</div>
+		</div>
+		<div class="body-sub-con">
+			<p class="body-sub-con-tit p-14">
+				<span class="p-18 mr-3 txt-skyblue bold">배너광고</span> 메인화면의 배너에 광고가
+				띄워집니다!
+			</p>
+	
+			<div class="item-list">
+				<c:forEach var="bitemVO" items="${banneritemVOList}">
+					<div class="item">
+						<div class="item-top">
+							
+							<p class="bold p-22">${bitemVO.itemNm}</p>
+							<p class="bold p-22 txt-red ml-auto">
+								<fmt:formatNumber value="${bitemVO.itemSalePrice}"
+									pattern="#,###" />
+								<span class="p-15 txt-black ml-5">원</span>
+							</p>
+						</div>
+						<div class="item-bot">
+							<div>
+								<p class="p-14 mr-5 mb-7">
+									<span class="badge badge-nm bg-skyblue txt-skyblue">혜택</span>
+									${bitemVO.itemIntrcn}
+								</p>
+								<p class="p-14 mr-5">
+									<span class="badge badge-nm"
+										style="background-color: #fff; border: 1px solid #ddd">가격</span>
+									<span class="bold">
+										<fmt:formatNumber type="number" maxFractionDigits="0">${bitemVO.itemSalePrice / (fn:substring(fn:split(bitemVO.itemNm, " ")[1], 0,1) * 7) }</fmt:formatNumber>
+										
+									</span>원 / 일
+								</p>
+							</div>
+							<div class="ml-auto">
+								<button class="btn btn-sm bg-blue color-white item-pay-btn"
+									data-itemcd="${bitemVO.itemCd}"
+									data-memid="${getCurrentLoginVO.memId}"
+									data-itemnm="${bitemVO.itemNm}"
+									data-mememail="${getCurrentLoginVO.memEmail}"
+									data-itemno="${bitemVO.itemNo}"
+									data-price="${bitemVO.itemSalePrice}">상품 결제</button>
+							</div>
+						</div>
+					</div>
+				</c:forEach>
+			</div>
+	
+			<p class="body-sub-con-tit p-14 mt-30">
+				<span class="p-18 mr-3 txt-skyblue bold">채용공고 상위노출</span> 채용공고 목록에서
+				해당 기업의 공고가 상위 노출됩니다!
+			</p>
+	
+			<div class="item-list">
+				<c:forEach var="ritemsVO" items="${recruitItemVOList}">
+					<div class="item">
+						<div class="item-top">
+							<p class="bold p-22">${ritemsVO.itemNm}</p>
+							<p class="bold p-22 txt-red ml-auto">
+								<fmt:formatNumber value="${ritemsVO.itemSalePrice}"
+									pattern="#,###" />
+								<span class="p-15 txt-black ml-5">원</span>
+							</p>
+						</div>
+						<div class="item-bot">
+							<div>
+								<p class="p-14 mr-5 mb-7">
+									<span class="badge badge-nm bg-skyblue txt-skyblue">혜택</span>
+									${ritemsVO.itemIntrcn}
+								</p>
+								<p class="p-14 mr-5">
+									<span class="badge badge-nm"
+										style="background-color: #fff; border: 1px solid #ddd">가격</span>
+									<span class="bold">
+										<fmt:formatNumber type="number" maxFractionDigits="0">${ritemsVO.itemSalePrice / (fn:substring(fn:split(ritemsVO.itemNm, " ")[1], 0,1) * 7) }</fmt:formatNumber>
+									</span>원 / 일
+								</p>
+							</div>
+							<div class="ml-auto">
+								<button class="btn btn-sm bg-blue color-white item-pay-btn"
+									data-itemcd="${ritemsVO.itemCd}"
+									data-memid="${getCurrentLoginVO.memId}"
+									data-itemnm="${ritemsVO.itemNm}"
+									data-mememail="${getCurrentLoginVO.memEmail}"
+									data-itemno="${ritemsVO.itemNo}"
+									data-price="${ritemsVO.itemSalePrice}">상품 결제</button>
+							</div>
+						</div>
+					</div>
+				</c:forEach>
+	
+			</div>
+			<!-- end item list -->
+	
+			<!-- 기업회원Id -->
+			<input type="hidden" value="${memberVO.memId}" name="memId">
+			<!-- 전화번호 -->
+			<input type="hidden" value="${memberVO.memTel}" name="memTel">
+			<!-- 기업회사 이름 -->
+			<input type="hidden" value="${memberVO.entNm}" name="entNm">
+			<!-- 기업회원 사업자 번호 -->
+			<input type="hidden" value="${memberVO.entNo}" name="entNo">
+			<!-- 기업 주소1 -->
+			<input type="hidden" value="${memberVO.entAddr} ${memberVO.entAddr2}"
+				name="entAddr">
+			<!-- 기업 우편번호 -->
+			<input type="hidden" value="${memberVO.entPostNo}" name="entPostNo">
+			<!-- 기업회사 사장이름 -->
+			<input type="hidden" value="${memberVO.entCeoNm}" name="entCeoNm">
+	
+	
+	
+		</div>
+		<!-- end body sub con -->
+	
+	
+		<div id="modal-custom">
+			<button data-izimodal-close="" class="icon-close"></button>
+			<p class="modal-title">광고에 사용할 배너 이미지를 등록해주세요.</p>
+			<div class="modal-con">
+	
+				<div class="payment-modal-inner">
+					<div>규격 : 가로 1060px x 세로 200px</div>
+				</div>
+				<div id="tab1-2">
+					<input type="file" id="uploadFile" name="uploadFile" multiple />
+				</div>
+	
+			</div>
+			<!-- end modal-con -->
+	
+			<div class="btn-parent">
+				<button class="btn-sm btn-write btn" id="modal-submit-btn">확인</button>
+			</div>
+		</div>
+	
+	</div>
+	<!-- end body -->
+	
+		
+</div>
+
+
+
+
+<script type="text/javascript">
+	$('#modal-custom').iziModal({
+	    title: '',
+	    subtitle: '',
+	    headerColor: '#88A0B9',
+	    background: null,
+	    theme: '',  // light
+	    icon: null,
+	    iconText: null,
+	    iconColor: '',
+	    rtl: false,
+	    width: 400,
+	    top: null,
+	    bottom: null,
+	    borderBottom: true,
+	    padding: 0,
+	    radius: 3,
+	    zindex: 999,
+	    iframe: false,
+	    iframeHeight: 400,
+	    iframeURL: null,
+	    focusInput: true,
+	    group: '',
+	    loop: false,
+	    arrowKeys: true,
+	    navigateCaption: true,
+	    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+	    history: false,
+	    restoreDefaultContent: false,
+	    autoOpen: 0, // Boolean, Number
+	    bodyOverflow: false,
+	    fullscreen: false,
+	    openFullscreen: false,
+	    closeOnEscape: true,
+	    closeButton: true,
+	    appendTo: 'body', // or false
+	    appendToOverlay: 'body', // or false
+	    overlay: true,
+	    overlayClose: true,
+	    overlayColor: 'rgba(0, 0, 0, 0.4)',
+	    timeout: false,
+	    timeoutProgressbar: false,
+	    pauseOnHover: false,
+	    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+	    transitionIn: 'comingIn',
+	    transitionOut: 'comingOut',
+	    transitionInOverlay: 'fadeIn',
+	    transitionOutOverlay: 'fadeOut',
+	    onFullscreen: function(){},
+	    onResize: function(){},
+	    onOpening: function(){},
+	    onOpened: function(){},
+	    onClosing: function(){},
+	    onClosed: function(){},
+	    afterRender: function(){}
+	});// end modal	
+	
+	
+	
+	let memId = $("input[name='memId']").val();
+	let memTel = $("input[name='memTel']").val();
+	let entNm = $("input[name='entNm']").val();
+	let entNo = $("input[name='entNo']").val();
+	let entAddr = $("input[name='entAddr']").val();
+	let entPostNo = $("input[name='entPostNo']").val();
+	
+	/* 이니시스 연결하는 것. */
+	var IMP = window.IMP;
+	IMP.init("imp50364423");
+
+	function requestPay(merchant) {
+		
+		IMP.request_pay(
+				
+		{
+			pg : "html5_inicis",
+			pay_method : "card",
+			merchant_uid : merchant.merchant_uid, // 상품 고유 아이디로 입력을 하셔야 합니다.
+			name : merchant.name,
+			amount : merchant.amount,
+			buyer_email : merchant.buyer_email,
+			buyer_name : merchant.buyer_name,
+			buyer_tel : merchant.buyer_tel,
+			buyer_addr : merchant.buyer_addr,
+			buyer_postcode : merchant.buyer_postcode
+			
+		},
+		function(rsp) {
+			
+				console.log(" rsp : " ,rsp);
+			
+				if(rsp.success) {
+					
+					console.log(rsp);
+					
+					console.log(" 여기 까지 찍히나?");
+					let originalString = merchant.merchant_uid;
+					console.log(" 여???" + originalString);
+					let parts = originalString.split('_'); // ["20231230150859", "PDC0100201", "a123"]
+					let itemCompanyCd = parts[1]; // "PDC0100201"
+					
+					console.log("상품 코드 제발 2: " + itemCompanyCd);
+					console.log("제발! :코드 가져와 " +  merchant.itemNo);
+					
+					let data = {
+								"payUserId" : memId,
+								"itemCompanyNo" : itemCompanyCd,
+								"payMethod" : rsp.pay_method,
+								"payEntNo" : entNo,
+								"itemNm": rsp.name
+								}
+					
+					console.log("data : " , data);
+					
+					 $.ajax({
+		        		  url:"/enter/ajaxinsertEntPay",
+		        		  contentType:"application/json;charset=utf-8",
+		                  data:JSON.stringify(data),
+		                  type:"post",
+		                  dataType:"json",
+		                  beforeSend:function(xhr){
+		                     xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+		                  },
+		                  success:function(rst){
+		                	  
+		                	  console.log(rst);
+		                	  
+		                	  if(rst.itemCompanyNo == 'PDCEO001' || rst.itemCompanyNo == 'PDCEO002' || rst.itemCompanyNo == 'PDCEO003'){
+		                		  
+		                		  let cont = '';
+			                	  
+			                	  cont += '<input type="hidden" name="payNo" value="'+rst.payNo+'">';
+			                	  
+			                	  $('#modal-submit-btn').append(cont);
+			                	  
+			                	  $('#modal-custom').iziModal('open');
+			                	  
+			                	  
+			                	  $("#modal-submit-btn").off("click").on("click", function(e) {
+			                		  
+			                		  let formData = new FormData();
+			                		  
+			                		  let inputFile = $("input[name='uploadFile']");
+			                		  
+			                		  let files = inputFile[0].files;
+			                		  
+			                		  if (files.length > 0) {
+			                		        formData.append('file', files[0]); // 'file'은 서버에서 해당 파일을 받는 데 사용할 키 이름
+			                		  }
+			                		  
+			                		  console.log( "files : " , files);
+			                		  
+			                		  let payNo = $('input[name="payNo"]').val();
+				                	  
+				                	  console.log("payNo : " + payNo);
+				                	  
+				                	  formData.append('payNo', payNo);
+				                	  
+				                	  $.ajax({
+						        		  url:"/enter/ajaxBannerEntFile",
+						        		  contentType:false,
+						        		  processData:false,
+						                  data:formData,
+						                  type:"post",
+						                  beforeSend:function(xhr){
+						                     xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+						                  },
+						                  success:function(rst){
+						                	  
+						                	  console.log(rst);
+						                	  
+						                	  if(rst == 1){
+						                		  
+						                		  $('#modal-custom').iziModal('close');
+						                		  
+						                		  alert("배너광고 상품 결제가 완료 되었습니다.");
+						                		  
+						                		  let fileInput = document.getElementById('uploadFile');
+
+							                	  // 파일 입력  값 초기화합니다.
+							                	  fileInput.value = '';
+							                	  
+							                	  //동적으로 생성해줬던 input(payNo) 요소 지워줌.
+							                	  removePayNoInput();
+						                		  
+						                	  }
+						                	  
+						                  },
+						                  error: function(xhr, status, error){
+						                     console.log('Error:', xhr, status, error);
+						                  }
+						        		  
+						        	  });//end ajax 사진
+				                	  
+				                	  
+			                		  
+			                	  });//end modal submint btn
+			                	  
+		                		  
+		                	  }else{
+		                		  
+		                		  alert("채용공고 상위노출 상품 결제가 완료되었습니다.");
+		                		  
+		                	  }
+		                	  
+		                      
+		                  },
+		                  error: function(xhr, status, error){
+		                     console.log('Error:', xhr, status, error);
+		                  }
+		        		  
+		        	  });//end ajax 결제insert
+		        	  
+		        	  
+		        	  
+		        	  
+		        	  
+		        	  
+					
+					
+
+			}else{
+					alert("결제가 정상적으로 되지 않았습니다.")
+				
+			}
+
+		});
+	}//end merchant
+
+
+
+		$(".item-pay-btn").off("click").on("click", function(e) {
+			
+
+			let year = new Date().getFullYear();
+			let month = ('0' + (new Date().getMonth() + 1)).slice(-2);
+			let day = ('0' + new Date().getDate()).slice(-2);
+			let hours = ('0' + new Date().getHours()).slice(-2);
+			let minutes = ('0' + new Date().getMinutes()).slice(-2);
+			let seconds = ('0' + new Date().getSeconds()).slice(-2);
+			
+			const dateStr = year +  "" + month + "" + day + "" + hours + "" + minutes + "" + seconds;
+			
+			let thisitemCd = $(this).data("itemcd");
+			let thismemId = $(this).data("memid");
+			let itemNm = $(this).data("itemnm");
+			let memEmail = $(this).data("mememail");
+			let thisitemNo = $(this).data("itemno");
+			
+			
+			if (confirm("상품을 구매 하시겠습니까?")) {
+	
+				// 년 + 월 + 일 + 상품고유아이디 + _로그인아이디
+				// 20231230_1_heebang
+				
+				let merchant = {
+					merchant_uid : dateStr + "_" + thisitemNo + "_" + thismemId, // 상품 고유 아이디로 입력을 하셔야 합니다.
+					name : itemNm,
+					buyer_email: memEmail,
+					buyer_name: entNm,
+					buyer_tel: memTel,
+					buyer_addr: entAddr,
+					buyer_postcode: entPostNo,
+					amount : 1,
+				};
+
+				requestPay(merchant);
+
+			} else {
+
+				alert("구매가 취소되었습니다.");
+			}
+
+		}); // end ".item-pay-btn".on"click", function(e)
+
+	
+		//input hidden 쌓여서 지워주는 함수 만듬.
+		function removePayNoInput() {
+		    $("input[name='payNo']").remove();
+		}
+	
+	
+	
+	
+</script>

@@ -1,0 +1,294 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<link rel="stylesheet" href="/resources/css/boardQNA.css">
+<div class="cen">
+
+	<p class="main-h1 mb-20">취업 Q&A</p>
+
+	<p class="main-tit flex"
+		style="font-weight: bold; margin-bottom: 15px;">🏅인기글</p>
+
+	<div class="popular-posts">
+		
+		<c:forEach var="boardQNAVO" items="${popularQNAList }">
+			<div class="cont">
+				<p class="cont-title hover_underline">
+					<a href="/boardQNA/detail?boardId=${boardQNAVO.boardId}">${boardQNAVO.boardTitle }</a>
+				</p>
+				<p class="cont-info">
+					<span class="cont-writer"> ${boardQNAVO.memId } </span> 
+					<span class="cont-like">
+						<i class="fa-regular fa-heart" style="color: #858c99;"></i> 
+						${boardQNAVO.boardLike }
+					</span> 
+					<span class="cont-reply">
+					<i class="fa-regular fa-message"style="color: #858c99;"></i> 
+						${fn:length(boardQNAVO.replys)}
+					</span>
+				</p>
+			</div>
+		</c:forEach>
+	</div>
+
+	<div class="sort-box flex" style="align-items: flex-end;">
+		
+		<c:choose>
+			<c:when test ="${param.sort == 'view'}">
+				<span id="recentSort" class="dot-div-span">최신순</span>		
+				<span id="likeSort" class="dot-div-span">공감순</span>
+				<span id="viewSort" class="dot-div-span on">조회순</span>
+			 </c:when>
+			 <c:when test ="${param.sort == 'like'}">
+				<span id="recentSort" class="dot-div-span">최신순</span>		
+				<span id="likeSort" class="dot-div-span on">공감순</span>
+				<span id="viewSort" class="dot-div-span">조회순</span>
+			 </c:when>
+			 <c:otherwise>
+				<span id="recentSort" class="dot-div-span on">최신순</span>		
+				<span id="likeSort" class="dot-div-span">공감순</span>
+				<span id="viewSort" class="dot-div-span">조회순</span>
+			 </c:otherwise>
+		</c:choose>
+		
+		
+		<form action="/boardQNA/list" class="flex align-center" method="get" style="margin-left:auto;">
+			<input type="text" class="input-ssm p-14" name="keyword">
+			<button type="button" class="p-14 btn btn-search btn-ssm"></button>
+		</form>
+		<sec:authorize access="hasRole('ROLE_MEMBER')">
+			<button class="btn btn-ssm btn-write" onclick="window.location='/boardQNA/create'">글 작성</button>
+		</sec:authorize>
+		<sec:authorize access="hasRole('ROLE_CONSULTANT')">
+			<button class="btn btn-ssm btn-write" onclick="window.location='/boardQNA/create'">글 작성</button>
+		</sec:authorize>
+	</div>
+	
+	<div class="board1" id="board1">
+		<c:forEach var="boardQNAVO" items="${data.content }">
+			<div class="board1-item" onclick="window.location.href='/boardQNA/detail?boardId=${boardQNAVO.boardId}'">
+				<p class="board1-item-title">${boardQNAVO.boardTitle }</p>
+				<p class="board1-item-cont">
+					${boardQNAVO.boardCntnt }
+					<c:if test="${not empty boardQNAVO.atchFileDetailVOList }">
+						<i class="fa-solid fa-file-image" style="color: #545a63;"></i>
+					</c:if>	
+				</p>
+				<p class="board1-item-info">
+					<span class="cont-writer"> ${boardQNAVO.memId } </span> 
+					<span class="cont-like">
+						<i class="fa-regular fa-heart" style="color: #858c99;"></i> ${boardQNAVO.boardLike }
+					</span> 
+					<span class="cont-reply">
+						<i class="fa-regular fa-message" style="color: #858c99;"></i> ${fn:length(boardQNAVO.replys) }
+					</span>
+				</p>
+			</div>		
+		</c:forEach>
+	</div>
+	
+	<div class="board-pagi mt-30">
+		${data.getPagingArea4()}
+	</div>
+
+</div>
+<script>
+
+
+
+	$(".sort-box span").on("click", function(e){
+		for(let i = 0; i < e.target.parentElement.children.length; i++){
+			e.target.parentElement.children[i].classList.remove("on");
+		}
+		e.target.classList.add("on");
+	})
+
+	$("#recentSort").on("click", function(e){
+		
+		data = "recent";
+		
+		console.log(data);
+		$.ajax({
+			url:"/boardQNA/ajaxList",
+			data:{
+				"sortBy" : data,
+				"keyword" : "",
+				"currentPage" : "1"
+			},
+			type:"post",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(header,token);
+			},
+			success:function(res){
+				console.log("res : " , res);
+				
+				let str = "";
+				
+				console.log(res.content.length);
+				
+				for(let i = 0; i < res.content.length; i++){
+					
+					str +='<div class="board1-item" onclick="window.location.href=\'/boardQNA/detail?boardId='+res.content[i].boardId+'\'">';
+					str +='<p class="board1-item-title">'+res.content[i].boardTitle +'</p>';
+					str +='<p class="board1-item-cont">'+res.content[i].boardCntnt +'</p>';
+					str +='<p class="board1-item-info">';
+					str +='		<span class="cont-writer"> '+res.content[i].memId  +'</span>';
+					str +='		<span class="cont-like">';
+					str +='			<i class="fa-regular fa-heart" style="color: #858c99;"></i> '+res.content[i].boardLike +'                ';
+					str +='		</span>';
+					str +='		<span class="cont-reply">';
+					str +='			<i class="fa-regular fa-message" style="color: #858c99;"></i> '+ res.content[i].replys.length +'';
+					str +='		</span>';
+					str +='	</p>';
+					str +='</div>';
+					
+				}
+				
+				console.log(str);
+				
+				$("#board1").html(str);
+				
+				$(".boardQNA-pagi").html(res.pagingArea);
+			}
+		})
+	})
+	
+	$("#likeSort").on("click", function(e){
+		
+		data = "like";
+		
+		console.log(data);
+		$.ajax({
+			url:"/boardQNA/ajaxList",
+			data:{
+				"sortBy" : data,
+				"keyword" : "",
+				"currentPage" : "1"
+			},
+			type:"post",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(header,token);
+			},
+			success:function(res){
+				console.log("res : " , res);
+				
+				let str = "";
+				
+				console.log(res.content.length);
+				
+				for(let i = 0; i < res.content.length; i++){
+					
+					str +='<div class="board1-item" onclick="window.location.href=\'/boardQNA/detail?boardId='+res.content[i].boardId+'\'">';
+					str +='<p class="board1-item-title">'+res.content[i].boardTitle +'</p>';
+					str +='<p class="board1-item-cont">'+res.content[i].boardCntnt +'</p>';
+					str +='<p class="board1-item-info">';
+					str +='		<span class="cont-writer"> '+res.content[i].memId  +'</span>';
+					str +='		<span class="cont-like">';
+					str +='			<i class="fa-regular fa-heart" style="color: #858c99;"></i> '+res.content[i].boardLike +'                ';
+					str +='		</span>';
+					str +='		<span class="cont-reply">';
+					str +='			<i class="fa-regular fa-message" style="color: #858c99;"></i> '+ res.content[i].replys.length+'';
+					str +='		</span>';
+					str +='	</p>';
+					str +='</div>';
+					
+				}
+				
+				console.log(str);
+				
+				$("#board1").html(str);
+				
+				$(".boardQNA-pagi").html(res.pagingArea);
+			}
+		})
+	})	
+		
+	$("#viewSort").on("click", function(e){
+		
+		data = "view";
+		
+		console.log(data);
+		$.ajax({
+			url:"/boardQNA/ajaxList",
+			data:{
+				"sortBy" : data,
+				"keyword" : "",
+				"currentPage" : "1"
+			},
+			type:"post",
+			beforeSend:function(xhr){
+				xhr.setRequestHeader(header,token);
+			},
+			success:function(res){
+				console.log("res : " , res);
+				
+				let str = "";
+				
+				console.log(res.content.length);
+				
+				for(let i = 0; i < res.content.length; i++){
+					
+					str +='<div class="board1-item" onclick="window.location.href=\'/boardQNA/detail?boardId='+res.content[i].boardId+'\'">';
+					str +='<p class="board1-item-title">'+res.content[i].boardTitle +'</p>';
+					str +='<p class="board1-item-cont">'+res.content[i].boardCntnt +'</p>';
+					str +='<p class="board1-item-info">';
+					str +='		<span class="cont-writer"> '+res.content[i].memId  +'</span>';
+					str +='		<span class="cont-like">';
+					str +='			<i class="fa-regular fa-heart" style="color: #858c99;"></i> '+res.content[i].boardLike +'                ';
+					str +='		</span>';
+					str +='		<span class="cont-reply">';
+					str +='			<i class="fa-regular fa-message" style="color: #858c99;"></i> '+res.content[i].replys.length+'';
+					str +='		</span>';
+					str +='	</p>';
+					str +='</div>';
+					
+				}
+				
+				console.log(str);
+				
+				$("#board1").html(str);
+				
+				$(".boardQNA-pagi").html(res.pagingArea);
+			}
+		})
+	})
+	
+function blockWhileDragging(isDragging) {
+	let slides = document.getElementsByClassName("slick-slide");
+    
+	if (isDragging) {
+    	for (let i = 0; i < slides.length; i++) {
+        	slides[i].classList.add("is-dragging"); // is-dragging 클래스 추가
+ 		}
+	} else {
+    	for (let i = 0; i < slides.length; i++) {
+        	slides[i].classList.remove("is-dragging"); // is-dragging 클래스 제거
+    	}
+	}
+}
+	// mousedown 여부를 판단할 변수
+	let isMouseDown = false;
+
+	// mousedown 이벤트에서 isMouseDown을 true로 변환
+	document.addEventListener("mousedown", () => {
+		isMouseDown = true;
+	});
+
+	// mousemove 이벤트에서 isMouseDown을 판단해 blockWhileDragging 함수 실행
+	document.addEventListener("mousemove", () => {
+		if (isMouseDown) {
+	    	blockWhileDragging(true);
+	    } else {
+	    	blockWhileDragging(false);
+	    }
+	});
+
+	// mouseup 이벤트에서 mousedown 이전 상태로 초기화
+	document.addEventListener("mouseup", () => {
+		isMouseDown = false;
+	    blockWhileDragging(false);
+	});
+</script>
+<script src="/resources/js/boardQNA.js"></script>

@@ -1,0 +1,139 @@
+package jobja.mypage.enterprise.controller;
+
+import java.security.Principal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.item.service.ItemService;
+import jobja.item.vo.ItemVO;
+import jobja.item.vo.PaymentVO;
+import jobja.member.vo.EnterpriseVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.util.ArticlePage;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/enter")
+@Controller
+public class EnterItemController {
+	
+	@Autowired
+	ItemService itemService;
+	
+	// 기업 상품 목록 가져오기.
+	@GetMapping("/items")
+	public String items(Model model,Principal principal) {
+		
+		//배너광고 가져오기.
+		List<ItemVO> banneritemVOList =  this.itemService.getBannerItemList();
+		
+		//채용광고 가져오기.
+		List<ItemVO> recruitItemVOList =  this.itemService.getRecruitItemList();
+		
+		//로그인한 회원의 기업정보
+		MemberVO memberVO = this.itemService.getLoginEntInfo(principal.getName());
+		
+		log.info("banneritemVOList gg : " + banneritemVOList);
+		
+		log.info("recruitItemList ㅎㅇㅎㅇ : " + recruitItemVOList);
+		
+		log.info("memberVO : " + memberVO);
+		
+		
+		model.addAttribute("banneritemVOList", banneritemVOList);
+		model.addAttribute("recruitItemVOList", recruitItemVOList);
+		model.addAttribute("memberVO",memberVO);
+		
+		return "mypageEnt/entItems";
+	}
+	
+	@PostMapping("/ajaxinsertEntPay")
+	@ResponseBody
+	public PaymentVO ajaxinsertEntPay(@RequestBody PaymentVO paymentVO) {
+		
+		log.info(" paymentVO : " + paymentVO);
+		
+		switch (paymentVO.getItemNm()) {
+			case "배너광고 1주":
+				paymentVO.setPayAmount(200000);
+				break;
+			case "배너광고 2주":
+				paymentVO.setPayAmount(350000);
+				break;
+			case "배너광고 4주":
+				paymentVO.setPayAmount(600000);
+				break;
+			case "상위노출 1주":
+				paymentVO.setPayAmount(120000);
+				break;
+			case "상위노출 2주":
+				paymentVO.setPayAmount(200000);
+				break;
+			case "상위노출 4주":
+				paymentVO.setPayAmount(380000);
+				break;
+	
+			default:
+				break;
+		}
+		
+		log.info("paymentVO set완료 : " + paymentVO);
+		
+		int result = this.itemService.ajaxinsertEntPay(paymentVO);
+		
+		log.info("result : " + result);
+		
+		log.info("payment VO : dskjaf " + paymentVO);
+		
+		//배너광고 결제한 기업정보 가져오기.
+		paymentVO = this.itemService.getBannerPayEnt(paymentVO);
+		
+		log.info("paymentVO : " + paymentVO);
+		
+		return paymentVO;
+		
+	}
+	
+	@PostMapping("/ajaxBannerEntFile")
+	@ResponseBody
+	public int ajaxBannerEntFile(@RequestParam("file") MultipartFile file, @RequestParam("payNo") String payNo) {
+		
+		log.info("pasldkafjlsal : " + payNo);
+		log.info("sdafasdfsadf: 파일 :" + file);
+		
+		PaymentVO paymenyVO = new PaymentVO();
+		
+		paymenyVO.setPayNo(payNo);
+		paymenyVO.setUploadFile(file);
+		
+		int result = this.itemService.ajaxinsertEntFile(paymenyVO);
+		
+		log.info("resultasdfas : " + result);
+		
+		return result;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+}

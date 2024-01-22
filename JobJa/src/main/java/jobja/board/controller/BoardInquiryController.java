@@ -1,0 +1,186 @@
+package jobja.board.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.board.service.BoardInquiryService;
+import jobja.board.vo.BoardEmplConsultVO;
+import jobja.board.vo.BoardInquiryVO;
+import jobja.item.vo.PaymentVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.util.ArticlePage;
+import jobja.util.ModelAttributeUtil;
+import jobja.util.TimeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/boardInquiry")
+public class BoardInquiryController {
+	
+	@Autowired
+	BoardInquiryService boardInquiryService;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	@Autowired
+	TimeUtil timeUtil;
+	
+	@GetMapping("/list")
+	public String list(Model model, @RequestParam(value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		map.put("currentPage", currentPage);
+		map.put("memId", memId);
+		
+		List<BoardInquiryVO> data = this.boardInquiryService.list(map);
+		
+		int total = this.boardInquiryService.getTotal(map);
+		
+		ArticlePage<BoardInquiryVO> info 
+			= new ArticlePage<BoardInquiryVO>(total, currentPage, 10, data);
+		
+		info.setUrl("/boardInquiry/list");
+		
+		model.addAttribute("info", info);
+		
+	    Date date;
+	      
+	    String passedTime;
+		log.info("data : " + data);
+	     
+		for(int i = 0; i < data.size(); i++) {
+	         date = data.get(i).getWirtDt();
+	         
+	         passedTime = timeUtil.calculateTime(date);
+	         
+	         data.get(i).setPassedTime(passedTime);
+	      }
+		
+		model.addAttribute("data", data);
+		
+		return "boardInquiry/list";
+	}
+
+	@GetMapping("/create")
+	public String create() {
+		
+		return "boardInquiry/create";
+	}
+	
+	@PostMapping("/createPost")
+	public String createPost(BoardInquiryVO boardInquiryVO) {
+		
+		log.info("createPost->boardInquiryVO : " + boardInquiryVO);
+		
+		int result = this.boardInquiryService.createPost(boardInquiryVO);
+		
+		return "redirect:/boardInquiry/list";
+	}
+	
+	@GetMapping("/detail")
+	public String detail(BoardInquiryVO boardInquiryVO, Model model) {
+		
+		boardInquiryVO = this.boardInquiryService.detail(boardInquiryVO.getBoardId());
+		
+		log.info("aaaaa : " + boardInquiryVO);
+		
+		model.addAttribute("boardInquiryVO", boardInquiryVO);
+		
+		return "boardInquiry/detail";
+	}
+	
+	@GetMapping("/detailUpdate")
+	public String detailUpdate(BoardInquiryVO boardInquiryVO, Model model) {
+		
+		boardInquiryVO = this.boardInquiryService.detail(boardInquiryVO.getBoardId());
+		
+		log.info("detailUpdate -> boardInquiryVO :" + boardInquiryVO);
+		
+		model.addAttribute("boardInquiryVO", boardInquiryVO);
+		
+		return "boardInquiry/detailUpdate";
+	}
+	
+	@PostMapping("/updatePost")
+	public String updatePost(BoardInquiryVO boardInquiryVO) {
+		
+		log.info("boardInquiryVO : " +boardInquiryVO);
+		
+		int result = this.boardInquiryService.updatePost(boardInquiryVO);
+		
+		return "redirect:/boardInquiry/detail?boardId="+boardInquiryVO.getBoardId();
+	}
+	
+	@PostMapping("/deletePost")
+	public String deletePost(BoardInquiryVO boardInquiryVO) {
+		
+		int result = this.boardInquiryService.deletePost(boardInquiryVO);
+		
+		return "redirect:/boardInquiry/list";
+	}
+	
+	
+	/** 상담사 상품 결제하는 메서드
+	 * @param requestData
+	 * @return
+	 */
+	@PostMapping("/getItemList")
+	@ResponseBody
+	public int getItemList(@RequestBody Map<String, String> requestData) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		int result = 0;
+		
+		String memId = requestData.get("memId");
+		map.put("memId", memId);
+		
+		log.info("paymentCheck : memId : " +memId);
+		
+		return result;
+	}
+	
+	@PostMapping("/chatConsultant")
+	@ResponseBody
+	public PaymentVO chatConsultant(@RequestBody Map<String, String> requestData) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+		
+		// 상담사 아이디
+		String payConId = requestData.get("memId");
+		// 일반회원(결제한) 아이디
+		String payUserId = memberVO.getMemId();
+		
+		map.put("payConId", payConId);
+		map.put("payUserId", payUserId);
+		
+		log.info("asdasdqwtuu : map: " +map);
+		
+		PaymentVO paymentVO = this.boardInquiryService.chatConsultant(map);
+		
+		log.info("chatConsultant -> paymentVO : "+paymentVO);
+		
+		return paymentVO;
+	}
+	
+	
+}

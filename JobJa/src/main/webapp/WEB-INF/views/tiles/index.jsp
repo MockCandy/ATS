@@ -1,0 +1,43 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="stylesheet" href="/resources/css/common.css">
+<!-- <link rel="stylesheet" href="/resources/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날 JOB아줘</title>
+    
+	<meta name="_csrf_header" content="${_csrf.headerName}">
+	<meta name="_csrf" content="${_csrf.token}">
+</head>
+<!-- jquery CDN -->
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<!-- fontawesome CDN -->
+<script src="https://kit.fontawesome.com/96da2afb16.js" crossorigin="anonymous"></script>
+<!-- slick-slider CDN -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<!-- iziModal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+
+<body>
+ 
+ 
+	<tiles:insertAttribute name="header" />
+	
+	<tiles:insertAttribute name="body" />
+	
+	<tiles:insertAttribute name="footer" />
+	
+	
+	<script type="text/javascript" src="/resources/js/header.js"></script>
+</body>
+
+</html>

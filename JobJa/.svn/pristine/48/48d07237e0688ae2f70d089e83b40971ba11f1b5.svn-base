@@ -1,0 +1,45 @@
+package jobja.board.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.board.vo.BoardClassVO;
+import jobja.common.vo.ComCodeInfoVO;
+
+//강의등록
+public interface BoardClassService {
+
+	// 강의클래스 목록
+	public List<BoardClassVO> list(Map<String, Object> map);
+
+	// 총 페이지 수
+	public int getTotal(Map<String, Object> map);
+
+	// 강의클래스 등록
+	public int createForm(BoardClassVO brdClsVO);
+	
+	// 기본키 +1
+	public String getBoardId();
+
+	// 강의클래스 수정
+	public int updatePost(BoardClassVO boardClassVO);
+
+	// 강의클래스 삭제
+	public int delete(BoardClassVO boardClassVO);
+	
+	// 첨부파일 삭제
+//	public int delAtch(String boardId);
+
+	// 아이디 값 꺼내오기
+	public BoardClassVO selectOne(String boardId);
+	
+	// 직군코드 불러오기
+	public List<ComCodeInfoVO> comJob();
+
+	// 수정시 목록 가져오기
+	public BoardClassVO updatelist(String boardId);
+
+	// 직군과 연결된 리스트들 출력 
+	public List<BoardClassVO> listAjax(String cateCd);
+
+}

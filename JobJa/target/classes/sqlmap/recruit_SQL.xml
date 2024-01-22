@@ -1,0 +1,1104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.recruit.mapper.RecruitMapper">
+
+   <sql id="order">
+      <choose>
+         <when test = "sort=='recent'">
+            ORDER BY RECRUIT_STDT DESC
+         </when>
+         <when test = "sort=='imminent'">
+            ORDER BY REMAINING_DATE ASC
+         </when>
+         <otherwise>
+            ORDER BY RECRUIT_STDT DESC
+         </otherwise>
+      </choose>
+   </sql>
+
+   <!-- keyword가 있으면 조건을 검 -->
+   <sql id="where">
+      <if test="keyword != null and keyword != ''">
+         AND      (RECRUIT_TITLE      LIKE '%' || #{keyword} || '%' 
+                 OR RECRUIT_CNTNT LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_PART LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_WORK LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_SKILL LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_PREFER LIKE '%' || #{keyword} || '%')
+      </if>
+   </sql>
+   
+   <!-- keyword로 조건을 검 / keyword 없으면 검색결과 없음 -->
+   <sql id="whereElse">
+      <choose>
+         <when test="keyword != null and keyword != ''">
+            AND      (RECRUIT_TITLE      LIKE '%' || #{keyword} || '%' 
+                 OR RECRUIT_CNTNT LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_PART LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_WORK LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_SKILL LIKE '%' || #{keyword} || '%'
+                 OR RECRUIT_PREFER LIKE '%' || #{keyword} || '%')
+         </when>
+         <otherwise>
+            AND 1 = 2
+         </otherwise>
+      </choose>
+   </sql>
+
+   <!-- recruitList keyword -->
+   <sql id="whereRec">
+      <if test="keyword != null and keyword != ''">
+         AND (RECRUIT_PART LIKE '%' || #{keyword} || '%')
+      </if>
+   </sql>
+   
+   <select id="getComCodeInfo" resultType="comCodeInfoVO">
+      SELECT    COM_CD,
+               COM_CD_NM,
+               COM_CD_DESCRIPTIONS
+         FROM      COM_CODE_INFO
+         WHERE     COM_CD LIKE 'MWJ010%' 
+   </select>
+   
+   <resultMap type="comDetCodeInfoVO" id="comDetCodeInfoMap">
+      <result property="comDetCd" column="COM_DET_CD"/>
+      <result property="comCd" column="COM_CD"/>
+      <result property="comDetCdNm" column="COM_DET_CD_NM"/>
+      <result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+   </resultMap>
+   
+   <select id="getComDetCode" parameterType="String" resultMap="comDetCodeInfoMap">
+      SELECT COM_DET_CD
+            ,COM_CD
+            ,COM_DET_CD_NM
+            ,COM_DET_DESCRIPTIONS
+      FROM COM_DET_CODE_INFO
+      WHERE COM_CD=#{comCd}
+   </select>
+   
+   
+   <select id="getComCodeInfoa" resultType="comDetCodeInfoVO">
+      SELECT COM_DET_CD
+            ,COM_CD
+            ,COM_DET_CD_NM
+            ,COM_DET_DESCRIPTIONS
+      FROM COM_DET_CODE_INFO
+      WHERE COM_CD LIKE 'IET01%'
+   </select>
+   
+   <select id="getComCodeInfob" resultType="comDetCodeInfoVO">
+      SELECT COM_DET_CD
+            ,COM_CD
+            ,COM_DET_CD_NM
+            ,COM_DET_DESCRIPTIONS
+      FROM COM_DET_CODE_INFO
+      WHERE COM_DET_CD LIKE 'IWS010%'
+   </select>
+   
+   <!-- 공통코드 직급 가져오기 -->
+   <select id="getComCodeInfod" resultType="comDetCodeInfoVO">
+   
+      SELECT    COM_DET_CD
+            ,COM_CD
+            ,COM_DET_CD_NM
+            ,COM_DET_DESCRIPTIONS
+            
+         FROM      COM_DET_CODE_INFO
+         
+         WHERE     COM_CD LIKE 'EHG01%' 
+         
+   </select>
+   
+   <!-- //RecruitFormVO(comCodeInfoVOList=null, comCodeAb=null, comCodeAC=null, recruitVO=null, recruitNo=, 
+      //benCd=[BNF01001, BNF01004, BNF01006, BNF01011, BNF01013, BNF01015, BNF01018, BNF01022], comDetCodeInfoVO=null) -->
+   <insert id="createPost" parameterType="recruitVO">
+      <selectKey resultType="String" order="BEFORE" keyProperty="recruitNo">
+         SELECT 
+          'REC' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(RECRUIT_NO, 4))), 0) + 1, 5, '0') AS NEXT_RECRUIT_NO
+         FROM  
+          RECRUIT
+      </selectKey>
+   
+   
+      INSERT INTO RECRUIT(RECRUIT_NO, RECRUIT_STDT, RECRUIT_EDDT, RECRUIT_TITLE
+                     ,RECRUIT_CNTNT, RECRUIT_WORK, RECRUIT_QLF, RECRUIT_PREFER
+                     ,RECRUIT_SALARY, RECRUIT_LOCATION
+                     ,RECRUIT_AF_ID, ENT_NO, RECRUIT_LEVEL, RECRUIT_WORK_TYPE
+                     ,RECRUIT_ACDM_CR, RECRUIT_CAREER, RECRUIT_COUNT,RECRUIT_PART,RECRUIT_OTT
+                     ,RECRUIT_JOB, RECRUIT_SKILL)
+      VALUES(#{recruitNo},SYSDATE,#{recruitEddt},#{recruitTitle},#{recruitCntnt}
+            ,#{recruitWork},#{recruitQlf},#{recruitPrefer}
+            ,#{recruitSalary},#{recruitLocation},#{recruitAfId},#{entNo},#{recruitLevel}
+            ,#{recruitWorkType},#{recruitAcdmCr},#{recruitCareer},#{recruitCount},#{recruitPart},#{recruitOtt},#{recruitJob},#{recruitSkill})
+      
+   </insert>
+   
+   <insert id="createBenefits" parameterType="recruitFormVO">
+       INSERT ALL
+       <foreach collection="benCd" item="benCd" separator="">
+          INTO BENEFITS(RECRUIT_NO, BEN_CD)
+          VALUES
+           (#{recruitNo}, #{benCd})
+       </foreach>
+       SELECT * FROM DUAL
+   </insert>
+   
+   <select id="getInterestRecruit" parameterType="memberVO" resultType="interestRecruitVO">
+      SELECT
+         MEM_ID, 
+         RECRUIT_NO, 
+         INTRST_RECRUIT_REG_DT 
+      FROM INTEREST_RECRUIT
+      WHERE MEM_ID=#{memId}
+   </select>
+   
+   <resultMap type="recruitVO" id="recruitMap">
+      <id property="recruitNo" column="RECRUIT_NO"/>
+      <result property="recruitNo" column="RECRUIT_NO"/>
+      <result property="recruitStdt" column="RECRUIT_STDT"/>
+      <result property="recruitEddt" column="RECRUIT_EDDT"/>
+      <result property="recruitTitle" column="RECRUIT_TITLE"/>
+      <result property="recruitCntnt" column="RECRUIT_CNTNT"/>
+      <result property="recruitWork" column="RECRUIT_WORK"/>
+      <result property="recruitQlf" column="RECRUIT_QLF"/>
+      <result property="recruitPrefer" column="RECRUIT_PREFER"/>
+      <result property="recruitPart" column="RECRUIT_PART"/>
+      <result property="recruitSalary" column="RECRUIT_SALARY"/>
+      <result property="recruitLocation" column="RECRUIT_LOCATION"/>
+      <result property="recruitAfId" column="RECRUIT_AF_ID"/>
+      <result property="entNo" column="ENT_NO"/>
+      <result property="recruitLevel" column="RECRUIT_LEVEL"/>
+      <result property="recruitWorkType" column="RECRUIT_WORK_TYPE"/>
+      <result property="recruitAcdmCr" column="RECRUIT_ACDM_CR"/>
+      <result property="recruitCareer" column="RECRUIT_CAREER"/>
+      <result property="recruitCount" column="RECRUIT_COUNT"/>
+      <result property="recruitThumb" column="RECRUIT_THUMB"/>
+      <result property="recruitOtt" column="RECRUIT_OTT"/>
+      <result property="recruitJob" column="RECRUIT_JOB"/>
+      <result property="recruitSkill" column="RECRUIT_SKILL"/>
+      <result property="remainingDate" column="REMAINING_DATE"/>
+      <result property="cnt" column="CNT"/>
+      <result property="appCount" column="APP_COUNT"/>
+      <association property="enterpriseVO" resultMap="enterpriseMap"></association>
+   </resultMap>
+   <resultMap type="enterpriseVO" id="enterpriseMap"><result property="entAddr" column="ENT_ADDR"/>
+      <result property="entAddr2" column="ENT_ADDR2"/>
+      <result property="entNo" column="ENT_NO"/>
+      <result property="entNm" column="ENT_NM"/>
+      <result property="entAprv" column="ENT_APRV"/>
+      <result property="entRegDt" column="ENT_REG_DT"/>
+      <result property="entAprvDt" column="ENT_APRV_DT"/>
+      <result property="entIntrcn" column="ENT_INTRCN"/>
+      <result property="entUrl" column="ENT_URL"/>
+      <result property="entSales" column="ENT_SALES"/>
+      <result property="entSector" column="ENT_SECTOR"/>
+      <result property="entEmpcnt" column="ENT_EMPCNT"/>
+      <result property="entBday" column="ENT_BDAY"/>
+      <result property="entFax" column="ENT_FAX"/>
+      <result property="entCeonm" column="ENT_CEONM"/>
+      <result property="entLogo" column="ENT_LOGO"/>
+      <result property="entIntWord" column="ENT_INT_WORD"/>
+      <result property="entPostno" column="ENT_POSTNO"/>
+   </resultMap>
+   
+   <select id="getList" parameterType="hashMap" resultMap="recruitMap" >
+      SELECT T.*
+      FROM
+      (
+         SELECT ROW_NUMBER() OVER(ORDER BY a.RECRUIT_STDT DESC) RNUM,
+            a.RECRUIT_NO, 
+            a.RECRUIT_STDT, 
+            a.RECRUIT_EDDT, 
+            a.RECRUIT_TITLE, 
+            a.RECRUIT_CNTNT, 
+            a.RECRUIT_WORK, 
+            a.RECRUIT_QLF, 
+            a.RECRUIT_PREFER, 
+            a.RECRUIT_SALARY, 
+            a.RECRUIT_LOCATION, 
+            a.RECRUIT_AF_ID, 
+            a.ENT_NO, 
+            a.RECRUIT_LEVEL, 
+            a.RECRUIT_WORK_TYPE, 
+            a.RECRUIT_ACDM_CR, 
+            a.RECRUIT_CAREER, 
+            a.RECRUIT_COUNT, 
+            a.RECRUIT_PART, 
+            a.RECRUIT_THUMB,
+            a.RECRUIT_OTT,
+            a.RECRUIT_JOB,
+            a.RECRUIT_SKILL,
+               (TO_DATE(a.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE ,
+            b.ENT_NM, 
+            b.ENT_APRV, 
+            b.ENT_REG_DT, 
+            b.ENT_APRV_DT, 
+            b.ENT_INTRCN, 
+            b.ENT_URL, 
+            b.ENT_SALES, 
+            b.ENT_SECTOR, 
+            b.ENT_EMPCNT, 
+            b.ENT_BDAY, 
+            b.ENT_FAX, 
+            b.ENT_CEONM, 
+            b.ENT_LOGO, 
+            b.ENT_INT_WORD,
+            (
+               SELECT COUNT(*) 
+               FROM INTEREST_RECRUIT c 
+               WHERE c.recruit_no = a.RECRUIT_NO 
+               AND c.mem_id = #{memId}
+            ) AS interest_yn
+         FROM RECRUIT a
+         INNER JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+         WHERE 1=1
+            AND RECRUIT_EDDT > SYSDATE
+         <include refid="where"></include>
+            <if test="recruitJobs != null and recruitJobs.size() > 0">
+             AND a.RECRUIT_JOB IN 
+             <foreach collection="recruitJobs" item="job" open="(" separator="," close=")">
+                 #{job}
+             </foreach>
+         </if>
+         
+         <if test="recruitLocations != null and recruitLocations.size() > 0">
+             AND (
+             <foreach collection="recruitLocations" item="location" open="(" separator=" OR " close=")">
+                 a.RECRUIT_LOCATION LIKE '%' || #{location} || '%'
+             </foreach>
+             )
+         </if>
+         
+         <if test="recruitLevels != null and recruitLevels.size() > 0">
+             AND a.RECRUIT_WORK_TYPE IN 
+             <foreach collection="recruitLevels" item="level" open="(" separator="," close=")">
+                 #{level}
+             </foreach>
+             
+         </if>
+         
+         <if test="selectStudies != null and selectStudies.size() > 0">
+             AND a.RECRUIT_ACDM_CR IN 
+             <foreach collection="selectStudies" item="study" open="(" separator="," close=")">
+                 #{study}
+             </foreach>
+         </if>
+      )T
+      WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * #{size}) + 1 AND (#{currentPage} * #{size})
+   </select>
+   
+   <select id="getSrchList" parameterType="hashMap" resultMap="recruitMap" >
+      SELECT T.*
+      FROM
+      (
+         SELECT ROW_NUMBER() OVER(ORDER BY a.RECRUIT_STDT DESC) RNUM,
+            a.RECRUIT_NO, 
+            a.RECRUIT_STDT, 
+            a.RECRUIT_EDDT, 
+            a.RECRUIT_TITLE, 
+            a.RECRUIT_CNTNT, 
+            a.RECRUIT_WORK, 
+            a.RECRUIT_QLF, 
+            a.RECRUIT_PREFER, 
+            a.RECRUIT_SALARY, 
+            a.RECRUIT_LOCATION, 
+            a.RECRUIT_AF_ID, 
+            a.ENT_NO, 
+            a.RECRUIT_LEVEL, 
+            a.RECRUIT_WORK_TYPE, 
+            a.RECRUIT_ACDM_CR, 
+            a.RECRUIT_CAREER, 
+            a.RECRUIT_COUNT, 
+            a.RECRUIT_PART, 
+            a.RECRUIT_THUMB,
+            a.RECRUIT_OTT,
+            a.RECRUIT_JOB,
+            a.RECRUIT_SKILL,
+               (TO_DATE(a.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE ,
+            b.ENT_NM, 
+            b.ENT_APRV, 
+            b.ENT_REG_DT, 
+            b.ENT_APRV_DT, 
+            b.ENT_INTRCN, 
+            b.ENT_URL, 
+            b.ENT_SALES, 
+            b.ENT_SECTOR, 
+            b.ENT_EMPCNT, 
+            b.ENT_BDAY, 
+            b.ENT_FAX, 
+            b.ENT_CEONM, 
+            b.ENT_LOGO, 
+            b.ENT_INT_WORD,
+            (
+               SELECT COUNT(*) 
+               FROM INTEREST_RECRUIT c 
+               WHERE c.recruit_no = a.RECRUIT_NO 
+               AND c.mem_id = #{memId}
+            ) AS interest_yn
+         FROM RECRUIT a
+         INNER JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+         WHERE 1=1
+         AND ( (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) > 0 OR (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) IS NULL )
+         <include refid="whereElse"></include>
+      )T
+      WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * #{size}) + 1 AND (#{currentPage} * #{size})
+   </select>
+   
+   <select id="getTotal" parameterType="hashMap" resultType="int">
+      SELECT COUNT(*)
+      FROM RECRUIT
+      WHERE 1 = 1
+        AND RECRUIT_EDDT > SYSDATE
+      <include refid="where"></include>
+   </select>
+   
+   <select id="getSrchTotal" parameterType="hashMap" resultType="int">
+      SELECT COUNT(*)
+      FROM RECRUIT
+      WHERE 1 = 1
+      <include refid="whereElse"></include>
+   </select>
+   
+   <select id="getPopular5" resultMap="recruitMap">
+      SELECT REC.*
+      FROM
+          (
+              SELECT 
+                  ROW_NUMBER() OVER(ORDER BY B.COUNT DESC NULLS LAST) RNUM,
+                  A.RECRUIT_NO, 
+                  A.RECRUIT_STDT, 
+                  A.RECRUIT_EDDT, 
+                  A.RECRUIT_TITLE, 
+                  A.RECRUIT_CNTNT, 
+                  A.RECRUIT_WORK, 
+                  A.RECRUIT_QLF, 
+                  A.RECRUIT_PREFER, 
+                  A.RECRUIT_SALARY, 
+                  A.RECRUIT_LOCATION, 
+                  A.RECRUIT_AF_ID, 
+                  A.ENT_NO, 
+                  A.RECRUIT_LEVEL, 
+                  A.RECRUIT_WORK_TYPE, 
+                  A.RECRUIT_ACDM_CR, 
+                  A.RECRUIT_CAREER, 
+                  A.RECRUIT_COUNT, 
+                  A.RECRUIT_PART, 
+                  A.RECRUIT_THUMB, 
+                  A.RECRUIT_OTT, 
+                  A.RECRUIT_JOB, 
+                  A.RECRUIT_SKILL,
+                  (TO_DATE(A.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE ,
+                  C.ENT_NM, 
+                  C.ENT_APRV, 
+                  C.ENT_REG_DT, 
+                  C.ENT_APRV_DT, 
+                  C.ENT_INTRCN, 
+                  C.ENT_URL, 
+                  C.ENT_SALES, 
+                  C.ENT_SECTOR, 
+                  C.ENT_EMPCNT, 
+                  C.ENT_BDAY, 
+                  C.ENT_FAX, 
+                  C.ENT_CEONM, 
+                  C.ENT_LOGO, 
+                  C.ENT_INT_WORD, 
+                  C.ENT_POSTNO, 
+                  C.ENT_ADDR, 
+                  C.ENT_ADDR2,
+                  NVL(B.COUNT, 0) AS CNT
+              FROM RECRUIT A
+              LEFT OUTER JOIN (
+                  SELECT 
+                      RECRUIT_NO,
+                      COUNT(*) AS COUNT
+                  FROM INTEREST_RECRUIT
+                  GROUP BY RECRUIT_NO
+              ) B
+              ON A.RECRUIT_NO = B.RECRUIT_NO
+              LEFT OUTER JOIN ENTERPRISE C
+              ON A.ENT_NO = C.ENT_NO
+          ) REC
+          WHERE 1=1
+         <![CDATA[ AND RNUM <= 5 ]]>
+   </select>
+   
+   <select id="getPopularDesc" resultMap="recruitMap">
+      SELECT REC.*
+      FROM
+          (
+              SELECT 
+                  ROW_NUMBER() OVER(ORDER BY B.COUNT DESC NULLS LAST) RNUM,
+                  A.RECRUIT_NO, 
+                  A.RECRUIT_STDT, 
+                  A.RECRUIT_EDDT, 
+                  A.RECRUIT_TITLE, 
+                  A.RECRUIT_CNTNT, 
+                  A.RECRUIT_WORK, 
+                  A.RECRUIT_QLF, 
+                  A.RECRUIT_PREFER, 
+                  A.RECRUIT_SALARY, 
+                  A.RECRUIT_LOCATION, 
+                  A.RECRUIT_AF_ID, 
+                  A.ENT_NO, 
+                  A.RECRUIT_LEVEL, 
+                  A.RECRUIT_WORK_TYPE, 
+                  A.RECRUIT_ACDM_CR, 
+                  A.RECRUIT_CAREER, 
+                  A.RECRUIT_COUNT, 
+                  A.RECRUIT_PART, 
+                  A.RECRUIT_THUMB, 
+                  A.RECRUIT_OTT, 
+                  A.RECRUIT_JOB, 
+                  A.RECRUIT_SKILL,
+                  (TO_DATE(A.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE ,
+                  C.ENT_NM, 
+                  C.ENT_APRV, 
+                  C.ENT_REG_DT, 
+                  C.ENT_APRV_DT, 
+                  C.ENT_INTRCN, 
+                  C.ENT_URL, 
+                  C.ENT_SALES, 
+                  C.ENT_SECTOR, 
+                  C.ENT_EMPCNT, 
+                  C.ENT_BDAY, 
+                  C.ENT_FAX, 
+                  C.ENT_CEONM, 
+                  C.ENT_LOGO, 
+                  C.ENT_INT_WORD, 
+                  C.ENT_POSTNO, 
+                  C.ENT_ADDR, 
+                  C.ENT_ADDR2,
+                  NVL(B.COUNT, 0) AS CNT
+              FROM RECRUIT A
+              LEFT OUTER JOIN (
+                  SELECT 
+                      RECRUIT_NO,
+                      COUNT(*) AS COUNT
+                  FROM INTEREST_RECRUIT
+                  GROUP BY RECRUIT_NO
+              ) B
+              ON A.RECRUIT_NO = B.RECRUIT_NO
+              LEFT OUTER JOIN ENTERPRISE C
+              ON A.ENT_NO = C.ENT_NO
+          ) REC
+          WHERE 1=1
+   </select>
+   
+   <select id="getConditionTotal" parameterType="map" resultType="int">
+       SELECT count(*)
+       FROM RECRUIT a
+       JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+         WHERE 1=1
+        AND RECRUIT_EDDT > SYSDATE
+      <if test="recruitJobs != null and recruitJobs.size() > 0">
+          AND a.RECRUIT_JOB IN 
+          <foreach collection="recruitJobs" item="job" open="(" separator="," close=")">
+              #{job}
+          </foreach>
+      </if>
+      
+      <if test="recruitLocations != null and recruitLocations.size() > 0">
+          AND (
+          <foreach collection="recruitLocations" item="location" open="(" separator=" OR " close=")">
+              a.RECRUIT_LOCATION LIKE '%' || #{location} || '%'
+          </foreach>
+          )
+      </if>
+      
+      <if test="recruitLevels != null and recruitLevels.size() > 0">
+          AND a.RECRUIT_WORK_TYPE IN 
+          <foreach collection="recruitLevels" item="level" open="(" separator="," close=")">
+              #{level}
+          </foreach>
+          
+      </if>
+      
+      <if test="selectStudies != null and selectStudies.size() > 0">
+          AND a.RECRUIT_ACDM_CR IN 
+          <foreach collection="selectStudies" item="study" open="(" separator="," close=")">
+              #{study}
+          </foreach>
+          
+      </if>
+   </select>
+   
+   
+   <select id="getEntNo" parameterType="String" resultType="String">
+   
+      SELECT 
+          B.ENT_NO
+      FROM 
+         MEMBER A, ENT_APRV B
+      WHERE A.MEM_ID = B.MEM_ID
+      AND   A.MEM_ID=#{memId}
+   
+   </select>
+   
+   <select id="getRecruitNo" parameterType="String" resultType="String">
+      SELECT RECRUIT_NO
+      FROM RECRUIT
+      WHERE ENT_NO=#{entNo}
+   </select>
+   
+   <update id="updateThumb" parameterType="recruitVO">
+   
+      UPDATE RECRUIT
+      SET RECRUIT_THUMB = #{recruitThumb}
+      WHERE RECRUIT_NO = #{recruitNo}
+   
+   </update>
+   
+   <select id="getFilterList" parameterType="map" resultMap="recruitMap">
+    SELECT
+        a.RECRUIT_NO, 
+        a.RECRUIT_STDT, 
+        a.RECRUIT_EDDT, 
+        a.RECRUIT_TITLE, 
+        a.RECRUIT_CNTNT, 
+        a.RECRUIT_WORK, 
+        a.RECRUIT_QLF, 
+        a.RECRUIT_PREFER, 
+        a.RECRUIT_SALARY, 
+        a.RECRUIT_LOCATION, 
+        a.RECRUIT_AF_ID, 
+        a.ENT_NO, 
+        a.RECRUIT_LEVEL, 
+        a.RECRUIT_WORK_TYPE, 
+        a.RECRUIT_ACDM_CR, 
+        a.RECRUIT_CAREER, 
+        a.RECRUIT_COUNT, 
+        a.RECRUIT_PART, 
+        a.RECRUIT_THUMB,
+        a.RECRUIT_OTT,
+        a.RECRUIT_JOB,
+        a.RECRUIT_SKILL,
+        b.ENT_NM, 
+        b.ENT_APRV, 
+        b.ENT_REG_DT, 
+        b.ENT_APRV_DT, 
+        b.ENT_INTRCN, 
+        b.ENT_URL, 
+        b.ENT_SALES, 
+        b.ENT_SECTOR, 
+        b.ENT_EMPCNT, 
+        b.ENT_BDAY, 
+        b.ENT_FAX, 
+        b.ENT_CEONM, 
+        b.ENT_LOGO, 
+        b.ENT_INT_WORD,
+        (SELECT COUNT(*) FROM INTEREST_RECRUIT c WHERE c.recruit_no = a.RECRUIT_NO AND c.mem_id = #{memId}) AS interest_yn
+    FROM RECRUIT a
+    JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+      WHERE 1=1
+   <if test="recruitJobs != null and recruitJobs.size() > 0">
+       AND a.RECRUIT_JOB IN 
+       <foreach collection="recruitJobs" item="job" open="(" separator="," close=")">
+           #{job}
+       </foreach>
+   </if>
+   
+   <if test="recruitLocations != null and recruitLocations.size() > 0">
+       AND (
+       <foreach collection="recruitLocations" item="location" open="(" separator=" OR " close=")">
+           a.RECRUIT_LOCATION LIKE '%' || #{location} || '%'
+       </foreach>
+       )
+   </if>
+   
+   <if test="recruitLevels != null and recruitLevels.size() > 0">
+       AND a.RECRUIT_WORK_TYPE IN 
+       <foreach collection="recruitLevels" item="level" open="(" separator="," close=")">
+           #{level}
+       </foreach>
+       
+   </if>
+   
+   <if test="selectStudies != null and selectStudies.size() > 0">
+       AND a.RECRUIT_ACDM_CR IN 
+       <foreach collection="selectStudies" item="study" open="(" separator="," close=")">
+           #{study}
+       </foreach>
+       
+   </if>
+   </select>
+   
+   <select id="getByEntNo" parameterType="String" resultType="recruitVO">
+   
+      SELECT 
+         RECRUIT_NO, 
+         RECRUIT_STDT, 
+         RECRUIT_EDDT, 
+         RECRUIT_TITLE, 
+         RECRUIT_CNTNT, 
+         RECRUIT_WORK, 
+         RECRUIT_QLF, 
+         RECRUIT_PREFER, 
+         RECRUIT_SALARY, 
+         RECRUIT_LOCATION, 
+         RECRUIT_AF_ID, 
+         ENT_NO, 
+         RECRUIT_LEVEL, 
+         RECRUIT_WORK_TYPE, 
+         RECRUIT_ACDM_CR, 
+         RECRUIT_CAREER, 
+         RECRUIT_COUNT, 
+         RECRUIT_PART, 
+         RECRUIT_THUMB,
+            RECRUIT_OTT,
+            RECRUIT_JOB,
+            RECRUIT_SKILL,
+            (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE
+      FROM RECRUIT
+      WHERE ENT_NO=#{entNo}
+      <if test="magam == 'false'">
+             AND ( (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) > 0 OR (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) IS NULL )
+      </if>
+      <include refid="order"></include>
+   </select>
+   
+   <select id="getScrapList" parameterType="hashMap" resultMap="recruitMap" >
+      SELECT *
+      FROM (
+          SELECT T.*, ROW_NUMBER() OVER (ORDER BY interest_yn DESC) AS RNUM
+          FROM (
+              SELECT 
+            a.RECRUIT_NO, 
+            a.RECRUIT_STDT, 
+            a.RECRUIT_EDDT, 
+            a.RECRUIT_TITLE, 
+            a.RECRUIT_CNTNT, 
+            a.RECRUIT_WORK, 
+            a.RECRUIT_QLF, 
+            a.RECRUIT_PREFER, 
+            a.RECRUIT_SALARY, 
+            a.RECRUIT_LOCATION, 
+            a.RECRUIT_AF_ID, 
+            a.ENT_NO, 
+            a.RECRUIT_LEVEL, 
+            a.RECRUIT_WORK_TYPE, 
+            a.RECRUIT_ACDM_CR, 
+            a.RECRUIT_CAREER, 
+            a.RECRUIT_COUNT, 
+            a.RECRUIT_PART, 
+            a.RECRUIT_THUMB,
+            a.RECRUIT_OTT,
+            a.RECRUIT_JOB,
+            a.RECRUIT_SKILL,
+            b.ENT_NM, 
+            b.ENT_APRV, 
+            b.ENT_REG_DT, 
+            b.ENT_APRV_DT, 
+            b.ENT_INTRCN, 
+            b.ENT_URL, 
+            b.ENT_SALES, 
+            b.ENT_SECTOR, 
+            b.ENT_EMPCNT, 
+            b.ENT_BDAY, 
+            b.ENT_FAX, 
+            b.ENT_CEONM, 
+            b.ENT_LOGO, 
+            b.ENT_INT_WORD,
+                (SELECT COUNT(*) FROM INTEREST_RECRUIT c WHERE c.recruit_no = a.RECRUIT_NO AND c.mem_id = #{memId}) AS interest_yn
+        FROM RECRUIT a
+        INNER JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+       ) T
+   )
+   WHERE RNUM BETWEEN ((#{currentPage} - 1) * 12) + 1 AND (#{currentPage} * 12)
+   ORDER BY interest_yn DESC
+   </select>
+   
+   <select id="getDeadlineList" parameterType="hashMap" resultMap="recruitMap">
+      SELECT T.*
+      FROM
+      (
+         SELECT ROW_NUMBER() OVER(ORDER BY a.RECRUIT_EDDT) RNUM,
+            a.RECRUIT_NO, 
+            a.RECRUIT_STDT, 
+            a.RECRUIT_EDDT, 
+            a.RECRUIT_TITLE, 
+            a.RECRUIT_CNTNT, 
+            a.RECRUIT_WORK, 
+            a.RECRUIT_QLF, 
+            a.RECRUIT_PREFER, 
+            a.RECRUIT_SALARY, 
+            a.RECRUIT_LOCATION, 
+            a.RECRUIT_AF_ID, 
+            a.ENT_NO, 
+            a.RECRUIT_LEVEL, 
+            a.RECRUIT_WORK_TYPE, 
+            a.RECRUIT_ACDM_CR, 
+            a.RECRUIT_CAREER, 
+            a.RECRUIT_COUNT, 
+            a.RECRUIT_PART, 
+            a.RECRUIT_THUMB,
+            a.RECRUIT_OTT,
+            a.RECRUIT_JOB,
+            a.RECRUIT_SKILL,
+            b.ENT_NM, 
+            b.ENT_APRV, 
+            b.ENT_REG_DT, 
+            b.ENT_APRV_DT, 
+            b.ENT_INTRCN, 
+            b.ENT_URL, 
+            b.ENT_SALES, 
+            b.ENT_SECTOR, 
+            b.ENT_EMPCNT, 
+            b.ENT_BDAY, 
+            b.ENT_FAX, 
+            b.ENT_CEONM, 
+            b.ENT_LOGO, 
+            b.ENT_INT_WORD
+         FROM RECRUIT a, ENTERPRISE b
+         WHERE a.ENT_NO = b.ENT_NO
+      )T
+      WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * #{size}) + 1 AND (#{currentPage} * #{size})
+   </select>
+   
+   <select id="getByRecNo" parameterType="String" resultMap="recruitMap">
+      SELECT 
+         a.RECRUIT_NO, 
+         a.RECRUIT_STDT, 
+         a.RECRUIT_EDDT, 
+         a.RECRUIT_TITLE, 
+         a.RECRUIT_CNTNT, 
+         a.RECRUIT_WORK, 
+         a.RECRUIT_QLF, 
+         a.RECRUIT_PREFER, 
+         a.RECRUIT_SALARY, 
+         a.RECRUIT_LOCATION, 
+         a.RECRUIT_AF_ID, 
+         a.ENT_NO, 
+         a.RECRUIT_LEVEL, 
+         a.RECRUIT_WORK_TYPE, 
+         a.RECRUIT_ACDM_CR, 
+         a.RECRUIT_CAREER, 
+         a.RECRUIT_COUNT, 
+         a.RECRUIT_PART, 
+         a.RECRUIT_THUMB,
+         a.RECRUIT_OTT,
+         a.RECRUIT_JOB,
+         a.RECRUIT_SKILL,
+            (TO_DATE(a.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE ,
+         b.ENT_ADDR,
+         b.ENT_ADDR2,
+         b.ENT_NO,
+         b.ENT_NM,
+         b.ENT_APRV,
+         b.ENT_REG_DT,
+         b.ENT_APRV_DT,
+         b.ENT_INTRCN,
+         b.ENT_URL,
+         b.ENT_SALES,
+         b.ENT_SECTOR,
+         b.ENT_EMPCNT,
+         b.ENT_BDAY,
+         b.ENT_FAX,
+         b.ENT_CEONM,
+         b.ENT_LOGO,
+         b.ENT_INT_WORD,
+         b.ENT_POSTNO
+      FROM RECRUIT a, ENTERPRISE b
+      WHERE a.ENT_NO = b.ENT_NO
+        AND a.RECRUIT_NO = #{recruitNo}
+   </select>
+   
+   <resultMap type="benefitsVO" id="benefitsMap">
+      <result property="recruitNo" column="RECRUIT_NO"/>
+      <result property="benCd2" column="BEN_CD2"/>
+      <association property="comDetCodeInfoVO" resultMap="comDetCodeInfoMap"></association>
+   </resultMap>
+   <select id="getBenefits" parameterType="String" resultMap="benefitsMap">
+      SELECT 
+        a.RECRUIT_NO
+      , a.BEN_CD as BEN_CD2
+        , b.COM_DET_CD
+        , b.COM_DET_CD_NM
+        , b.COM_DET_DESCRIPTIONS
+      FROM BENEFITS a, COM_DET_CODE_INFO b
+      WHERE a.BEN_CD = b.COM_DET_CD
+      AND RECRUIT_NO = #{recruitNo}
+   </select>
+   
+   <select id="myRecruitList" parameterType="hashMap" resultMap="myRecruitMap"> 
+      SELECT T.* FROM (
+		    SELECT
+		        ROW_NUMBER() OVER(ORDER BY A.ENT_NO DESC) RNUM,
+		                A.ENT_NO, A.ENT_NM
+		               , B.RECRUIT_NO, B.RECRUIT_STDT, B.RECRUIT_EDDT, B.RECRUIT_TITLE, B.RECRUIT_CNTNT, B.RECRUIT_WORK
+		               , B.RECRUIT_QLF, B.RECRUIT_PREFER, B.RECRUIT_SALARY, B.RECRUIT_LOCATION, B.RECRUIT_PART, B.RECRUIT_SKILL, B.RECRUIT_CAREER
+		               , C.MEM_ID, C.INTRST_RECRUIT_REG_DT
+		      FROM ENTERPRISE A
+		      INNER JOIN RECRUIT B ON A.ENT_NO = B.ENT_NO
+		      INNER JOIN INTEREST_RECRUIT C ON B.RECRUIT_NO = C.RECRUIT_NO
+		      WHERE C.MEM_ID = #{memId}
+		      ) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+   </select>
+   
+   <select id="getMyTotal" parameterType="hashMap" resultType="int">
+   		SELECT    COUNT(*)
+		FROM      INTEREST_RECRUIT
+		WHERE    MEM_ID = #{memId}
+   </select>
+      
+   <resultMap type="recruitVO" id="myRecruitMap">
+      <result property="recruitNo" column="RECRUIT_NO"/>
+      <result property="recruitStdt" column="RECRUIT_STDT"/>
+      <result property="recruitEddt" column="RECRUIT_EDDT"/>
+      <result property="recruitTitle" column="RECRUIT_TITLE"/>
+      <result property="recruitCntnt" column="RECRUIT_CNTNT"/>
+      <result property="recruitWork" column="RECRUIT_WORK"/>
+      <result property="recruitQlf" column="RECRUIT_QLF"/>
+      <result property="recruitPrefer" column="RECRUIT_PREFER"/>
+      <result property="recruitSalary" column="RECRUIT_SALARY"/>
+      <result property="recruitLocation" column="RECRUIT_LOCATION"/>
+      <result property="recruitPart" column="RECRUIT_PART"/>
+      <result property="recruitCareer" column="RECRUIT_CAREER"/>
+      <result property="recruitSkill" column="RECRUIT_SKILL"/>
+      <association property="enterpriseVO" resultMap="myEnterpriseMap"></association>
+      <association property="interestRecruitVO" resultMap="interestRecruitVOMap"></association>
+   </resultMap>
+   
+   <resultMap type="enterpriseVO" id="myEnterpriseMap">
+      <result property="entNo" column="ENT_NO"/>
+      <result property="entNm" column="ENT_NM"/>
+   </resultMap>
+   
+   <resultMap type="interestRecruitVO" id="interestRecruitVOMap">
+      <result property="memId" column="MEM_ID"/>
+      <result property="recruitNo" column="RECRUIT_NO"/>
+      <result property="intrstRecruitRegDt" column="INTRST_RECRUIT_REG_DT"/>
+   </resultMap>
+   
+   <!-- 마이페이지 내가 스트랩했던 채용공고 삭제 -->
+   <delete id="ajaxdeleteRecruit" parameterType="interestRecruitVO">
+      DELETE 
+      FROM    INTEREST_RECRUIT
+      WHERE   RECRUIT_NO = #{recruitNo}
+        AND   MEM_ID = #{memId}
+   </delete>
+   
+   <!-- 마이페이지 내가 스크랩했던 채용공고 삭제 후 북마크 체크하면 다시 등록 -->
+   <insert id="ajaxinsertRecruit" parameterType="interestRecruitVO">
+      INSERT INTO INTEREST_RECRUIT
+                 ( MEM_ID
+                 , RECRUIT_NO
+                 , INTRST_RECRUIT_REG_DT
+                )
+          VALUES (
+                  #{memId}
+                , #{recruitNo}
+                , SYSDATE
+                 )
+   </insert>
+   
+   <select id="recruitList" parameterType="hashMap" resultMap="recruitMap">
+   /* "RECRUIT LIST" */
+   		SELECT T.* FROM
+   			(
+            SELECT   
+            	ROW_NUMBER() OVER(ORDER BY RECRUIT_EDDT DESC) RNUM,
+            		RECRUIT_NO,
+                   RECRUIT_STDT,
+                   RECRUIT_EDDT,
+                   RECRUIT_TITLE,
+                   RECRUIT_CNTNT,
+                   RECRUIT_WORK,
+                   RECRUIT_QLF,
+                   RECRUIT_PREFER,
+                   RECRUIT_SALARY,
+                   RECRUIT_LOCATION,
+                   RECRUIT_AF_ID,
+                   ENT_NO,
+                   RECRUIT_LEVEL,
+                   RECRUIT_WORK_TYPE,
+                   RECRUIT_ACDM_CR,
+                   RECRUIT_CAREER,
+                   RECRUIT_COUNT,
+                   RECRUIT_PART,
+                   RECRUIT_THUMB,
+                   RECRUIT_OTT,
+                   RECRUIT_JOB,
+                   RECRUIT_SKILL,
+                   (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE,
+                   (SELECT COUNT(*) FROM APPLICATION WHERE RECRUIT_NO = RECRUIT.RECRUIT_NO) as APP_COUNT
+                
+            FROM   RECRUIT
+         
+            WHERE   ENT_NO = (SELECT ENT_NO FROM ENT_APRV WHERE MEM_ID = #{memId})
+            ) T
+            
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+   </select>
+   
+   <select id="recruitListCount" parameterType="hashMap" resultType="int">
+   /* "RECRUIT LIST" */
+   		SELECT COUNT(*) FROM
+   			(
+            SELECT   
+            	ROW_NUMBER() OVER(ORDER BY RECRUIT_EDDT DESC) RNUM,
+            		RECRUIT_NO,
+                   RECRUIT_STDT,
+                   RECRUIT_EDDT,
+                   RECRUIT_TITLE,
+                   RECRUIT_CNTNT,
+                   RECRUIT_WORK,
+                   RECRUIT_QLF,
+                   RECRUIT_PREFER,
+                   RECRUIT_SALARY,
+                   RECRUIT_LOCATION,
+                   RECRUIT_AF_ID,
+                   ENT_NO,
+                   RECRUIT_LEVEL,
+                   RECRUIT_WORK_TYPE,
+                   RECRUIT_ACDM_CR,
+                   RECRUIT_CAREER,
+                   RECRUIT_COUNT,
+                   RECRUIT_PART,
+                   RECRUIT_THUMB,
+                   RECRUIT_OTT,
+                   RECRUIT_JOB,
+                   RECRUIT_SKILL,
+                   (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE,
+                   (SELECT COUNT(*) FROM APPLICATION WHERE RECRUIT_NO = RECRUIT.RECRUIT_NO) as APP_COUNT
+                
+            FROM   RECRUIT
+         
+            WHERE   ENT_NO = (SELECT ENT_NO FROM ENT_APRV WHERE MEM_ID = #{memId})
+            )
+            
+   </select>
+   
+   <select id="recruitListByMap" parameterType="hashMap" resultMap="recruitMap">
+   
+   
+            SELECT   RECRUIT_NO,
+                   RECRUIT_STDT,
+                   RECRUIT_EDDT,
+                   RECRUIT_TITLE,
+                   RECRUIT_CNTNT,
+                   RECRUIT_WORK,
+                   RECRUIT_QLF,
+                   RECRUIT_PREFER,
+                   RECRUIT_SALARY,
+                   RECRUIT_LOCATION,
+                   RECRUIT_AF_ID,
+                   ENT_NO,
+                   RECRUIT_LEVEL,
+                   RECRUIT_WORK_TYPE,
+                   RECRUIT_ACDM_CR,
+                   RECRUIT_CAREER,
+                   RECRUIT_COUNT,
+                   RECRUIT_PART,
+                   RECRUIT_THUMB,
+                   RECRUIT_OTT,
+                   RECRUIT_JOB,
+                   RECRUIT_SKILL,
+                     (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE
+                
+            FROM   RECRUIT
+         
+            WHERE   ENT_NO = (SELECT ENT_NO FROM ENT_APRV WHERE MEM_ID = #{memId})
+            
+	      <if test="magam == 'false'">
+	             AND ( (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) > 0 OR (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) IS NULL )
+	      </if>
+	      
+		  <include refid="order"></include>
+   </select>
+   
+   
+   <!-- 채용공고 상품 구매한 기업 List 가져오기. -->
+   <resultMap type="paymentVO" id="paymentVOMap">
+      <result property="payConId" column="PAY_CON_ID"/>
+      <result property="payEntNo" column="PAY_ENT_NO"/>
+      <result property="payNo" column="PAY_NO"/>
+      <result property="itemCompanyNo" column="ITEM_COMPANY_NO"/>
+      <result property="payAmount" column="PAY_AMOUNT"/>
+      <result property="payMethod" column="PAY_METHOD"/>
+      <result property="payDt" column="PAY_DT"/>
+      <result property="payUserId" column="PAY_USER_ID"/>
+      <result property="payRemndrCnt" column="PAY_REMNDR_CNT"/>
+      <result property="payStdt" column="PAY_STDT"/>
+      <result property="payEddt" column="PAY_EDDT"/>
+      <association property="enterpriseVO" resultMap="enterprisegetitemMap" />
+      <association property="recruitVO" resultMap="recruitVOgetitemMap" />
+   </resultMap>
+   
+   <resultMap type="enterpriseVO" id="enterprisegetitemMap">
+      <result property="entAddr" column="ENT_ADDR"/>
+      <result property="entAddr2" column="ENT_ADDR2"/>
+      <result property="entNo" column="ENT_NO"/>
+      <result property="entNm" column="ENT_NM"/>
+      <result property="entAprv" column="ENT_APRV"/>
+      <result property="entRegDt" column="ENT_REG_DT"/>
+      <result property="entAprvDt" column="ENT_APRV_DT"/>
+      <result property="entIntrcn" column="ENT_INTRCN"/>
+      <result property="entUrl" column="ENT_URL"/>
+      <result property="entSales" column="ENT_SALES"/>
+      <result property="entSector" column="ENT_SECTOR"/>
+      <result property="entEmpcnt" column="ENT_EMPCNT"/>
+      <result property="entBday" column="ENT_BDAY"/>
+      <result property="entFax" column="ENT_FAX"/>
+      <result property="entCeonm" column="ENT_CEONM"/>
+      <result property="entLogo" column="ENT_LOGO"/>
+      <result property="entIntWord" column="ENT_INT_WORD"/>
+      <result property="entPostno" column="ENT_POSTNO"/>
+      <result property="enterpriseEntNo" column="ENTERPRISE_ENT_NO"/>
+   </resultMap>
+   
+   <resultMap type="recruitVO" id="recruitVOgetitemMap">
+      <result property="recruitNo" column="RECRUIT_NO"/>
+      <result property="recruitStdt" column="RECRUIT_STDT"/>
+      <result property="recruitEddt" column="RECRUIT_EDDT"/>
+      <result property="recruitTitle" column="RECRUIT_TITLE"/>
+      <result property="recruitCntnt" column="RECRUIT_CNTNT"/>
+      <result property="recruitWork" column="RECRUIT_WORK"/>
+      <result property="recruitQlf" column="RECRUIT_QLF"/>
+      <result property="recruitPrefer" column="RECRUIT_PREFER"/>
+      <result property="recruitPart" column="RECRUIT_PART"/>
+      <result property="recruitSalary" column="RECRUIT_SALARY"/>
+      <result property="recruitLocation" column="RECRUIT_LOCATION"/>
+      <result property="recruitAfId" column="RECRUIT_AF_ID"/>
+      <result property="entNo" column="ENT_NO"/>
+      <result property="recruitLevel" column="RECRUIT_LEVEL"/>
+      <result property="recruitWorkType" column="RECRUIT_WORK_TYPE"/>
+      <result property="recruitAcdmCr" column="RECRUIT_ACDM_CR"/>
+      <result property="recruitCareer" column="RECRUIT_CAREER"/>
+      <result property="recruitCount" column="RECRUIT_COUNT"/>
+      <result property="recruitThumb" column="RECRUIT_THUMB"/>
+      <result property="recruitOtt" column="RECRUIT_OTT"/>
+      <result property="recruitJob" column="RECRUIT_JOB"/>
+      <result property="recruitSkill" column="RECRUIT_SKILL"/>
+      <result property="recruitEntNo" column="RECRUIT_ENT_NO"/>   
+   </resultMap>
+   
+   
+   <!-- 채용공고상품 구매한 기업 랜덤으로 가져오기. -->
+   <select id="getRecruititemEntList" resultMap="paymentVOMap">
+      <![CDATA[ SELECT T.*
+				FROM (
+				    SELECT A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT, A.PAY_METHOD, A.PAY_DT
+				         , A.PAY_USER_ID, A.PAY_REMNDR_CNT, A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID, A.PAY_ENT_NO
+				         
+				         , B.RECRUIT_NO, B.RECRUIT_STDT, B.RECRUIT_EDDT, B.RECRUIT_TITLE, B.RECRUIT_CNTNT, B.RECRUIT_WORK
+				         , B.RECRUIT_QLF, B.RECRUIT_PREFER, B.RECRUIT_SALARY, B.RECRUIT_LOCATION, B.RECRUIT_AF_ID
+				         , B.ENT_NO, B.RECRUIT_LEVEL, B.RECRUIT_WORK_TYPE, B.RECRUIT_ACDM_CR, B.RECRUIT_CAREER
+				         , B.RECRUIT_COUNT, B.RECRUIT_PART, B.RECRUIT_THUMB, B.RECRUIT_OTT, B.RECRUIT_JOB, B.RECRUIT_SKILL
+				         
+				         , C.ENT_NM, C.ENT_APRV, C.ENT_REG_DT, C.ENT_APRV_DT, C.ENT_INTRCN, C.ENT_URL, C.ENT_SALES, C.ENT_SECTOR, C.ENT_EMPCNT
+				         , C.ENT_BDAY, C.ENT_FAX, C.ENT_CEONM
+				         , C.ENT_LOGO, C.ENT_INT_WORD, C.ENT_POSTNO, C.ENT_ADDR, C.ENT_ADDR2
+				         
+				         , ROW_NUMBER() OVER (PARTITION BY A.PAY_NO ORDER BY DBMS_RANDOM.VALUE) AS rn
+				    FROM PAYMENT A, RECRUIT B, ENTERPRISE C
+				    WHERE A.ITEM_COMPANY_NO BETWEEN 'PDCEO004' AND 'PDCEO006'
+				    AND SYSDATE BETWEEN A.PAY_STDT AND A.PAY_EDDT
+				    AND A.PAY_ENT_NO = B.ENT_NO
+				    AND B.ENT_NO = C.ENT_NO
+				    ORDER BY DBMS_RANDOM.VALUE
+				) T
+				WHERE rn = 1 AND ROWNUM <= 3]]>
+   </select>
+   
+</mapper>   

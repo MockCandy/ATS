@@ -1,0 +1,25 @@
+package jobja.member.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class ApplicationVO {
+
+	private String appNo;
+	private String memId;
+	private String recruitNo;
+	private String resumeNo;
+	private String ptflNo;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appStdt;
+	private String appStateCd;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appStateDt;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appApplyDt;
+	
+}

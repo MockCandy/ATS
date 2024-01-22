@@ -1,0 +1,225 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+<style>
+.chatting-box {
+	width: 400px;
+    height: 618px;
+    background-color: #ffffff;
+    position: absolute;
+    z-index: 1;
+    right: 137px;
+    top: 40px;
+    border: 1px solid #e5e6e9;
+    border-radius: 6px;
+	display: none;
+	padding: 24px;
+}
+
+.chatting-box-header {
+	margin-bottom:20px;
+}
+
+.consultant-list{
+	width: 335px;
+	height: 90px;
+	border: 1px solid #e5e6e9;
+	padding: 5px;
+	display:flex;
+	align-items:center;
+}
+
+.consultant-list:not(:first-child){
+	margin-top: 10px;
+}
+
+.tab2 {
+	display: none;
+	overflow-y: auto;
+    height: 500px
+}
+
+.consultant-list-div-left{
+	width:80px;
+	height:80px;
+}
+
+.consultant-list-div-right{
+	width:235px;
+	padding: 10px;
+}
+
+.picture-size-img{
+	width:100%;
+	height:100%;
+	object-fit: cover;
+}
+
+.chat-list{
+	width:335px;
+	height:120px;
+	border: 1px solid;
+	padding: 10px;
+    border: 1px solid #e5e6e9;
+    cursor:pointer;
+}
+
+.chat-list:not(:first-child){
+	margin-top: 10px;
+}
+
+.chat-list:hover {
+	background-color: #fafafa;
+}
+
+.tab1{
+	overflow-y: auto;
+    height: 500px
+}
+
+.tab1::-webkit-scrollbar {
+    width: 5px;  /* 스크롤바의 너비 */
+}
+
+.tab1::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: #00c362; /* 스크롤바의 색상 */
+    
+    border-radius: 10px;
+}
+
+.tab1::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+
+.tab2::-webkit-scrollbar {
+    width: 5px;  /* 스크롤바의 너비 */
+}
+
+.tab2::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: #00c362; /* 스크롤바의 색상 */
+    
+    border-radius: 10px;
+}
+
+.tab2::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+
+.two-line-ellipsis{
+	
+	height:42px;
+
+}
+</style>
+
+<div class="chatting-box">
+	<div class="chatting-box-header">
+<%-- 		<c:if test="${memberVO.memCd == 'MCC01000'}"> --%>
+			<button class="tab1-btn btn btn-sm txt-white bg-sig">채팅 회원 목록</button>
+<%-- 		</c:if> --%>
+<%-- 		<c:if test="${memberVO.memCd == 'MCC01002'}"> --%>
+<!-- 			<button class="tab1-btn btn btn-sm txt-white bg-sig">일반회원 목록</button> -->
+<%-- 		</c:if> --%>
+		<button class="tab2-btn btn btn-sm txt-white bg-blue">채팅 목록</button>
+	</div>
+	<div class="tab1" >
+<!-- 		<div class="consultant-list"> -->
+<!-- 			<div class="consultant-list-div-left"> -->
+<%-- 				<c:choose> --%>
+<%-- 					<c:when test="${memberVO.memAfId ne null && memberVO.memAfId  != ''}"> --%>
+<%-- 						<img class="picture-size-img" alt="" src="/resources/upload/${memberVO.memAfId}"> --%>
+<%-- 					</c:when> --%>
+<%-- 					<c:otherwise> --%>
+<!-- 						<img class="picture-size-img" src="/resources/images/noimages.png"> -->
+<%-- 					</c:otherwise> --%>
+<%-- 				</c:choose> --%>
+<!-- 			</div> -->
+<!-- 			<div class="consultant-list-div-right"> -->
+<!-- 				22222222222 -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+	</div>
+	<div class="tab2">
+		<div class="chat-list">
+		</div>
+	</div>
+</div>
+
+<script>
+
+$('.tab1-btn').on("click", function() {
+	$('.tab1').css('display', 'block');
+	$('.tab2').css('display', 'none');
+});
+
+$('.tab2-btn').on("click", function() {
+	
+	let tmp = '${getCurrentLoginVO}';
+	
+	$.ajax({
+		url : '/chatting/getChatRoom',
+		contentType : "application/json;charset=utf-8",
+		type : "post",
+		dataType : "text",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader(
+					"${_csrf.headerName}",
+					"${_csrf.token}");
+		},
+		success : function(result) {
+			
+			let chatRoomVOList = JSON.parse(result);
+			
+			console.log("나와라 마지막 채팅",chatRoomVOList);
+			
+			let tempStr = '';
+			
+			chatRoomVOList.forEach(function(element) {
+				
+				console.log("!!!",element)
+				
+				tempStr += '<div class="chat-list">';
+				tempStr += '<input type="hidden" value="'+element.chatRoomId+'">';
+				tempStr += '<div class="p-18 bold mb-7">';
+				if('${getCurrentLoginVO.memCd}' == 'MCC01000'){
+					tempStr += element.chatConMemNm;
+				}else{
+					tempStr += element.chatMemNm;
+				}
+				tempStr += '</div>';
+				tempStr += '<div>';
+				tempStr += "<p class='p-15 mb-5 two-line-ellipsis'> " + element.lastChatCntnt + '</p>'; 
+				tempStr += "<p class='p-12 txt-gray'>" + element.maxChatDate.split(" ")[0] + " | " + element.maxChatDate.split(" ")[1].split(":")[0] + '시 ' + element.maxChatDate.split(" ")[1].split(":")[1] + '분' +'</p>';
+				tempStr += '</div>';
+				tempStr += '</div>';
+			});
+			
+			$('.tab2').html(tempStr);
+			
+		}	
+	});
+	
+	$('.tab2').css('display', 'block');
+	$('.tab1').css('display', 'none');
+});
+
+$(document).on("click",".chat-list",function(){
+	
+	let chatRoomId = $(this).children('input').val();
+	
+	console.log("chatRoomId",chatRoomId);
+	
+	window.location.href = "/chatting/chatRoom?bang_id="+chatRoomId;
+});
+
+
+
+
+
+</script>

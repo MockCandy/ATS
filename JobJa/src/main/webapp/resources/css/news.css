@@ -1,0 +1,280 @@
+
+ul,li,a{list-style: none;
+    padding: 0;
+    margin: 0; text-decoration:none;}
+.news_list {
+    display: flex; /* Flexbox를 사용하여 가로 방향으로 나열합니다 */
+	 height:250px; 
+	padding:10px;
+	border-radius: 30px;
+}
+.content_box {
+  flex: 5;
+  padding: 20px;
+  position: relative;
+  background-color: white;
+  border-radius: 30px;
+  border-top-right-radius: 0; /* 오른쪽 위 모서리 반지름 0으로 설정 */
+  border-bottom-right-radius: 0; /* 오른쪽 아래 모서리 반지름 0으로 설정 */
+}
+.title{
+	font-size:20px;
+	 padding:10px 0;
+	  display:block;
+	   margin-bottom:30px;
+	   }
+.log_time{
+	position:absolute;
+	 bottom:10px;
+	  left:20px;
+	  }
+.img_box{
+	flex:3;
+/* 	padding:20px; */
+/* 	border:1px solid red; */
+	background-color:white;
+	width:100px;
+	  }
+.img_box img{
+	width:300px;
+	height:100%;
+	object-fit:cover;
+}
+.news_date {
+  flex: 2;
+  text-align: center;
+  background-color: white;
+  border-radius: 30px; /* 일반적인 반지름 */
+  border-top-left-radius: 0; /* 왼쪽 위 모서리 반지름 0으로 설정 */
+  border-bottom-left-radius: 0; /* 왼쪽 아래 모서리 반지름 0으로 설정 */
+}
+.detail {
+    /* border: 1px solid blue; */
+    height: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:500px;
+}
+
+.sec_head{
+	background-color:#444;
+}
+
+.ad_wrap{
+	height:100px;
+}
+
+/* .sec_body1 { */
+/*     border: 1px solid blue; */
+/*     height: 110px; */
+/*     overflow: hidden; */
+/* /*     white-space: nowrap; */ */
+/*     text-overflow: ellipsis; */
+/* } */
+.news_sec .cen{padding:20px;}
+ul.best_wrap{ display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap:20px; }
+.news_node{border:1px solid ; margin:0!important; padding:0!important; box-sizing:border-box; background-color:white; border-radius: 30px;}
+.news_node img{width:100%;height:200px;object-fit:cover;}
+
+.btn-upload {
+  width: 150px;
+  height: 30px;
+  background: #fff;
+  border: 1px solid rgb(77,77,77);
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background: rgb(77,77,77);
+    color: #fff;
+  }
+}
+
+#file {
+  display: none;
+}
+
+.news_list{
+	height:200px;
+}
+
+.hrP {
+   display: flex; /* Flexbox 사용 */
+    justify-content: center; /* 가로 방향 가운데 정렬 */
+    align-items: center; /* 세로 방향 가운데 정렬 */
+    height: 30px; /* 필요에 따라 높이 조절 */
+}
+
+.hrP hr {
+    width: 1060px;
+   
+    /* 추가적인 스타일링 속성 */
+}
+.content_tit{
+	 font-size: 30px;
+}
+.add-padding-left {
+    padding-left: 450px; /* 원하는 만큼의 여백 설정 */
+   
+}
+
+.btn_gotop {
+   display:none;
+   position:fixed;
+   bottom:-20px;
+   right:-20px;
+   z-index:999;
+   cursor:pointer;
+  text-align: center;
+  transform: scale(.6);
+}
+.gototop{margin-bottom: 10px;}
+
+.btnlist{
+
+    bottom: 30%;
+    
+    background-color: #fff;
+}
+
+.listbb{
+	margin-left: 70%;
+}
+.white_wrap{width:100%;}
+.white_board{background-color:#ffffff; width:1060px; position:relative; left:50%; transform:translateX(-50%); }
+#content{border-top:1px solid gray;}
+.area_tit{margin-left:20px; padding-top:20px; }
+
+.container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.containerc {
+	display:flex;
+}
+
+.containerc a {
+	
+	margin-left:auto;
+	margin-right:25px;
+	margin-bottom:15px;
+}
+
+/* 페이지네이션 가로 정렬 */
+.pagination {
+    display: flex;
+    list-style: none;
+}
+
+.pagez  li.is_active{
+  font-weight: bold;
+  border-bottom: 3px solid #2ecc71;
+}
+.pagez .pagination a{
+  display: inline-block;
+  color: #222;
+}
+.pagez .pagination ul{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display:flex;
+  justify-content: center;
+}
+.pagez.pagination{
+  padding: 30px 0;
+}
+
+.pagez .paginate_button {
+   margin:0 15px;
+}
+
+.pagez  .disabled {
+    pointer-events : none;
+    cursor:default;
+}
+
+.pagez  .disabled a {
+   color : #ccc;
+    
+}
+
+.news_ttl{
+	
+	height: 40px;		
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width:200px;
+   
+}
+.c_point{
+	 font-size:20px;
+}
+
+.filebutton{
+	text-align: end;
+}
+.boarder{
+    border-color: white; /* 모서리 선의 색상을 하얀색으로 설정 */
+    /* 다른 스타일 속성들을 필요에 따라 추가할 수 있음 */
+}
+
+.aa{
+	background-color: white;
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 13px;
+    height: 48px;
+}
+
+.photoA{
+	width:600px;
+	height:400px;
+	object-fit: contain;
+}
+
+.photw img{
+	width:600px;
+	height:400px;
+	object-fit: contain;
+}
+
+.idx{
+	display:flex;
+	align-items:center;
+}
+
+
+.hot-recruit-title.two-line-ellipsis{
+	width: 145px;
+}
+.hot-recruit-title.one-line-ellipsis{
+	width: 230px;
+}
+
+.hot-recruit-item{
+	margin-bottom:8px!important;
+	display:flex;
+	align-items:center;
+}
+.hot-recruit-item:not(:last-child){
+	border-bottom:1px solid #efefef;
+	padding-bottom:10px;
+}
+.hot-recruit{
+	padding:20px 20px 5px 20px!important;
+}
+
+.recruit-grid {
+	cursor:pointer;
+}
+.recruit-grid:hover .ent-keyword-area {
+	text-decoration:underline;
+}

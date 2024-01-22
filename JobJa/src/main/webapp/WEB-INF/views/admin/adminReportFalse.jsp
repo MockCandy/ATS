@@ -1,0 +1,692 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<link rel="stylesheet" href="/resources/css/admin.css">
+<!-- Favicons -->
+<link href="/resources/assets/img/favicon.png" rel="icon">
+<link href="/resources/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<!-- <link href="https://fonts.gstatic.com" rel="preconnect"> -->
+<!-- <link -->
+<!-- 	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" -->
+<!-- 	rel="stylesheet"> -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap"
+	rel="stylesheet">
+
+<!-- Vendor CSS Files -->
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="/resources/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/resources/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/resources/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/resources/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/resources/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<style>
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+    border-bottom: 3px solid;
+    height: 80px;
+    font-weight: bold;
+}
+.sub-title-area {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin: 20px 50px -16px 50px;
+}
+
+.body-sub-title {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    padding-inline-start: 32px;
+    gap: 16px;
+}
+
+.card-title {
+    font-size: 24px;
+ }
+ 
+.report {
+  	table-layout: fixed;
+    border-collapse: collapse;
+    width: 1350px;
+    margin-top: 16px;
+    margin-left: 80px;
+    margin-bottom: 10px;
+}
+.biz-tab {
+    display: flex;
+/*     justify-content: flex-end; /* 우측 정렬을 위해 flex-end 값을 사용합니다 */ 
+	margin-left: 300px;
+    margin-bottom: 24px;
+    margin-bottom: 24px;
+    position: relative; /* 부모 요소를 relative로 설정합니다 */
+    align-items: center;
+   
+}
+.biz-tab::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0; /* 좌측 여백 크기 */
+    right: 240px; /* 우측 여백 크기 */
+    border-bottom: 1px solid #50C785;
+}
+
+
+a.biz-tab__item {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 253px;
+    height: 48px;
+    border-radius: 6px 6px 0 0;
+    border: 1px solid #d3dae6;
+    border-bottom: 0;
+    background-color: #fff;
+    font-family: 'HGSoftGGothicssi60g';
+    font-size: 16px;
+    text-align: center;
+    line-height: 47px;
+    letter-spacing: 0;
+    color: #777e8c;
+    }
+.mypage-aside-con{font-family: 'Noto Sans KR', sans-serif;}
+.aside-name{padding-top:34px;}\
+.mem-ul{display:flex; align-items:center;}
+table .modaltable {
+	border-collapse: collapse;
+}
+
+.thth ,.tdtd {
+	border: 1px solid black;
+	padding: 8px;
+	text-align: left;
+}
+
+.thth{
+	background-color: #f2f2f2;
+	
+}
+
+.modal-content {
+	padding: 20px;
+	
+}
+
+.infomation {
+    font-weight: bold; /* 진하게 */
+    font-size: 20px; /* 크기 조절 */
+}
+/* 원 모양 프로필 사진 스타일 */
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-primary {
+   --bs-border-opacity: 1; 
+    border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;
+}
+
+.modaltable {
+    margin-top: 20px; /* .modaltable 위쪽 여백 추가 */
+}
+
+#closeModal{
+	margin-top: 7px;
+}
+.modal-body{
+	text-align: center;
+}
+.warning-icon {
+    text-align: center;
+    display: flex; /* Flexbox를 사용하여 수직, 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    background-color: mistyrose;
+    border-radius: 50%;
+    width: 40px; /* 원의 지름으로 크기 조정 */
+    height: 40px; /* 원의 지름으로 크기 조정 */
+    margin-left: 45%;
+}
+
+.warning-icon i {
+    color: red;
+    font-size: 20px;
+    margin-top: -3px; /* 아이콘 위치 조정 */
+}
+
+.card-tools{
+	width: 100%;
+	font-size: 20px;
+}
+
+.serchbox {
+    display: flex;
+    align-items: center;
+}
+
+.serch-input {
+    margin-right: 10px; /* 원하는 간격으로 조절 */
+}
+
+.serch button {
+    margin-left: auto; /* 나머지 공간을 모두 차지하여 오른쪽에 정렬 */
+    height: 35px;
+    border-radius: 15px; /* 버튼을 더 둥글게 만들기 */
+}
+
+.sub-title-area {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin: 20px 50px -16px 50px;
+}
+
+.body-sub-title {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    padding-inline-start: 32px;
+    gap: 16px;
+}
+
+.card-title {
+    font-size: 24px;
+}
+
+.headdd{
+	padding-top: 1rem;
+}
+
+.list-counting__applicants-btn{
+	background-color: white;
+}
+
+tbody {
+    
+    margin: 20px;
+    padding: 20px;
+    margin-bottom: 20px; 
+    padding-bottom: 20px;
+}
+.pagination {
+    display: flex;
+    list-style: none;
+    padding-left: 30%;
+}
+
+.pagez {
+	display: flex;
+    justify-content: center;
+    margin: 32px 0px;
+}
+
+.pagez  li.is_active{
+  font-weight: bold;
+  border-bottom: 3px solid #2ecc71;
+}
+.pagez .pagination a{
+  display: inline-block;
+  color: #222;
+}
+.pagez .pagination ul{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display:flex;
+  justify-content: center;
+}
+.pagez.pagination{
+  padding: 30px 0;
+}
+
+.pagez .paginate_button {
+   margin:0 15px;
+}
+
+.pagez  .disabled {
+    pointer-events : none;
+    cursor:default;
+}
+
+.disabled>.page-link {
+	background-color: transparent !important;
+	border-color: transparent !important;
+}
+
+.page-link {
+	border-color: transparent !important;
+}
+
+.center{
+	text-align: center;
+}
+
+
+.u_u{
+	height: 100px;
+	border-bottom: 1px solid #d2d2d2;
+}
+
+.uu_uu{
+	padding-bottom: 20px;
+}
+
+.green{
+	color: green;
+}
+
+.red{
+	color: red;
+}
+
+.black{
+	color: black;
+}
+.question{
+	margin-left: 70px;
+}
+.wait{
+	color:white;
+}
+.cancle{
+	background-color: #EB4646 !important;
+	border-color: red;
+}
+.ok{
+	background-color: green;
+	color: white;
+	border-color: green;
+}
+
+.side{
+	margin-right: 150px;
+}
+.condition{
+	    margin-right: 30%;
+}
+.btn-secondary:hover {
+    background-color: #6c757d /* 원하는 호버 배경색 */
+}
+
+/* 승인 버튼 호버 */
+.btn-primary:hover {
+    background-color: green; /* 원하는 호버 배경색 */
+}
+
+.btn-cancle:hover{
+	background-color: #EB4646;
+	color:white;
+}
+
+.redd{
+background-color: #EB4646;
+    color: white;
+}
+
+.questions{
+    margin-left: 110px;
+}
+.save-buttons{
+    margin-left: 20px;
+    margin-right: 10px;
+    background-color: #329632;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+.gogogo{
+	margin-left: 60%;	   
+}
+
+.cancel-buttonz{
+	margin-left: 80px;
+	background-color: #EB3232;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+</style>
+<div class="mypage-body-con">
+	<div
+		class="sub-title-area alert alert-success alert-dismissible fade sho alert alert-success alert-dismissible fade show">
+		<div class="body-sub-title card-title">
+			신고 관리 →
+			<h3 class="card-title">신고 목록</h3>
+			<hr class="title-hr" />
+		</div>
+	</div>
+
+
+	<div class="body-sub-con">
+		<div class="card">
+				<div class="card-header border-0">
+
+					<div class="card-tools"
+						style="display: flex; justify-content: space-between;">
+						<span>전체신고 건수 ${totalRePort} 건</span>
+						<div class="serchbox">
+							<input class="search-input" placeholder="이름을 검색해주세요." type="text"
+								 id="" value="" style="margin-left: auto;">
+							<button id="btnSearch" type="submit" class="btn btn-secondary serch">검색</button>
+						</div>
+					</div>
+				</div>
+			<div class="biz-tab">
+				<a class="biz-tab__item biz-tab__item--active"
+					href="/admin/adminReport">전체 <span
+					class="biz-tab__number"> ${totalRePort}</span></a> <a
+					class="biz-tab__item " href="/admin/adminReportSuccess?sort=success">승인
+					<span class="biz-tab__number"> ${reports}</span>
+				</a> <a class="biz-tab__item " href="/admin/adminReportWaiting?sort=waiting">승인
+					대기<span class="biz-tab__number"> ${reportWating}</span>
+				</a> <a class="biz-tab__item " href="/admin/adminReportFalse?sort=false">승인
+					취소<span class="biz-tab__number"> ${reportNos}</span>
+				</a>
+			</div>
+			<table class="report">
+				<colgroup>
+					<col style="width: 18%">
+					<col style="width: 20%">
+					<col style="width: 20%">
+					<col style="width: 25%">
+					<col style="width: 30%">
+					<col style="width: 15%">
+					<col style="width: 15%">
+					<col style="width: 23%">
+					<col style="width: 12%">
+					<col style="width: 10%">
+				</colgroup>
+				<thead>
+					<tr class="uu_uu">
+						<th scope="col" class="headdd">신고접수번호</th>
+						<th scope="col" class="headdd">신고대상ID</th>
+						<th scope="col" class="headdd">신고일</th>
+						<th scope="col" class="headdd">신고사유</th>
+						<th scope="col" class="headdd">신고분류</th>
+						<th scope="col" class="headdd">신고접수ID</th>
+						<th scope="col" class="headdd">신고처리Id</th>
+						<th scope="col" class="headdd">신고접수 게시물</th>
+						<th scope="col" class="headdd">결과</th>
+						<th scope="col" class="headdd">비고</th>
+					</tr>
+				</thead>
+				<tbody>
+				<c:forEach var="reportVO" items="${reportFalseVOList}" varStatus="stat">
+					<tr class="u_u">
+						<td class="repNoValue">${reportVO.repNo}</td>
+						<td>${reportVO.repSubId}</td>
+						<td><fmt:formatDate pattern="yyyy-MM-dd" value="${reportVO.repDt}" /></td>
+						<td >${reportVO.repReason}</td>
+						<c:choose>
+							<c:when test="${reportVO.repTypeCd == 'RCC01001'}">
+								<td>스팸 및 홍보글</td>
+							</c:when>
+							<c:when test="${reportVO.repTypeCd == 'RCC01002'}">
+								<td>음란성이 포함된 글</td>
+							</c:when>
+							<c:when test="${reportVO.repTypeCd == 'RCC01003'}">
+								<td>욕설 및 혐오발언이 포함된 글</td>
+							</c:when>
+							<c:when test="${reportVO.repTypeCd == 'RCC01004'}">
+								<td>분란을 조장하는 글</td>
+							</c:when>
+							<c:when test="${reportVO.repTypeCd == 'RCC01005'}">
+								<td>사실과 무관한 거짓 글</td>
+							</c:when>
+						</c:choose>
+						<td class="center">${reportVO.reporterId}</td>
+						<td>${reportVO.adminId}</td>
+						<c:set var="truncatedId" value="${reportVO.repBoardId.substring(0, 3)}" />
+							<c:choose>
+							    <c:when test="${truncatedId == 'REV'}">
+							       <td class="center">리뷰 게시글 </td>
+							    </c:when>
+							    <c:when test="${truncatedId == 'QNA'}">
+							    	<td class="center">QnA 게시글</td>
+							    </c:when>
+							</c:choose>
+						<td>
+						    <c:choose>
+						        <c:when test="${reportVO.repResultCd == 'AYN01001'}">
+						            <a href="#" class="green" data-bs-toggle="modal" data-bs-target=".disabledAnimation" data-repResultCd="${reportVO.repResultCd}">완료</a>
+						        </c:when>
+						        <c:when test="${reportVO.repResultCd == 'AYN01002'}">
+						            <a href="#" class="black" data-bs-toggle="modal" data-bs-target=".disabledAnimation" data-repResultCd="${reportVO.repResultCd}">대기</a>
+						        </c:when>
+						        <c:when test="${reportVO.repResultCd == 'AYN01003'}">
+						            <a href="#" class="red" data-bs-toggle="modal" data-bs-target=".disabledAnimation" data-repResultCd="${reportVO.repResultCd}">취소</a>
+						        </c:when>
+						    </c:choose>
+						</td>
+						<td>
+							<c:choose>
+								<c:when test="${reportVO.repResultCntnt != null}">
+									<a href="#" class="black detailrepcntnt" data-bs-toggle="modal" data-bs-target=".detailmodal">상세보기</a>	
+									<input type="hidden" name="repResultCntnt" value="${reportVO.repResultCntnt}">
+								</c:when>
+								<c:when test="${reportVO.repResultCntnt == null}">
+									<a href="#" class="black inpBtn" data-bs-toggle="modal" data-bs-target=".notemodal">입력하기</a>		
+                					<input type="hidden" name="repNo" value="${reportVO.repNo}" >				
+								</c:when>
+							</c:choose>
+						</td>
+					</tr>
+				</c:forEach>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="pagez">${info.getPagingArea()}</div>
+</div>
+
+<div class="card">
+    <div class="modal fade disabledAnimation" id="#disabledAnimation" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title question">어떤 상태로 변경하시겠습니까?</h5>
+                </div>
+                <div class="modal-footer condition">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="modal fade notemodal" id="#disabledAnimation" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title questions">  비고란을 작성해주세요</h5>
+                </div>
+                <div class="modal-footer">
+                	<textarea rows="5" cols="50"  name="repResultCntnt"></textarea> 
+                </div>
+                <div class="gogogo">
+                	<input type="hidden" name="repNo" id="hiddenInp" value="" >			
+                	<button type="button" class="save-buttons">등록</button>
+                	<button type="button" class="cancel-button" onclick="window.location.href='/admin/adminReport'">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="modal fade detailmodal" id="#disabledAnimation" tabindex="-1" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title questionss">  비고</h5>
+                </div>
+                <div class="modal-footers">
+                	
+                </div>
+                <div class="gogogo">
+                	<input type="hidden" name="repNo" id="hiddenInp" value="" >			
+                	<button type="button" class="cancel-buttonz" onclick="window.location.href='/admin/adminReport'">나가기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<sec:csrfInput />
+	
+	<script src="/resources/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/resources/vendor/chart.js/chart.umd.js"></script>
+	<script src="/resources/vendor/echarts/echarts.min.js"></script>
+	<script src="/resources/vendor/quill/quill.min.js"></script>
+	<script src="/resources/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/resources/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/resources/vendor/php-email-form/validate.js"></script>
+	<!-- sweetalert -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<!-- Template Main JS File -->
+	<script src="/resources/js/main.js"></script>
+
+	<script src="/resources/js/admin.js"></script>
+
+<script>
+$(document).ready(function() {
+	$(document).on("click", $(".detailrepcntnt"), function(e){
+		let repResultCntnt = e.target.nextElementSibling.value;
+		console.log(repResultCntnt);
+		
+		let cnt = '';
+		
+		cnt += '<p>'+repResultCntnt+'</p>';
+		
+		$(".modal-footers").html(cnt);
+		
+		
+	})
+	
+	$('.save-buttons').on("click", function(e) {
+	    var noteContent = $(this).closest('.modal-content').find('textarea[name="repResultCntnt"]').val();
+	    var repNo = e.target.previousElementSibling.value; 
+	    // 나머지 코드는 그대로 유지
+	
+        data = {
+        	repResultCntnt : noteContent,
+        	repNo : repNo
+        }
+        
+        $.ajax({
+        	url: "/admin/updateReportCnt",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(data),
+            type: "post",
+            dataType: "json",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+            },
+            success: function(result) {
+                window.location.href = "/admin/adminReport";
+            }
+        });
+	});
+	
+    $('.disabledAnimation').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var repResultCd = button.data('represultcd');
+        var repNo = button.closest('tr').find('td:eq(0)').text(); // repNo 가져오기
+        var repSubId = button.closest('tr').find('td:eq(1)').text(); // repSubId 가져오기
+        var modal = $(this);
+
+        modal.find('.modal-title').text('어떤 상태로 변경하시겠습니까?');
+        var modalFooter = modal.find('.modal-footer');
+        modalFooter.empty();
+
+        if (repResultCd === 'AYN01001') {
+            modalFooter.append('<button type="button" class="btn btn-secondary waiting" data-value="AYN01002">대기</button>');
+            modalFooter.append('<button type="button" class="btn btn-cancle cancel redd" data-dismiss="modal" data-value="AYN01003">취소</button>');
+        } else if (repResultCd === 'AYN01002') {
+            modalFooter.append('<button type="button" class="btn btn-primary ok" data-value="AYN01001">승인</button>');
+            modalFooter.append('<button type="button" class="btn btn-cancle cancel redd" data-dismiss="modal" data-value="AYN01003">취소</button>');
+        } else if (repResultCd === 'AYN01003') {
+            modalFooter.append('<button type="button" class="btn btn-primary ok" data-value="AYN01001">승인</button>');
+            modalFooter.append('<button type="button" class="btn btn-secondary waiting" data-value="AYN01002">대기</button>');
+        }
+
+        modalFooter.find('.waiting').on('click', function() {
+        	var memStateCd = $(".waiting").attr('data-value');
+        	console.log(memStateCd);
+            sendAjaxRequest(repNo, repSubId, memStateCd);
+        });
+
+        modalFooter.find('.cancel').on('click', function() {
+        	var memStateCd = $(this).attr('data-value');
+            sendAjaxRequest(repNo, repSubId, memStateCd);
+        });
+
+        modalFooter.find('.ok').on('click', function() {
+        	var memStateCd = $(this).attr('data-value');
+            sendAjaxRequest(repNo, repSubId, memStateCd);
+        });
+    });
+
+    function sendAjaxRequest(repNo, repSubId, memStateCd) {
+        var data = {
+            repNo: repNo,
+            repSubId: repSubId,
+            repResultCd: memStateCd
+        };
+
+        $.ajax({
+            url: "/admin/updateReport",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(data),
+            type: "post",
+            dataType: "json",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+            },
+            success: function(result) {
+                window.location.href = "/admin/adminReport";
+            }
+        });
+    }
+});
+
+$(document).on("click", $(".inpBtn"), function(e){
+	let repNo = e.target.nextElementSibling.value;
+	$("#hiddenInp").val(repNo)
+
+
+  $('#btnSearch').on('click', function(){
+    	let keyword = $('.search-input').val();
+    	
+    	window.location.href = '/admin/adminReport?keyword='+keyword;
+    });
+})
+
+
+</script>

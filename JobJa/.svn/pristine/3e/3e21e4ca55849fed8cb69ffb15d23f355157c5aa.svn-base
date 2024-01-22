@@ -1,0 +1,312 @@
+package jobJa.board.service.impl;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobJa.atchFile.controller.FileController;
+import jobJa.atchFile.mapper.AtchFileDetailMapper;
+import jobJa.atchFile.vo.AtchFileDetailVO;
+import jobJa.board.mapper.BoardInterViewMapper;
+import jobJa.board.service.BoardInterViewSevice;
+import jobJa.board.vo.BoardInterViewQNACodeVO;
+import jobJa.board.vo.BoardInterViewQNAVO;
+import jobJa.board.vo.BoardInterViewVO;
+import jobJa.common.vo.ComCodeInfoVO;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
+
+
+/**
+ * @author PC-13
+ *
+ */
+@Slf4j
+@Service
+public class BoardInterViewServiceImpl implements BoardInterViewSevice {
+	
+	@Autowired
+	BoardInterViewMapper boardInterViewMapper;
+	
+	@Autowired
+	FileController fileController;
+	
+	@Autowired
+	AtchFileDetailMapper atchFileDetailMapper;
+	
+	//인터뷰내용 가져오기.
+	@Override
+	public List<BoardInterViewVO> list() {
+		return this.boardInterViewMapper.list();
+	}
+	
+	//직군코드 가져오기.
+	@Override
+	public List<ComCodeInfoVO> comJob() {
+		
+		return this.boardInterViewMapper.comJob();
+	}
+	
+	//추가
+	@Override
+	public List<BoardInterViewVO> listAll(Map<String, Object> map) {
+		return this.boardInterViewMapper.listAll(map);
+	}
+	
+	@Override
+	public int getTotal(Map<String, Object> map) {
+		return this.boardInterViewMapper.getTotal(map);
+	}
+	
+	@Override
+	public List<BoardInterViewVO> codeList(Map<String, Object> map) {
+		return this.boardInterViewMapper.codeList(map);
+	}
+	
+	//게시글 상세내역 가져오기
+	@Transactional
+	@Override
+	public BoardInterViewVO detail(BoardInterViewVO boardInterViewVO) {
+		
+		String boardId = boardInterViewVO.getBoardId();
+		
+		boardInterViewVO = this.boardInterViewMapper.detail(boardInterViewVO);
+		
+		return boardInterViewVO;
+	}
+	
+	//질문코드,내용 가져오기.
+	@Override
+	public List<BoardInterViewQNACodeVO> QNACodeList() {
+		return this.boardInterViewMapper.QNACodeList();
+	}
+	
+	//인터뷰 등록
+	@Transactional
+	@Override
+	public int createForm(BoardInterViewVO boardInterViewVO) {
+		
+		//1) BOARD_INTER_VIEW 테이블에 insert
+		int result = this.boardInterViewMapper.createForm(boardInterViewVO);
+		
+		//2) BOARD_INTER_VIEW_QNA 테이블에 insert
+		List<BoardInterViewQNAVO> boardInterViewQNAVOListTemp = boardInterViewVO.getBoardInterViewQNAVOList();
+		
+		List<BoardInterViewQNAVO> boardInterViewQNAVOList = new ArrayList<BoardInterViewQNAVO>();
+		
+		for(BoardInterViewQNAVO boardInterViewQNAVO : boardInterViewQNAVOListTemp) {
+			boardInterViewQNAVO.setBoardId(boardInterViewVO.getBoardId());
+			boardInterViewQNAVOList.add(boardInterViewQNAVO);
+		}
+		
+		result += this.boardInterViewMapper.createFormQNA(boardInterViewQNAVOList);
+		
+		log.info("createForm->result : " + result);
+		
+		log.info("boardInterViewVO.getBoardId() : " + boardInterViewVO.getBoardId());
+		
+		MultipartFile[] uploadFile = boardInterViewVO.getUploadFile();
+		
+		result += fileController.uploadFile(uploadFile, boardInterViewVO.getBoardId());
+		
+		return result;
+	}
+	
+	//게시물변호 가져오기.
+	@Override
+	public String getBoardId() {
+		return this.boardInterViewMapper.getBoardId();
+	}
+	
+	//인테뷰 상세 가져오기.
+	@Override
+	public BoardInterViewVO selectUpdate(BoardInterViewVO boardInterViewVO) {
+		
+		return this.boardInterViewMapper.selectUpdate(boardInterViewVO);
+	}
+	
+	//인터뷰 상세 수정
+	@Transactional
+	@Override
+	public int updatePost(BoardInterViewVO boardInterViewVO) {
+		
+		
+		int result = this.boardInterViewMapper.updatePost(boardInterViewVO);
+		
+		List<BoardInterViewQNAVO> boardInterViewQNAVOList = boardInterViewVO.getBoardInterViewQNAVOList();
+		
+		log.info("updatePost ->  boardInterViewQNAVOList : " + boardInterViewQNAVOList);
+		
+		for(BoardInterViewQNAVO boardInterViewQNAVO : boardInterViewQNAVOList) {
+			
+				boardInterViewQNAVO.setBoardId(boardInterViewVO.getBoardId());
+			
+		log.info("updatePostQNA boardInterViewQNAVO : " + boardInterViewQNAVO);
+		log.info("updatePostQNA boardInterViewQNAVO boardId: " + boardInterViewQNAVO.getBoardId());
+		
+			result += this.boardInterViewMapper.updatePostQNA(boardInterViewQNAVO);
+		}
+		
+		log.info(" updatePost -> result : " + result );
+		
+		MultipartFile[] uploadFile = boardInterViewVO.getUploadFile();
+		log.info("uploadFile => " + uploadFile);
+		
+		uploadFile(uploadFile,boardInterViewVO.getBoardId());
+		
+		
+		return result;
+		
+		
+	}
+	
+	
+private int uploadFile(MultipartFile[] uploadFile, String boardId) {
+		
+		//파일이 업로드 될 경로
+		String uploadFolder = "C:\\Users\\PC-13\\Desktop\\finalUpload"; 
+		String uploadFileName = "";
+		log.info("uploadFile->uploadFolder : " + uploadFolder);
+		
+		int result = 0;
+		
+		//연월일 폴더 만들기 시작/////////////////////
+		File uploadPath = new File(uploadFolder, getFolder());
+		log.info("uploadPath : " + uploadPath);
+		
+		//만약 연/월/일 해당 폴더가 없으면 생성
+		if(uploadPath.exists()==false) {
+			uploadPath.mkdirs();
+		}
+		//연월일 폴더 만들기 끝/////////////////////
+		
+		//uploadFile : MultipartFile[] uploadFile / uploadFile[0] : MultipartFile 1개
+		if(uploadFile[0].getOriginalFilename().length()>0) {
+			//ATCH_FILE_DETAIL 테이블의 데이터를 삭제
+			this.boardInterViewMapper.delAtch(boardId);
+			
+			//파일객체배열로부터 파일을 하나씩 꺼내서 확인
+			for(MultipartFile multipartFile : uploadFile) {
+				log.info("-------------------");
+				log.info("파일명 : " + multipartFile.getOriginalFilename());
+				log.info("크기 : " + multipartFile.getSize());
+				log.info("MIME타입 : " + multipartFile.getContentType());
+				
+				//파일명
+				uploadFileName = multipartFile.getOriginalFilename();
+				
+				// 같은날 같은 이미지를 업로드 시 파일 중복 방지 시작//////////////
+				//java.util.UUID => 랜덤값 생성
+				UUID uuid = UUID.randomUUID();	//임의의 값을 생성
+				//원래의 파일 이름과 구분하기 위해서 _를 붙임
+				uploadFileName = uuid.toString() + "_" + uploadFileName;
+				// 같은날 같은 이미지를 업로드 시 파일 중복 방지 끝//////////////
+				
+				//File 객체 설계(복사할 대상 경로, 파일명)
+				//uploadPath : 연월일 처리된 경로
+				//uploadFileName : uuid 처리된 파일명
+				File saveFile = new File(uploadPath, uploadFileName);
+				
+				try {
+					//파일 복사가 일어남
+					//파일객체.transferTo(설계)
+					multipartFile.transferTo(saveFile);
+					
+					//썸네일
+					//이미지인지 체킹
+					if(checkImagetype(saveFile)) {//이미지라면..
+						//설계
+						FileOutputStream thumbnail = new FileOutputStream(
+							new File(uploadPath, "s_" + uploadFileName)
+						);
+						//섬네일 생성
+						Thumbnailator.createThumbnail(multipartFile.getInputStream(),thumbnail,100,100);
+						thumbnail.close();
+					}
+					
+					//ATCH_FILE_DETAIL 테이블에 insert
+					AtchFileDetailVO atchFileDetailVO = new AtchFileDetailVO();
+					atchFileDetailVO.setAfId(boardId);	//P.K
+					atchFileDetailVO.setAfdSeq(0);				//P.K
+					atchFileDetailVO.setAfdSavePath(
+							uploadPath + "\\" + uploadFileName);
+					atchFileDetailVO.setAfdSaveNm(
+							getFolder().replaceAll("\\\\", "/") + "/" + uploadFileName);
+					atchFileDetailVO.setAfdOriginNm(multipartFile.getOriginalFilename());
+					atchFileDetailVO.setAfdExtsn(
+							uploadFileName.substring(uploadFileName.lastIndexOf(".")+1));
+					atchFileDetailVO.setAfdCntnt("");
+					atchFileDetailVO.setAfdFileSize(multipartFile.getSize());
+					
+					log.info("atchFileDetailVO : " + atchFileDetailVO);
+					
+					//쿼리 실행
+					result += this.atchFileDetailMapper.insertAtchFileDetail(atchFileDetailVO);
+				} catch (IllegalStateException | IOException e) {
+					log.error(e.getMessage());
+				}
+			}//end for
+		}//end if
+		
+		return result;
+	}
+
+	private boolean checkImagetype(File file) {
+		
+		String contentType;
+		
+		try {
+			contentType = Files.probeContentType(file.toPath());
+			log.info("contentType : " + contentType);		
+			
+			return contentType.startsWith("image");
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+		
+		return false;
+	}
+
+	private String getFolder() {
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date date = new Date();
+		
+		String str = sdf.format(date);
+		
+		return str.replace("-", File.separator);
+	}
+	
+	//인터뷰 삭제
+	@Override
+	public int delete(BoardInterViewVO boardInterViewVO) {
+		
+		int result = this.boardInterViewMapper.deleteAtcFile(boardInterViewVO.getBoardId());
+		
+		result = this.boardInterViewMapper.delete(boardInterViewVO);
+		
+		return result;
+	}
+	
+	//조회수 증가
+	@Override
+	public int countUp(String boardId) {
+		return this.boardInterViewMapper.countUp(boardId);
+	}
+	
+
+
+}

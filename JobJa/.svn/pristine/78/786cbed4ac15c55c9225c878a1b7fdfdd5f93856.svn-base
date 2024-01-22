@@ -1,0 +1,67 @@
+let headerr = document.querySelector("header");
+let scrollHeader = document.querySelector("#scroll-header");
+
+let searchInput = document.querySelectorAll(".schbar-input");
+
+let header = $("meta[name='_csrf_header']").attr('content');
+let token = $("meta[name='_csrf']").attr('content');
+
+let body = document.querySelector("body");
+
+window.onscroll = function () { 
+    
+    let windowTop = window.scrollY;
+    // 스크롤 세로값이 헤더높이보다 크거나 같으면 
+    // 헤더에 클래스 'drop'을 추가한다
+    // console.log(windowTop);
+    if (windowTop > 0) {
+        headerr.style.display = "none";
+        scrollHeader.style.display = "flex";
+        body.style.paddingTop = "112px";
+    } 
+    else {
+        headerr.style.display = "block";
+        scrollHeader.style.display = "none"
+        body.style.paddingTop = "0";
+    }
+}
+
+
+function search(e){
+	let searchWord = e.target.value;
+	
+	console.log(searchWord);
+	
+	if(e.keyCode == 13){
+		window.location.href="/search/list?keyword="+searchWord;
+	}
+	
+}
+
+let url = window.location.href.split("/")[3];
+
+if( url.includes('entRanking') ){
+	document.querySelector(".li-entRanking").classList.add("active");
+}else if( url.includes('recruit') ){
+	document.querySelector(".li-recruit").classList.add("active");
+}else if(url.includes('boardQNA') ){
+	document.querySelector(".li-boardQna").classList.add("active");
+}else if(url.includes('boardInterView')){
+	document.querySelector(".li-devCarr").classList.add("active");
+	document.querySelector(".boardInterView").classList.add("active");
+}else if(url.includes('boardClass')){
+	document.querySelector(".li-devCarr").classList.add("active");
+	document.querySelector(".boardClass").classList.add("active");
+}else if(url.includes('news')){
+	document.querySelector(".li-devCarr").classList.add("active");
+	document.querySelector(".news").classList.add("active");
+}else if(url.includes('boardConsulting') ){
+	document.querySelector(".li-devCarr").classList.add("active");
+	document.querySelector(".boardConsulting").classList.add("active");
+}
+
+
+$("#fileInput").on('change',function(){
+  var fileName = $("#fileInput").val();
+  $(".upload-name").val(fileName);
+});

@@ -1,0 +1,21 @@
+package jobja.mypage.member.service;
+
+import java.util.List;
+
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.mypage.member.vo.MemberVO;
+
+public interface MemProfileService {
+	
+	//회원상세정보 가져오기.
+	public MemberVO detail(String memId);
+	
+	//직군,관심 키워드 가져오기.
+	public List<ComDetCodeInfoVO> comDetCode();
+	
+	//프로필 수정.
+	public int mypagePost(MemberVO memberVO);
+	
+  
+}

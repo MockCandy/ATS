@@ -1,0 +1,13 @@
+package jobJa.application.service;
+
+import java.util.Map;
+
+import jobJa.member.vo.ApplicationVO;
+
+public interface ApplicationService {
+
+	int insert(ApplicationVO applicationVO);
+
+	int isApplicated(Map<String, Object> appMap);
+
+}

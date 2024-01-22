@@ -1,0 +1,94 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<style>
+.mypage-body-con{
+	background-color: #fff;
+	border-radius: 30px;
+ 	padding: 24px; 
+ 	height: 800px;
+}
+.body-sub-title{
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.title-hr{
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+	width: 100%;
+}
+.sub-con-inner{
+	width: 880px;
+	margin: auto;
+}
+.review-list-con{
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	padding: 16px 24px;
+	margin-top: 16px;
+}
+.review-pre{
+	min-height: 80px;
+    overflow-y: auto;
+}
+.review-hr{
+	width: 100%;
+	color: #444;
+	margin: 16px 0px;
+}
+</style>
+<div class="mypage-body-con">
+	<div class="sub-title-area">
+		<div class="body-sub-title">
+			상담 리뷰목록
+		</div>
+		<hr class="title-hr"/>
+	</div>
+		
+	<div class="body-sub-con">
+		
+		<div class="sub-con-inner">
+		
+			<c:forEach var="conReviewVO" items="${consultantReviewVOList}">
+				<div class="review-list-con">
+					<div class="mb-12 p-15 detail-one-line">
+						<p class="bold">이름</p>	 
+						<p class="">${conReviewVO.memNm}</p>
+					</div>
+					<div class="mb-12 p-15 detail-one-line">
+						<p class="bold">상담사 이름</p>	 
+						<p class="">${conReviewVO.conNm}</p>
+					</div>
+					<div class="mb-12 p-15 detail-one-line">
+						<p class="bold">구매상품</p>	 
+						<p class="">${conReviewVO.itemVO.itemIntrcn }</p>
+<%-- 						<p class="">${conReviewVO.itemVO.itemNm}</p> --%>
+					</div>
+					<div class="mb-12 p-15 detail-one-line">
+						<p class="bold">리뷰작성날짜</p>	 
+						<p class="">
+						<fmt:formatDate value="${conReviewVO.reviewRegDt}" pattern="yyyy-MM-dd"/>
+						</p>
+					</div>
+					<hr class="review-hr"/>
+					
+					<div class="mb-12 p-15 detail-one-line">
+						<p class="bold">리뷰내용</p>	 
+						<pre class="review-pre">${conReviewVO.reviewCntnt} </pre>
+					</div>
+				
+				</div>
+			</c:forEach>
+			
+			
+		</div><!-- end sub-con-inner -->
+		
+	</div><!-- end body-sub-con -->
+	
+</div><!-- end myPagebody-con -->
+

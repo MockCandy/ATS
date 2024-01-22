@@ -1,0 +1,1714 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<link rel="stylesheet" href="/resources/css/compare.css">
+<link rel="stylesheet" type="text/css"
+	href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<script
+	src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+
+
+<div class="bg-white">
+	<div class="cen">
+
+		<div class="ent-area">
+			<div></div>
+
+			<div class="ent-item" id="ent-item1">
+				<div>
+					<i class="fa-solid fa-plus" style="color: #00c362"></i>
+				</div>
+				<p class="p-17">비교기업 추가</p>
+			</div>
+
+			<div class="ent-item" id="ent-item2">
+				<div>
+					<i class="fa-solid fa-plus" style="color: #00c362"></i>
+				</div>
+				<p class="p-17">비교기업 추가</p>
+			</div>
+
+			<div class="ent-item" id="ent-item3">
+				<div>
+					<i class="fa-solid fa-plus" style="color: #00c362"></i>
+				</div>
+				<p class="p-17">비교기업 추가</p>
+			</div>
+
+		</div>
+
+		<div class="accordion mt-40 mb-40">
+			<div class="accordion-tab">
+				<p class="compare-tit">평점</p>
+				<span class="expand-icon"></span>
+			</div>
+
+			<div class="accordion-cont rate">
+
+				<p class="compare-tit">총 만족도</p>
+
+				<div class="disabled-col">
+					<p class="p-15 mb-5">
+						<span class="bold">전체</span> 통계
+					</p>
+
+					<div class="avg-rate">
+						<img alt="" src="/resources/images/star.svg">
+						<p>
+							<fmt:formatNumber value="0.0" pattern="0.0" />
+						</p>
+					</div>
+
+					<p class="p-15 mb-7 mt-15">
+						<span class="bold">연도별</span> 통계
+					</p>
+					
+					<div class="chart-box">
+						<canvas class="avg-rate-chart" width="250" height="150"></canvas>
+					</div>
+
+					<div class="rates">
+
+						<div class="welfare">
+							<p>복지 및 급여</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="balance">
+							<p>워라밸</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="cultue">
+							<p>사내문화</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="chances">
+							<p>승진 기회</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="manager">
+							<p>경영진</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="disabled-col">
+					<p class="p-15 mb-5">
+						<span class="bold">전체</span> 통계
+					</p>
+
+					<div class="avg-rate">
+						<img alt="" src="/resources/images/star.svg">
+						<p>
+							<fmt:formatNumber value="0.0" pattern="0.0" />
+						</p>
+					</div>
+					
+					<p class="p-15 mb-7 mt-15">
+						<span class="bold">연도별</span> 통계
+					</p>
+					
+					<div class="chart-box">
+						<canvas class="avg-rate-chart" width="250" height="150"></canvas>
+					</div>
+
+
+					<div class="rates">
+
+						<div class="welfare">
+							<p>복지 및 급여</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>워라밸</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>사내문화</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>승진 기회</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>경영진</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+
+					</div>
+
+				</div>
+
+				<div class="disabled-col">
+					<p class="p-15 mb-5">
+						<span class="bold">전체</span> 통계
+					</p>
+
+					<div class="avg-rate">
+						<img alt="" src="/resources/images/star.svg">
+						<p>
+							<fmt:formatNumber value="0.0" pattern="0.0" />
+						</p>
+					</div>
+
+					<p class="p-15 mb-7 mt-15">
+						<span class="bold">연도별</span> 통계
+					</p>
+					<div class="chart-box">
+						<canvas class="avg-rate-chart" width="250" height="150"></canvas>
+					</div>
+
+					<div class="rates">
+
+						<div class="welfare">
+							<p>복지 및 급여</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>워라밸</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>사내문화</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>승진 기회</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+						<div class="welfare">
+							<p>경영진</p>
+							<p>
+								<i class="fa-solid fa-star" style="color: #fbba2d;"></i> <span
+									class="bold">0.0</span>
+							</p>
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="accordion mt-40 mb-40">
+			<div class="accordion-tab">
+				<p class="compare-tit">매출</p>
+				<span class="expand-icon"></span>
+			</div>
+
+			<div class="accordion-cont sales">
+
+				<p class="compare-tit">매출액</p>
+
+				<div class="disabled-col">
+					<p class="ent-sales">
+						<span class="p-20 bold">0</span>
+						원
+					</p>
+				</div>
+				
+				<div class="disabled-col">
+					<p class="ent-sales">
+						<span class="p-20 bold">0</span>
+						원
+					</p>
+				</div>
+				
+				<div class="disabled-col">
+					<p class="ent-sales">
+						<span class="p-20 bold">0</span>
+						원
+					</p>
+				</div>
+
+
+			</div>
+
+		</div>
+		
+		<div class="accordion mt-40 mb-40">
+			<div class="accordion-tab">
+				<p class="compare-tit">공감되는 리뷰</p>
+				<span class="expand-icon"></span>
+			</div>
+			
+			<div class="accordion-cont short-review">
+
+				<p class="compare-tit">간단 리뷰</p> 
+
+				<div class="disabled-col">
+					<div class="short">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="short">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="short">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+
+			</div>
+
+			<div class="accordion-cont pros">
+
+				<p class="compare-tit">
+					<i class="fa-regular fa-face-smile mr-3" style="color: #3d77db;"></i>
+					장점
+				</p> 
+
+				<div class="disabled-col">
+					<div class="prs">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="prs">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="prs">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			
+			<div class="accordion-cont cons">
+
+				<p class="compare-tit">
+					<i class="fa-regular fa-face-frown mr-3" style="color: #c72323;"></i>
+					단점
+				</p> 
+
+				<div class="disabled-col">
+					<div class="cns">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="cns">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="cns">
+						<div class="review-item">
+							<div class="review-profile">
+							</div>                                                
+							<p class="p-gray p-14 mt-3">            
+								-              	
+							</p>                                                  
+							<p class="p-15 mt-9 bold review-cont">-</p>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		
+		
+		<div class="accordion mt-40 mb-40">
+			<div class="accordion-tab">
+				<p class="compare-tit">채용</p>
+				<span class="expand-icon"></span>
+			</div>
+
+			<div class="accordion-cont recruit">
+
+				<p class="compare-tit">진행중인 채용</p>
+
+				<div class="disabled-col">
+					<div class="rec">
+						<div class="recruit-item">
+							<p class="rec-empty">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="rec">
+						<div class="recruit-item">
+							<p class="rec-empty">-</p>
+						</div>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="rec">
+						<div class="recruit-item">
+							<p class="rec-empty">-</p>
+						</div>
+					</div>
+				</div>
+
+
+			</div>
+
+		</div>	
+		
+		<div class="accordion underline mt-40 mb-40 pb-50">
+			<div class="accordion-tab">
+				<p class="compare-tit">기업정보</p>
+				<span class="expand-icon"></span>
+			</div>
+
+			<div class="accordion-cont ent-sector">
+
+				<p class="compare-tit">산업군</p>
+
+				<div class="disabled-col">
+					<div class="sect">
+						<p class="bold">-</p>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="sect">
+						<p class="bold">-</p>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="sect">
+						<p class="bold">-</p>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="accordion-cont ent-cnt">
+
+				<p class="compare-tit">직원 수</p>
+
+				<div class="disabled-col">
+					<div class="cnt">
+						<span class="bold p-24">-</span>
+						명
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="cnt">
+						<span class="bold p-24">-</span>
+						명
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="cnt">
+						<span class="bold p-24">-</span>
+						명
+					</div>
+				</div>
+
+			</div>
+
+			<div class="accordion-cont ent-addr">
+
+				<p class="compare-tit">주소</p>
+
+				<div class="disabled-col">
+					<div class="addr">
+						<p class="bold">-</p>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="addr">
+						<p class="bold">-</p>
+					</div>
+				</div>
+				
+				<div class="disabled-col">
+					<div class="addr">
+						<p class="bold">-</p>
+					</div>
+				</div>
+
+			</div>
+
+		</div>		
+		
+
+
+	</div>
+</div>
+
+
+<!-- Modal structure -->
+<div id="modal-compare">
+	<section>
+		<button data-izimodal-close="" class="icon-close">
+		</button>
+		<div class="focus-green auto-complete-area">
+			<div class="focus-green mb-45 auto-complete-area">
+				<p class="p-20 bold mb-20">비교하고 싶은 기업을 입력해 주세요</p>
+				<input class="input01 mb-0 w-100" id="ent-srch"
+					placeholder="비교하고 싶은 기업을 선택해 주세요">
+				<div id="ent-srch-list"></div>
+			</div>
+		</div>
+		<input type="hidden" id="entNo" />
+
+		<div class="selected-ent">
+			<p class="p-12 bold mb-12">
+				선택된 기업(<span class="selected">0</span>/3)
+			</p>
+			<p class="empty-selected">기업을 선택해 주세요.</p>
+			<div class="selected-ent-list"></div>
+		</div>
+
+		<div class="mt-auto talign-center">
+			<button class="btn btn-sm modalCancel" data-izimodal-close=""
+				data-izimodal-transitionout="comingOut">취소</button>
+			<button class="btn btn-sm bg-sig color-white modalSubmit"
+				data-izimodal-close="" data-izimodal-transitionout="bounceOutDown">확인</button>
+		</div>
+	</section>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<script type="text/javascript" src="/resources/js/func.js"></script>
+	
+<script>
+	
+	let entItems = document.querySelectorAll(".ent-item:not(.active)");
+	
+	let entItemList = document.querySelectorAll(".ent-item");
+	
+	// 모달에서 선택된 기업들 목록
+	let selectedItems = document.querySelectorAll(".selected-ent-list .selected-ent-item");
+	
+	let modalCompare = document.querySelector("#modal-compare");
+	
+	// 총 만족도 전체 row
+	let rates = document.querySelectorAll(".rate > div")
+	console.log(rates)
+	
+	// 전체 통계 값 넣어줄 곳
+	let avgRate = document.querySelectorAll(".avg-rate > p");
+	console.log(avgRate)
+	
+	// 매출액 
+	let sales = document.querySelectorAll(".sales > div");
+	console.log("sales",sales);
+	
+	// 한줄 리뷰 
+	let shorts = document.querySelectorAll(".short-review > div");
+	console.log("shorts",shorts);
+
+	// 장점 
+	let pros = document.querySelectorAll(".pros > div");
+	console.log("pros",pros);
+
+	// 단점 
+	let cons = document.querySelectorAll(".cons > div");
+	console.log("cons",cons);
+
+	// 진행중인 채용공고
+	let recruits = document.querySelectorAll(".recruit > div");
+	console.log("recruits",recruits);
+
+	// 산업군
+	let sectors = document.querySelectorAll(".ent-sector > div");
+	console.log("sectors",sectors);
+	
+	// 직원 수
+	let cnts = document.querySelectorAll(".ent-cnt > div");
+	console.log("cnts",cnts);
+	
+	// 주소
+	let addrs = document.querySelectorAll(".ent-addr > div");
+	console.log("addrs",addrs);
+
+	let chartBox = document.querySelectorAll(".chart-box");
+	let charts = document.querySelectorAll(".avg-rate-chart");
+	console.log("chartBox",chartBox);
+	console.log("charts",charts);
+	let today = new Date();   
+	let year = today.getFullYear();
+	
+	let datas = [];
+	let yearlyRate = [];
+
+	let jsonDatas = ${datas};
+	let jsonYearlyRate = ${yearlyRate};
+	
+	console.log(jsonDatas);
+	console.log(jsonYearlyRate);
+	
+	if(jsonDatas != null){
+		
+		datas.push(jsonDatas);		
+
+		yearlyRate.push(jsonYearlyRate);
+		
+		drawModal();
+		
+		drawEntItem();
+	};
+	
+	console.log('jsonDatas',jsonDatas);
+	
+	console.log("datas", datas);
+	
+	
+	function chkSelectedLength(){
+
+		let selectedList = document.querySelector(".selected-ent-list");
+
+		let selected = document.querySelector(".selected");
+		
+		selected.innerHTML = selectedList.children.length;
+		
+	}
+	
+	function delThis(e){
+		console.log(e.parentElement);
+		let entNo = e.parentElement.children.entNo.value;
+		datas.forEach((item, index)=>{
+			if(item.entNo === entNo){
+				datas.splice(index, 1);
+				yearlyRate.splice(index,1);
+			}
+		})
+		e.parentElement.remove();
+		chkSelectedLength();
+		isEmpty();
+		console.log(datas);
+		console.log(yearlyRate);
+	}
+
+	function isEmpty(){
+		let selectedItem = document.querySelectorAll(".selected-ent-list .selected-ent-item");
+		let emptySelected = document.querySelector(".empty-selected");
+		console.dir(selectedItem.length);
+		if(selectedItem.length >= 1){
+			emptySelected.style.display = "none";
+		}else{
+			emptySelected.style.display = "flex";			
+		}
+		
+	}
+	isEmpty();
+	
+
+	$("#modal-compare").iziModal({
+	    title: '',
+	    subtitle: '',
+	    headerColor: '#88A0B9',
+	    background: null,
+	    theme: '',  // light
+	    icon: null,
+	    iconText: null,
+	    iconColor: '',
+	    rtl: false,
+	    width: 500,
+	    top: null,
+	    bottom: null,
+	    borderBottom: true,
+	    padding: 0,
+	    radius: 3,
+	    zindex: 999,
+	    iframe: false,
+	    iframeHeight: 400,
+	    iframeURL: null,
+	    focusInput: true,
+	    group: '',
+	    loop: false,
+	    arrowKeys: true,
+	    navigateCaption: true,
+	    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+	    history: false,
+	    restoreDefaultContent: false,
+	    autoOpen: 0, // Boolean, Number
+	    bodyOverflow: false,
+	    fullscreen: false,
+	    openFullscreen: false,
+	    closeOnEscape: true,
+	    closeButton: true,
+	    appendTo: 'body', // or false
+	    appendToOverlay: 'body', // or false
+	    overlay: true,
+	    overlayClose: false,
+	    overlayColor: 'rgba(0, 0, 0, 0.4)',
+	    timeout: false,
+	    timeoutProgressbar: false,
+	    pauseOnHover: false,
+	    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+	    transitionIn: 'comingIn',
+	    transitionOut: 'comingOut',
+	    transitionInOverlay: 'fadeIn',
+	    transitionOutOverlay: 'fadeOut',
+	    onFullscreen: function(){},
+	    onResize: function(){},
+	    onOpening: function(){},
+	    onOpened: function(){},
+	    onClosing: function(){},
+	    onClosed: function(){},
+	    afterRender: function(){}
+	});
+	
+	
+	// 기업이 선택되지 않은 칸만 클릭 시 모달 뜸
+	for(let i = 0 ; i < entItemList.length; i++){
+		entItemList[i].addEventListener("click", function(){
+ 			if(!entItemList[i].classList.contains("active")){
+ 				drawModal();
+				$("#modal-compare").iziModal('open');	
+			}
+		})
+	}
+	
+	
+	
+// 	entItemList.on("click", function(){
+// 		let entItems = $(".ent-item:not(.active)");
+// 		console.log("entItems",entItems);
+// 		entItems.on("click", function(){
+// 			alert("zzzz")
+// 			$("#modal-compare").iziModal('open');	
+// 		})
+// 	})
+	
+// 	for(let i = 0; i < entItems.length; i++ ){
+// 		console.log(entItems[i]);
+// 		entItems[i].addEventListener("click", function(){		
+// 			console.log("123");
+// 			$("#modal-compare").iziModal('open');			
+// 		})
+// 	}
+	
+	
+	function debounce(callback, limit = 100) {
+	    let timeout;
+	    return function(...args) {
+	        clearTimeout(timeout)
+	        timeout = setTimeout(() => {
+	            callback.apply(this, args)
+	        }, limit)
+	    }
+	}
+	
+	
+	let entSrch = document.querySelector("#ent-srch");
+	console.log(entSrch);
+	let entSrchList = document.querySelector("#ent-srch-list");
+	console.log(entSrchList);
+	
+	function inpVal(e){
+	
+		console.dir(e.children.entNo.value);
+		
+		entSrch.value = "";
+		
+		let entNo = document.querySelector("#entNo");
+		console.dir(e.children.entNo.value);
+		console.dir(entNo);
+		entNo.value = e.children.entNo.value;
+		
+// 		entSrchList.innerHTML = "";
+		entSrchList.style.display = "none";
+		
+		let data = {
+ 			"entNo" : entNo.value
+		}
+		
+		
+		$.ajax({
+			url : "/enterprise/ajaxGetEntOne",
+			contentType : "application/json; charset=UTF-8",
+			data : JSON.stringify(data),
+			dataType : "json",
+			type : "post",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+			},
+			success : function(res) {
+
+				console.log(datas.length)
+				
+				if(datas.length >= 3){
+					alert("기업 비교는 최대 3개까지 선택 가능합니다.");
+					return;
+				}
+				
+				console.log("res",res);
+				let str = "";
+				
+				str+='<div class="selected-ent-item">';
+                str+='<input name="entNo" type="hidden" value="'+res.entNo+'">    ';
+                str+='<input class="chkbox-sig" onclick="delThis(this)" type="checkbox" checked name="" id="keep-logged">    ';
+                str+='<label for="keep-logged"></label>                                      ';
+                str+='<div class="checked-item">                                '    ;
+                str+='	<div class="ent-logo">                                  '    ;
+                if(res.entLogo == null || res.entLogo == ''){
+	                str+='		<img alt="" src="/resources/images/ent-logo.png">   '    ;
+                }else{
+	                str+='		<img alt="" src="/resources/upload/'+res.entLogo+'">   '    ;                	
+                }
+                str+='	</div>                                                  '    ;
+                str+='	<div>                                                   '    ;
+                str+='		<p class="p-16 bold mb-7">'+res.entNm+'</p>        '    ;
+                str+='		<p class="txt-gray p-12">                           '    ;
+                str+='			<span class="dot-div-span">'+res.entSector+'</span>                          '    ;
+                str+='			<span class="dot-div-span">'+res.entCeonm+'</span>                             '    ;
+                str+='		</p>                                                '    ;
+                str+='	</div>                                                  '    ;
+                str+='</div>                                                    '    ;
+
+
+				let selectedList = document.querySelector(".selected-ent-list");
+				console.log("222",selectedList);
+				
+
+                selectedList.insertAdjacentHTML("beforeend", str);
+				console.log(selectedList);
+
+				chkSelectedLength();
+				
+				isEmpty();
+				
+				datas.push(res);
+				
+				console.log("datas",datas);
+				console.log("yearlyRate",yearlyRate);
+               	
+			}
+			
+		})
+		
+		$.ajax({
+			url : "/enterprise/ajaxGetEntOneYearly",
+			contentType : "application/json; charset=UTF-8",
+			data : JSON.stringify(data),
+			dataType : "json",
+			type : "post",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+			},
+			success : function(res) {
+				console.log("res!!!",res);
+				
+				yearlyRate.push(res);
+				
+			}
+		
+		})
+		
+		
+	}
+	
+	entSrch.addEventListener("keyup", debounce(function(){
+				
+		let data = {
+ 				"entNm" : entSrch.value
+		}
+		
+		console.log(data);
+
+		$.ajax({
+			url : "/boardEntReview/ajaxGetEnt",
+			contentType : "application/json; charset=UTF-8",
+			data : JSON.stringify(data),
+			dataType : "json",
+			type : "post",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+			},
+			success : function(res) {
+				let list = document.querySelector("#ent-srch-list");
+				console.log(res);
+				
+				if(entSrch.value == "" || entSrch.value == null){
+					list.style.display = "none";
+				}else{
+					list.style.display = "block";					
+					console.log(res);
+					
+					if(res.length == 0){
+						list.innerHTML = `<p class="bold p-25" style="padding:15px 8px;">해당 검색 결과가 없습니다</p>`; 
+						return;
+					}
+					
+					let str = "";
+					
+					for(let i = 0 ; i < res.length; i++){
+						
+						let dis = true;
+						
+						let entNo = res[i].entNo;
+						
+						str += '<div class="ent-srch-list-item';
+						datas.forEach((item, index)=>{
+							if(item.entNo === entNo){
+								str += ' disabled"> ';
+								dis = false;
+							}
+						})
+						if(dis){							
+							str +='" onclick="inpVal(this)">';
+						}
+						str += '<input type="hidden" value="'+res[i].entNo+'">';
+		                if(res[i].entLogo == null || res[i].entLogo == ''){
+			                str+='		<img alt="" src="/resources/images/ent-logo.png">   '    ;
+		                }else{
+			                str+='		<img alt="" src="/resources/upload/'+res[i].entLogo+'">   '    ;                	
+		                }
+						str += '	<div>';
+						str += '		<p class="ent-srch-list-ent-name">'+res[i].entNm+'</p>';
+						str += '		<p class="ent-srch-list-ent-cont">';
+						str += '			<span class="ent-sector dot-div-span">'+res[i].comCodeInfoVOList[0].comCdNm+'</span>';
+						str += '			<span class="ent-ceoNm dot-div-span">'+res[i].entCeonm+'</span>';
+						str += '		</p>';
+						str += '	</div>';
+						str += '	<input type="hidden" name="entNo" value="'+res[i].entNo+'" />';
+						str += '</div>';
+					};
+					
+					list.innerHTML = str;
+					
+					
+					isEmpty();
+					
+				}
+				
+			}
+		})
+	}, 500))
+	
+	
+	
+	// 체크박스 관련 js
+	let chkboxSig = document.querySelector(".chkbox-sig");
+	let chkboxTxt = document.querySelector(".chkbox-txt");
+
+	$(document).on("change", chkboxSig, function (e) {
+	    console.dir(e.target.checked);
+	})
+	
+    
+	let modalCancel = document.querySelector(".modalCancel");
+	
+	modalCancel.addEventListener("click", function(){
+
+		 resetModal();
+		 
+		 datas = [];
+
+		 console.log(datas);
+		 console.log(yearlyRate);
+		 
+		 drawModal();
+		 
+		 drawEntItem();
+		
+	})
+	
+	let modalSubmit = document.querySelector(".modalSubmit");
+	
+	modalSubmit.addEventListener("click", function(){
+		
+		resetModal();
+		console.log('datas',datas);
+		console.log('yearlyRate',yearlyRate);
+		
+		drawEntItem();
+		
+	})
+	
+	let btnClose = document.querySelector(".icon-close");
+	
+	btnClose.addEventListener("click", function(){
+
+		resetModal();
+	
+		drawModal();
+		
+		
+		
+		
+		 
+	})
+	
+	function resetModal(e){
+		
+
+		let list = document.querySelector(".selected-ent-list");
+		
+		let emptySelected = document.querySelector(".empty-selected");
+		
+		list.innerHTML = "";
+		
+		console.log("list", list)
+		
+		emptySelected.style.display = "flex";
+		
+		chkSelectedLength();
+		
+		entSrchList.innerHTML = '';
+		entSrchList.style.display = "none";
+		
+		
+	}
+	
+	function drawModal(){
+
+
+		let selectedList = document.querySelector(".selected-ent-list");
+		
+		selectedList.innerHTML = "";
+		
+		let selected = document.querySelector(".selected");
+		
+		selected.innerHTML = datas.length;
+		
+		for(let i = 0; i < datas.length; i++){
+			let str = "";
+			
+			str+='<div class="selected-ent-item">';
+	        str+='<input name="entNo" type="hidden" value="'+datas[i].entNo+'">    ';
+	        str+='<input class="chkbox-sig" onclick="delThis(this)" type="checkbox" checked name="" id="keep-logged">    ';
+	        str+='<label for="keep-logged"></label>                                      ';
+	        str+='<div class="checked-item">                                '    ;
+	        str+='	<div class="ent-logo">                                  '    ;
+	        if(datas[i].entLogo == null || datas[i].entLogo == ''){
+	            str+='		<img alt="" src="/resources/images/ent-logo.png">   '    ;
+	        }else{
+	            str+='		<img alt="" src="/resources/upload/'+datas[i].entLogo+'">   '    ;                	
+	        }
+	        str+='	</div>                                                  '    ;
+	        str+='	<div>                                                   '    ;
+	        str+='		<p class="p-16 bold mb-7">'+datas[i].entNm+'</p>        '    ;
+	        str+='		<p class="txt-gray p-12">                           '    ;
+	        str+='			<span class="dot-div-span">'+datas[i].entSector+'</span>                          '    ;
+	        str+='			<span class="dot-div-span">'+datas[i].entCeonm+'</span>                             '    ;
+	        str+='		</p>                                                '    ;
+	        str+='	</div>                                                  '    ;
+	        str+='</div>  ';             
+	        
+			console.log("222",selectedList);
+			
+	
+	        selectedList.insertAdjacentHTML("beforeend", str);
+			console.log(selectedList);
+	
+			chkSelectedLength();
+			
+			console.log("datas",datas);	
+			console.log("yearlyRate",yearlyRate);
+			
+			isEmpty();
+		}
+		
+		
+	}
+	
+	function resetEntItem(e, i){
+		console.log(e);
+		console.log(i);
+		e.stopPropagation();
+		
+		console.log(e.target);
+		
+		let entItem = e.target.parentElement;
+		console.dir(entItem);
+		
+		console.dir(e.target)
+		let entNo = e.target.nextElementSibling.value;
+		console.dir(entNo);
+
+		datas.forEach((item, index)=>{
+			if(item.entNo === entNo){
+				datas.splice(index, 1);
+				yearlyRate.splice(index,1);
+			}
+		})
+		
+		console.log("datas", datas);
+		console.log("yearlyRate",yearlyRate);
+		
+		drawEntItem();
+		
+	}
+	
+	
+	function drawEntItem(){
+		
+		for(let i = 0 ; i < datas.length; i++){
+			
+			let str = '';
+
+			entItemList[i].classList.add("active");
+
+			str += '<div class="ent-link">';
+			str += '	<a class="hover_underline" href="/enterprise/'+ datas[i].entNo +'/info">'
+			str += '		<div class="active-logo">';
+			console.log("logo", datas[i].entLogo);
+			if(datas[i].entLogo == '' || datas[i].entLogo == null){
+				str += '		<img alt="" src="/resources/images/ent-logo.png">';
+			} else{
+				str += '		<img alt="" src="/resources/upload/'+datas[i].entLogo+'">';				
+			}
+			str += '		</div>'; 
+			str += '		<p class="p-18 bold">'+datas[i].entNm+'</p>';
+			str += '	</a>';	
+			str += '</div>';
+			str += '<button onclick="resetEntItem(event, this)" class="btn-close-ent" type="button"></button>';
+			str += '<input type="hidden" name="entNo" value="'+datas[i].entNo+'" >';
+			
+			entItemList[i].innerHTML = str;
+			
+			
+
+			let welfare = document.querySelector(".welfare span");
+			let balance = document.querySelector(".balance span");
+			let culture = document.querySelector(".culture span");
+			let chances = document.querySelector(".chances span");
+			let manager = document.querySelector(".manager span");
+			
+			// disabled-col 클래스 제거
+			rates[i].classList.remove("disabled-col");
+			// 전체 통계값 소수점 1자리까지만 표출
+			avgRate[i].innerHTML = datas[i].entAvgRate.toFixed(1);
+			
+			let keyData = [];
+			let valueData = [];
+			
+			console.log(yearlyRate[i]);
+			
+			yearlyRate[i].forEach((el, index, array) => {
+				console.log(el);
+				
+				// 올해 ~ 3년 전(최대 4년) 데이터만 들어감
+				if((year-3) <= el.regYear && el.regYear <= year){					
+					console.log("들어감");
+					keyData.push(el.regYear);
+					valueData.push(el.entAvgRate.toFixed(1))
+				}else{					
+					console.log("안 들어감");
+				}
+				
+				
+			});
+			
+			console.log("keyData",keyData);
+			console.log("valueData",valueData);
+			
+			console.log(charts[i]);
+			console.log(chartBox[i]);
+			
+			charts[i].remove()
+			chartBox[i].insertAdjacentHTML('beforeend','<canvas class="avg-rate-chart" width="250" height="150"></canvas>');
+			
+			console.log(chartBox[i]);
+			
+			charts = document.querySelectorAll(".avg-rate-chart");
+			
+			let ctx = charts[i].getContext("2d");
+			
+			let chart = new Chart(ctx, {
+			    type: 'line',
+			    data: {
+			        labels: keyData,
+					datasets: [{ 
+						    data: valueData,
+				            borderWidth: 2,
+				            borderColor: "#00c362",
+				            pointBackgroundColor : "#00c362",
+				            pointBorderWidth: 2
+					}]
+				},
+			    options: {
+					responsive: false,
+					plugins:{
+					     legend: {
+					         display: false
+					     }
+					},
+					title: {
+					  display: false,
+					},
+					scales: {
+					
+						y :  {
+							min:1,
+							max:5,
+							axis: 'y',
+							ticks : {
+								stepSize: 1
+							},
+						},
+					  
+					}
+			    }
+			});
+			
+			// 각 세부 평점들 넣어주기
+			console.dir(rates[i])
+			rates[i].children[4].children[0].children[1].children[1].innerHTML = datas[i].sumEntRevWelfare.toFixed(1);
+			rates[i].children[4].children[1].children[1].children[1].innerHTML = datas[i].sumEntRevBalance.toFixed(1);
+			rates[i].children[4].children[2].children[1].children[1].innerHTML = datas[i].sumEntRevCulture.toFixed(1);
+			rates[i].children[4].children[3].children[1].children[1].innerHTML = datas[i].sumEntRevChances.toFixed(1);
+			rates[i].children[4].children[4].children[1].children[1].innerHTML = datas[i].sumEntRevManager.toFixed(1);
+			
+			console.log("zz",sales[i])
+
+			// disabled-col 클래스 제거
+			sales[i].classList.remove("disabled-col");
+			// 매출액 넣어주기
+			sales[i].children[0].children[0].innerText = formatNumber(datas[i].entSales); 
+			
+			
+			// 한줄 리뷰 넣어주기 (공감순이 높은 순서대로 2개까지만)
+			shorts[i].classList.remove("disabled-col");
+			for(let j = 0; j < 2; j++){
+				let str ='';
+// 				console.log("j",j)
+// 				console.log(datas[i].boardEntReviewVOList.length);
+// 				console.log(datas[i].boardEntReviewVOList.length < j);
+				
+				if(datas[i].boardEntReviewVOList.length <= j){
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+					if(j == 0){
+						shorts[i].children[0].innerHTML = str;
+					}else{
+						shorts[i].children[0].insertAdjacentHTML('beforeend',str);					
+					}
+					break;
+				}
+				if(datas[i].boardEntReviewVOList[j].entRevNo != null){					
+					str+='<div class="review-item">';
+					str+='<div class="review-profile">                           ';
+					str+='</div>                                                ';
+					str+='<p class="p-gray p-14 mt-3">                          ';
+					str+='	<span class="dot-div-span">                         ';
+					let date = new Date(datas[i].boardEntReviewVOList[j].regDate);
+					let year = date.getFullYear();
+					let month = CF_leftPad(date.getMonth() + 1);
+					str+='		'+year+'.'+month+'';
+					str+='	</span>                                             ';
+					str+='	<span class="dot-div-span">';
+					str+='		'+datas[i].boardEntReviewVOList[j].comCodeVO.comCdNm+'';
+					str+='	</span>';
+					str+='	<span class="dot-div-span">';
+					if(datas[i].boardEntReviewVOList[j].entRevWorkYn == 'Y'){
+						str +=	'현직원';								
+					}else{
+						str +=	'전직원';								
+					}
+					str+='	</span>              ';
+					str+='</p>                                                  ';
+					str+='<p class="p-17 italic mt-9 bold review-cont">                                 ';
+					str+= datas[i].boardEntReviewVOList[j].entRevShortReview;
+					str+='</p>                                                  ';
+					str+='</div>';
+				}else{
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+				}
+				
+				console.log("str",str);
+				
+				if(j == 0){
+					shorts[i].children[0].innerHTML = str;
+				}else{
+					shorts[i].children[0].insertAdjacentHTML('beforeend',str);					
+				}
+				
+				
+			}
+			
+			// 장점 넣어주기 (공감순이 높은 순서대로 2개까지만)
+			pros[i].classList.remove("disabled-col");
+			for(let j = 0; j < 2; j++){
+				let str ='';
+// 				console.log("j",j)
+// 				console.log(datas[i].boardEntReviewVOList.length);
+// 				console.log(datas[i].boardEntReviewVOList.length < j);
+				
+				if(datas[i].boardEntReviewVOList.length <= j){
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+					if(j == 0){
+						pros[i].children[0].innerHTML = str;
+					}else{
+						pros[i].children[0].insertAdjacentHTML('beforeend',str);					
+					}
+					break;
+				}
+				if(datas[i].boardEntReviewVOList[j].entRevNo != null){					
+					str+='<div class="review-item">';
+					str+='<div class="review-profile">                           ';
+					str+='</div>                                                ';
+					str+='<p class="p-gray p-14 mt-3">                          ';
+					str+='	<span class="dot-div-span">                         ';
+					let date = new Date(datas[i].boardEntReviewVOList[j].regDate);
+					let year = date.getFullYear();
+					let month = CF_leftPad(date.getMonth() + 1);
+					str+='		'+year+'.'+month+'';
+					str+='	</span>                                             ';
+					str+='	<span class="dot-div-span">';
+					str+='		'+datas[i].boardEntReviewVOList[j].comCodeVO.comCdNm+'';
+					str+='	</span>';
+					str+='	<span class="dot-div-span">';
+					if(datas[i].boardEntReviewVOList[j].entRevWorkYn == 'Y'){
+						str +=	'현직원';								
+					}else{
+						str +=	'전직원';								
+					}
+					str+='	</span>              ';
+					str+='</p>                                                  ';
+					str+='<p class="p-15 mt-9 review-cont">                                 ';
+					str+= datas[i].boardEntReviewVOList[j].entRevPros;
+					str+='</p>                                                  ';
+					str+='</div>';
+				}else{
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+				}
+				
+				console.log("str",str);
+				
+				if(j == 0){
+					pros[i].children[0].innerHTML = str;
+				}else{
+					pros[i].children[0].insertAdjacentHTML('beforeend',str);					
+				}
+				
+				
+			}
+			
+			// 단점 넣어주기 (공감순이 높은 순서대로 2개까지만)
+			cons[i].classList.remove("disabled-col");
+			for(let j = 0; j < 2; j++){
+				let str ='';
+// 				console.log("j",j)
+// 				console.log(datas[i].boardEntReviewVOList.length);
+// 				console.log(datas[i].boardEntReviewVOList.length < j);
+				
+				if(datas[i].boardEntReviewVOList.length <= j){
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+					if(j == 0){
+						cons[i].children[0].innerHTML = str;
+					}else{
+						cons[i].children[0].insertAdjacentHTML('beforeend',str);					
+					}
+					break;
+				}
+				if(datas[i].boardEntReviewVOList[j].entRevNo != null){					
+					str+='<div class="review-item">';
+					str+='<div class="review-profile">                           ';
+					str+='</div>                                                ';
+					str+='<p class="p-gray p-14 mt-3">                          ';
+					str+='	<span class="dot-div-span">                         ';
+					let date = new Date(datas[i].boardEntReviewVOList[j].regDate);
+					let year = date.getFullYear();
+					let month = CF_leftPad(date.getMonth() + 1);
+					str+='		'+year+'.'+month+'';
+					str+='	</span>                                             ';
+					str+='	<span class="dot-div-span">';
+					str+='		'+datas[i].boardEntReviewVOList[j].comCodeVO.comCdNm+'';
+					str+='	</span>';
+					str+='	<span class="dot-div-span">';
+					if(datas[i].boardEntReviewVOList[j].entRevWorkYn == 'Y'){
+						str +=	'현직원';								
+					}else{
+						str +=	'전직원';								
+					}
+					str+='	</span>              ';
+					str+='</p>                                                  ';
+					str+='<p class="p-15 mt-9 review-cont">                                 ';
+					str+= datas[i].boardEntReviewVOList[j].entRevCons;
+					str+='</p>                                                  ';
+					str+='</div>';
+				}else{
+					str+='<div class="review-item">';
+					str+='<p class="p-14 bold">해당 기업의 리뷰가 존재하지 않습니다.</p>';
+					str+='</div>';
+				}
+				
+				console.log("str",str);
+				
+				if(j == 0){
+					cons[i].children[0].innerHTML = str;
+				}else{
+					cons[i].children[0].insertAdjacentHTML('beforeend',str);					
+				}
+				
+				
+			}
+			
+			// 진행중인 채용 공고 2개만 표출
+			recruits[i].classList.remove("disabled-col");
+			for(let j = 0; j < 2; j++){
+				let str ='';
+				console.log("j",j)
+				console.log(datas[i].recruitVOList.length);
+				console.log(datas[i].recruitVOList.length <= j);
+				
+				if(datas[i].recruitVOList.length <= j){
+					str+='<div class="recruit-item">';
+					str+='<p class="rec-empty">진행중인 채용 공고가 없습니다.</p>';
+					str+='</div>';
+					if(j == 0){
+						recruits[i].children[0].innerHTML = str;
+					}else{
+						recruits[i].children[0].insertAdjacentHTML('beforeend',str);					
+					}
+					break;
+				}
+				if(datas[i].recruitVOList[j].recruitNo != null){					
+
+					str+='<div class="recruit-item">';
+					str+='	<a href="/recruit/'+ datas[i].recruitVOList[j].recruitNo +'/detail" class="recruit-link">';
+					str+='		<p class="rec-period">';
+					if(datas[i].recruitVOList[j].remainingDate == null){
+						str+='	<span class="txt-sig bold">상시채용</span>';
+					}else{
+						str+='	<span class="txt-orange bold">D-'+datas[i].recruitVOList[j].remainingDate+'</span>'
+					}
+					str+='		</p>';
+					str+='		<p class="rec-tit">';
+					str+='		'+ datas[i].recruitVOList[j].recruitPart  +''; 
+					str+='		</p>';
+					str+='		<p class="rec-skills">';
+					let skills = datas[i].recruitVOList[j].recruitSkill.replaceAll("|", ", ");
+					str+=		skills;
+					str+='		</p>';
+					str+='		<p class="rec-workType">';
+					if(datas[i].recruitVOList[j].recruitWorkType == "IWS01001"){
+						str+='비정규직';
+					}else if(datas[i].recruitVOList[j].recruitWorkType == "IWS01002"){
+						str+='정규직'		;				
+					}else if(datas[i].recruitVOList[j].recruitWorkType == "IWS01003"){
+						str+='프리랜서'	;					
+					}else if(datas[i].recruitVOList[j].recruitWorkType == "IWS01004"){
+						str+='파견직'		;				
+					}else if(datas[i].recruitVOList[j].recruitWorkType == "IWS01005"){
+						str+='교육생/연수생'	;					
+					}else if(datas[i].recruitVOList[j].recruitWorkType == "IWS01006"){
+						str+='인턴직'		;				
+					}
+					str+='		</p>';
+					str+='	</a>';
+					str+='</div>';
+					
+				}else{
+					str+='<div class="recruit-item">';
+					str+='<p class="rec-empty">진행중인 채용 공고가 없습니다.</p>';
+					str+='</div>';
+				}
+				
+				console.log("str",str);
+				
+				if(j == 0){
+					recruits[i].children[0].innerHTML = str;
+				}else{
+					recruits[i].children[0].insertAdjacentHTML('beforeend',str);	
+					recruits[i].children[0].insertAdjacentHTML('beforeend','<p class="rec-more"><a href="/enterprise/'+datas[i].entNo+'/recruit">더보기</a></p>')
+				}
+				
+				
+			}
+			
+			// 산업군 넣어주기
+			sectors[i].classList.remove("disabled-col");
+			let sector = '';
+			if(datas[i].entSector == 'MWJ01000'){
+				sector = '개발';
+			}else if(datas[i].entSector == 'MWJ01001'){
+				sector = '경영/비즈니스';
+			}else if(datas[i].entSector == 'MWJ01002'){
+				sector = '마케팅/광고';
+			}else if(datas[i].entSector == 'MWJ01003'){
+				sector = '디자인';
+			}else if(datas[i].entSector == 'MWJ01004'){
+				sector = '영업';
+			}else if(datas[i].entSector == 'MWJ01005'){
+				sector = '고객 서비스';
+			}else if(datas[i].entSector == 'MWJ01006'){
+				sector = '미디어 콘텐츠';
+			}else if(datas[i].entSector == 'MWJ01007'){
+				sector = '엔지니어링/설계';
+			}else if(datas[i].entSector == 'MWJ01008'){
+				sector = 'HR';
+			}else if(datas[i].entSector == 'MWJ01009'){
+				sector = '게임/제작';
+			}else if(datas[i].entSector == 'MWJ01010'){
+				sector = '금융';
+			}else if(datas[i].entSector == 'MWJ01011'){
+				sector = '제조/생산';
+			}else if(datas[i].entSector == 'MWJ01012'){
+				sector = '의료/제약/바이오';
+			}else if(datas[i].entSector == 'MWJ01013'){
+				sector = '교육';
+			}else if(datas[i].entSector == 'MWJ01014'){
+				sector = '물류/무역';
+			}else if(datas[i].entSector == 'MWJ01015'){
+				sector = '법률/법집행기관';
+			}else if(datas[i].entSector == 'MWJ01016'){
+				sector = '식/음료';
+			}else if(datas[i].entSector == 'MWJ01017'){
+				sector = '건설/시설';
+			}else if(datas[i].entSector == 'MWJ01018'){
+				sector = '공공/복지';
+			}else{
+				sector = datas[i].entSector;
+			}
+			sectors[i].children[0].children[0].innerText = sector;
+
+			// 직원수 넣어주기
+			cnts[i].classList.remove("disabled-col");
+			let entCnt = '';
+			entCnt = insertNumCommas(datas[i].entEmpcnt);
+			cnts[i].children[0].children[0].innerText = entCnt;
+			
+			// 주소 넣어주기
+			addrs[i].classList.remove("disabled-col");
+			let addr = datas[i].entAddr.split(" ");
+			addr = addr[0] +' '+ addr[1] +' '+ addr[2];
+			addrs[i].children[0].children[0].innerText = addr;
+			
+			
+		}
+		
+		for(let i = datas.length; i < 3; i++){
+			
+			charts = document.querySelectorAll(".avg-rate-chart");
+			
+			let str = '';
+
+			entItemList[i].classList.remove("active");
+
+			str +='	<div><i class="fa-solid fa-plus" style="color:#00c362"></i></div>    ';
+			str +='	<p class="p-17">비교기업 추가</p> ';        
+
+			entItemList[i].innerHTML = str;
+			
+
+			// disabled-col 클래스 생성
+			rates[i].classList.add("disabled-col");
+
+			// 전체 통계 초기화
+			avgRate[i].innerHTML = '0.0';
+
+			// 차트 삭제 후 재생성
+			charts[i].remove();
+			chartBox[i].insertAdjacentHTML('beforeend','<canvas class="avg-rate-chart" width="250" height="150"></canvas>');
+
+			console.dir(rates[i])
+			rates[i].children[4].children[0].children[1].children[1].innerHTML = '0.0';
+			rates[i].children[4].children[1].children[1].children[1].innerHTML = '0.0';
+			rates[i].children[4].children[2].children[1].children[1].innerHTML = '0.0';
+			rates[i].children[4].children[3].children[1].children[1].innerHTML = '0.0';
+			rates[i].children[4].children[4].children[1].children[1].innerHTML = '0.0';
+			
+			// 매출액 초기화
+			sales[i].classList.add("disabled-col");
+			sales[i].children[0].children[0].innerText = '0'; 
+
+			// 간단 리뷰 초기화
+			shorts[i].classList.add("disabled-col");
+			shorts[i].children[0].innerHTML = `<div class="review-item">
+													<div class="review-profile">
+													</div>                                                
+													<p class="p-gray p-14 mt-3">            
+														-              	
+													</p>                                                  
+													<p class="p-15 mt-9 bold">-</p>
+												</div>`;
+
+
+			// 장점 초기화
+			pros[i].classList.add("disabled-col");
+			pros[i].children[0].innerHTML = `<div class="review-item">
+													<div class="review-profile">
+													</div>                                                
+													<p class="p-gray p-14 mt-3">            
+														-              	
+													</p>                                                  
+													<p class="p-15 mt-9 bold">-</p>
+												</div>`;
+
+			// 단점 초기화
+			cons[i].classList.add("disabled-col");
+			cons[i].children[0].innerHTML = `<div class="review-item">
+													<div class="review-profile">
+													</div>                                                
+													<p class="p-gray p-14 mt-3">            
+														-              	
+													</p>                                                  
+													<p class="p-15 mt-9 bold">-</p>
+												</div>`;
+												
+			// 진행중인 채용 초기화
+			recruits[i].classList.add("disabled-col");
+			recruits[i].children[0].innerHTML = `<div class="recruit-item">
+													<p class="rec-empty">-</p>
+												</div>`;
+
+			// 산업군 초기화
+			sectors[i].classList.add("disabled-col");
+			sectors[i].children[0].children[0].innerHTML = '-';
+
+			// 직원 수 초기화
+			cnts[i].classList.add("disabled-col");
+			cnts[i].children[0].children[0].innerText = '-';
+			
+			// 주소 초기화
+			addrs[i].classList.add("disabled-col");
+			addrs[i].children[0].children[0].innerText = '-';
+			
+			
+		}
+		
+		
+	}
+	
+	
+	
+
+</script>

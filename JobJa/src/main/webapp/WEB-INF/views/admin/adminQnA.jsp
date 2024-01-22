@@ -1,0 +1,400 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<link rel="stylesheet" href="/resources/css/admin.css">
+<!-- Favicons -->
+<link href="/resources/assets/img/favicon.png" rel="icon">
+<link href="/resources/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<!-- <link href="https://fonts.gstatic.com" rel="preconnect"> -->
+<!-- <link -->
+<!-- 	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" -->
+<!-- 	rel="stylesheet"> -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Vendor CSS Files -->
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="/resources/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/resources/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/resources/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/resources/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/resources/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<style>
+.mypage-aside-con{font-family: 'Noto Sans KR', sans-serif;}
+.aside-name{padding-top:34px;}\
+.mem-ul{display:flex; align-items:center;}
+table .modaltable {
+	border-collapse: collapse;
+}
+
+.thth ,.tdtd {
+	border: 1px solid black;
+	padding: 8px;
+	text-align: left;
+}
+
+.thth{
+	background-color: #f2f2f2;
+	
+}
+
+.naesajin {
+  max-width: 150px;
+  max-height: 150px;
+  display: block;
+  margin: 0 auto; /* 수평 가운데 정렬을 위해 추가 */
+}
+
+.modal-content {
+	padding: 20px;
+	
+}
+
+.infomation {
+    font-weight: bold; /* 진하게 */
+    font-size: 20px; /* 크기 조절 */
+}
+/* 원 모양 프로필 사진 스타일 */
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-primary {
+   --bs-border-opacity: 1; 
+    border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;
+}
+
+.modaltable {
+    margin-top: 20px; /* .modaltable 위쪽 여백 추가 */
+}
+
+#closeModal{
+	margin-top: 7px;
+}
+.modal-body{
+	text-align: center;
+}
+.warning-icon {
+    text-align: center;
+    display: flex; /* Flexbox를 사용하여 수직, 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    background-color: mistyrose;
+    border-radius: 50%;
+    width: 40px; /* 원의 지름으로 크기 조정 */
+    height: 40px; /* 원의 지름으로 크기 조정 */
+    margin-left: 45%;
+}
+
+.warning-icon i {
+    color: red;
+    font-size: 20px;
+    margin-top: -3px; /* 아이콘 위치 조정 */
+}
+
+.card-tools{
+	width: 100%;
+	font-size: 20px;
+}
+
+.serchbox {
+    display: flex;
+    align-items: center;
+}
+
+.serch-input {
+    margin-right: 10px; /* 원하는 간격으로 조절 */
+}
+
+.serch button {
+    margin-left: auto; /* 나머지 공간을 모두 차지하여 오른쪽에 정렬 */
+    height: 35px;
+    border-radius: 15px; /* 버튼을 더 둥글게 만들기 */
+}
+
+ .sub-title-area {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin: 20px 50px -16px 50px;
+  }
+
+  .body-sub-title {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    padding-inline-start: 32px;
+    gap: 16px;
+  }
+
+  .card-title {
+    font-size: 24px;
+   }
+   
+  .questions{
+  	margin-left: 22%;
+  }
+  
+  .gogogo{
+  	margin-left: 70%;
+  }
+  
+  .save-buttons{
+	    margin-left: 20px;
+	    margin-right: 10px;
+	    background-color: #329632;
+	    color: white;
+	    border-radius: 5px;
+	    padding: 5px;
+	}
+  
+  .note{
+  	margin-left: 15px;
+  }
+  
+  .naemo{
+  	margin-right: 20px;
+  }
+  
+  .cancel-buttonz{
+  	margin-left: 80px;
+	background-color: #EB3232;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    width: 70px;
+  }
+  
+  .gogogos{
+      margin-left: 60%;
+  }
+  
+  .pagez {
+	display: flex;
+    justify-content: center;
+    margin: 32px 0px;
+    margin-left: 115px;
+}
+
+.pagez  li.is_active{
+  font-weight: bold;
+  border-bottom: 3px solid #2ecc71;
+}
+.pagez .pagination a{
+  display: inline-block;
+  color: #222;
+}
+.pagez .pagination ul{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  display:flex;
+  justify-content: center;
+}
+.pagez.pagination{
+  padding: 30px 0;
+}
+
+.pagez .paginate_button {
+   margin:0 15px;
+}
+
+.pagez  .disabled {
+    pointer-events : none;
+    cursor:default;
+}
+
+.disabled>.page-link {
+	background-color: transparent !important;
+	border-color: transparent !important;
+}
+
+.page-link {
+	border-color: transparent !important;
+}
+
+.btn-free{
+	width: 60px;
+}
+
+.selectArea{
+	margin-left: 30px;
+}
+.font{
+color: #959595;
+}  
+	</style>
+
+<div class="mypage-body-con">
+
+	<div class="body-sub-con">	
+		<h1 class="admin-h1">취업 Q&A</h1>
+		<form:form modelAttribute="blackListVO" action="/admin/adminBlackListPage" method="post">
+			
+			<div class="card-tools mb-7" style="display: flex; justify-content: space-between;">
+                  
+<!-- 				<div class="serchbox ml-auto"> -->
+<!-- 	                <input class="serch-input" placeholder="ID를 검색해주세요." type="text" name="memId" id="" value=""><button type="submit" class="btn btn-sm ml-auto btn-secondary serch">검색</button> -->
+<!-- 	            </div> -->
+			</div>	
+		</form:form>
+    	<div class="listType flex align-center">
+    	 	<span>총 <span class="bold">${boardQNATotal}</span> 건</span>
+    	 	<div class="ml-auto">
+	            <a href="/admin/adminBoardQnA" id="registration" >등록일순</a>
+	            <a href="/admin/adminBoardQnA?sort=cnt"  id="cnt">조회수순</a>
+	            <a href="/admin/adminBoardQnA?sort=like" id="like">공감수순</a>
+    	 	</div>
+        </div>	
+			
+			
+			<div class="card-body table-responsive p-0">
+				<table class="table table1 table-valign-middle">
+					<thead>
+						<tr>
+							<th style="width: 10%;">게시물ID</th>
+							<th style="width: 10%;">작성자ID</th>
+							<th style="width: 15%;">게시물 제목</th>
+							<th style="width: 10%;">게시물 내용</th>
+							<th style="width: 14%;">작성일시</th>
+							<th style="width: 14%;">수정일시</th>
+							<th style="width: 8%;">조회수</th>
+							<th style="width: 8%;">공감수</th>
+							<th style="width: auto;">비고</th>
+						</tr>
+					</thead>
+					<tbody>
+
+						<c:forEach var="boardQNAVO" items="${boardQNAVOList}" varStatus="stat">
+							<tr>
+								<td><span>${boardQNAVO.boardId}</span></td>
+								<td><span>${boardQNAVO.memId}</span></td>
+								<td><span>${boardQNAVO.boardTitle}</span></td>
+								<c:choose>
+									<c:when test= "${boardQNAVO.boardCntnt != null}">
+										<td><a href="/boardQNA/detail?boardId=${boardQNAVO.boardId}">내용보기</a></td>
+									</c:when>
+								</c:choose>
+								<td><span><fmt:formatDate pattern="yyyy년 MM월  dd일" value="${boardQNAVO.boardWritingDt}"/></span></td>
+								<td><span><fmt:formatDate pattern="yyyy년 MM월  dd일" value="${boardQNAVO.boardUpdtDt}"/></span></td>
+								<td><span>${boardQNAVO.boardCnt}</span></td>
+								<td><span>${boardQNAVO.boardLike}</span></td>
+								<td>
+								
+								<input type="hidden" class="bltNo" value="${boardQNAVO.boardCnt}" />
+								<input type="hidden" class="bltNo" value="${boardQNAVO.boardId}" />
+								<button type="button" class="detailGo btn-sm btn btn-danger btn-free" id="btn-free">삭제</button>
+								<input type="hidden" class="memberId" value="${boardQNAVO.boardLike}" />
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				<div class="pagez">${info.getPagingArea()}</div>
+			</div>
+		</div>
+	</div>
+	
+	<sec:csrfInput />
+
+	<!-- Vendor JS Files -->
+	<script src="/resources/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/resources/vendor/chart.js/chart.umd.js"></script>
+	<script src="/resources/vendor/echarts/echarts.min.js"></script>
+	<script src="/resources/vendor/quill/quill.min.js"></script>
+	<script src="/resources/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/resources/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/resources/vendor/php-email-form/validate.js"></script>
+	<!-- sweetalert -->
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<!-- Template Main JS File -->
+	<script src="/resources/js/main.js"></script>
+
+	<script src="/resources/js/admin.js"></script>
+	<script>
+	
+	function handleAndAnother(sortType) {
+	  
+	    
+	    if (sortType === 'cnt') {
+	        window.location.href = '/admin/qnaCnt?sort=cnt';
+	    } else if (sortType === 'like') {
+	        window.location.href = '/admin/qnaLike?sort=like';
+	    }else{
+	    	console.log(encodeURIComponent(sortType));
+	    	 window.location.href = '/admin/adminQnA';
+	    }
+	}
+    $(".btn-free").on("click", function(e){
+    	var boardId = e.target.previousElementSibling.value; 
+    	
+    	console.log("boardId",boardId);
+        
+    	Swal.fire({
+            title: 'QnA를 삭제하시겠습니까?',
+            text:  '삭제하면 복구할수 없습니다',
+            icon: 'question',
+            showCancelButton: true, // cancel버튼 보이기
+            confirmButtonColor: '#0ABAB5',
+            cancelButtonColor: '#FF4040',
+            confirmButtonText: '확인',
+            cancelButtonText: '취소',
+        }).then(result => {
+           // 확인
+            if (result.isConfirmed) { 
+            	 Swal.fire({
+                     title: '삭제가 완료되었습니다',
+                     icon: 'success',
+                     confirmButtonColor: '#0ABAB5',
+                     confirmButtonText: '확인'
+                  }).then(result => {
+                     let data = {
+                           "boardId" : boardId,
+                     };
+                   		
+                     $.ajax({
+                         url:"/admin/deleteQnA",
+                         contentType:"application/json;charset=utf-8",
+                         data: JSON.stringify(data),
+                         type:"post",
+                         dataType:"json",
+                         beforeSend:function(xhr){
+                        	 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+                         },
+                         success: function(result) {
+                        	 console.log(result);
+                        	 window.location.href = "/admin/adminQnA";
+                         }
+           			});
+            }); 
+            
+        }else if (result.isDismissed) {
+            $("#createSchModal").modal("hide"); 
+        }
+      
+    });		
+    });	
+	
+	
+</script>

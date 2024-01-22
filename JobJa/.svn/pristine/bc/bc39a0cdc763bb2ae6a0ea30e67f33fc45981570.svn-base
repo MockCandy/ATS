@@ -1,0 +1,24 @@
+package jobJa.member.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.member.mapper.JobOfferMapper;
+import jobJa.member.service.JobOfferService;
+import jobJa.member.vo.JobOfferVO;
+import jobJa.myPage.member.vo.MemberVO;
+
+@Service
+public class JobOfferServiceImpl implements JobOfferService {
+
+	@Autowired
+	JobOfferMapper jobOfferMapper;
+	
+	@Override
+	public List<JobOfferVO> getOffers(MemberVO memberVO) {
+		return jobOfferMapper.getOffers(memberVO);
+	}
+
+}

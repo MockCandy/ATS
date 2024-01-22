@@ -1,0 +1,93 @@
+package jobJa.admin.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.recruit.vo.RecruitVO;
+
+public interface AdminMapper {
+
+	public List<MemberVO> getMember(Map<String,Object> map);
+
+	public int getTotalMem(Map<String,Object> map);
+
+	public MemberVO getMem(Map<String,Object> map);
+
+	public int deleteAjax(String memId);
+
+	public int deleteSchedule(String memId);
+
+	public int deleteInterestEnt(String memId);
+
+	public int deleteAlarm(String memId);
+
+	public int deleteCertificate(String memId);
+
+	public int deletePortfolio(String memId);
+
+	public int deleteInterestRecruit(String memId);
+
+	public int deleteAuth(String memId);
+
+	public int deleteProduct(String memId);
+
+	public int getTotalCounsel(Map<String, Object> map);
+
+	public List<MemberVO> getCounselor(Map<String, Object> map);
+
+	public int getTotalCounselOffer(Map<String, Object> map);
+
+	public List<MemberVO> getCounselorOffer(Map<String, Object> map);
+
+	public int updateYn(Map<String,Object> map);
+
+	public int getcsCompleTeCount(Map<String, Object> map);
+
+	public int getcsWaitCount(Map<String, Object> map);
+
+	public int getcsFalseCount(Map<String, Object> map);
+
+	public List<MemberVO> getCounselorSuccess(Map<String, Object> map);
+
+	public List<MemberVO> getCounselorWaiting(Map<String, Object> map);
+
+	public List<MemberVO> getAdminFalseList(Map<String, Object> map);
+
+	public int getTotalEnter(Map<String, Object> map);
+
+	public List<MemberVO> getEnter(Map<String, Object> map);
+
+	public int getTotalEnterOffer(Map<String, Object> map);
+
+	public int getEnterWaitCount(Map<String, Object> map);
+
+	public int getEnterFalseCount(Map<String, Object> map);
+
+	public List<MemberVO> getEnterOffer(Map<String, Object> map);
+
+	public int updateYn2(Map<String, Object> map);
+
+	public List<MemberVO> getEnterWaiting(Map<String, Object> map);
+
+	public List<MemberVO> getAdminEnterFalseList(Map<String, Object> map);
+
+	public int getTotalRecruit(Map<String, Object> map);
+
+	public List<RecruitVO> getRecruitVOList(Map<String, Object> map);
+
+	public ComCodeInfoVO getComCode(Map<String, Object> map);
+
+	public int deleteRecruitAjax(String recruitNo);
+
+	public List<RecruitVO> getDeadLineRecruitVOList(Map<String, Object> map);
+
+	public List<RecruitVO> getMoneyRecruitVOList(Map<String, Object> map);
+
+	public int getTotalReport(Map<String, Object> map);
+
+	public List<RecruitVO> getReporttVOList(Map<String, Object> map);
+
+
+}

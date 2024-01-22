@@ -1,0 +1,92 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<style>
+body {
+	font-weight: 400;
+	font-size: 1rem;
+	font-family: "Encode Sans", sans-serif;
+	line-height: 1.6;
+	color: #052c52;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-moz-font-feature-settings: "liga", "kern";
+	text-rendering: optimizelegibility;
+	background-color: #fff;
+}
+
+.col-lg-9 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.justify-content-center {
+	-ms-flex-pack: center !important;
+	justify-content: center !important;
+}
+
+form {
+	padding:20px;
+}
+.selectJob {
+	height:50px!important;
+	margin-bottom:20px;
+}
+
+.space-between {
+	display:flex;
+	justify-content:space-between;
+}
+</style>
+
+<!-- lecture CSS 파일 링크 -->
+<link rel="stylesheet" type="text/css" href="/resources/css/lecture.css">
+
+<div class="lectureCen">
+	<div class="lectureBoard">
+		<h1 class="lecture-main-tit">강의 클래스 등록</h1>
+		<div class="lec-h-div-line"></div>
+		
+		<form name="frm" action="/boardClass/createForm?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+		
+			<p> <input type="hidden" name="memId" value="${getCurrentLoginVO.memId}" /> </p>
+			<p class="cls-tit"> 클래스 제목</p>
+			<p> <input type="text" name="boardTitle" placeholder="클래스 제목입력" required /> </p>
+			<p class="cls-tit"> 회사명 | 날짜 </p>
+			<p> <input type="text" name="boardCntnt" placeholder="클래스 내용 -이름 |날짜 입력" required /> </p>
+			<p class="cls-tit"> 연결 링크 입력 </p>
+			<p> <input type="text" name="classUrl" placeholder="연결될 링크 http:// 부터 입력" required /> </p>
+			
+			<div id="tab1">
+				<div id="tab1-1">
+				<p class="cls-tit"> 직군선택 </p>
+			 	<p>	<select name="jobCategoryCd" class="selectJob">
+						<c:forEach var="comInfoVOList" items="${comCodeInfoVOList}">
+							<option value="${comInfoVOList.comCd}">${comInfoVOList.comCdNm}</option>
+						</c:forEach>
+					</select>
+				</p>
+				</div>
+				
+				<p class="cls-tit"> 첨부파일 선택 </p>
+				<div id="tab1-2">
+					<input type="file" id="uploadFile" name="uploadFile" multiple />
+				</div>
+			</div>
+			
+			<p class="mt-20 mb-10">
+				<button type="submit" class="list-btn btn btn-sm">등록</button>
+				<button type="reset" class="list-btn btn btn-sm">초기화</button>
+				<button onclick="location.href='/boardClass/list'" class="list-btn btn btn-sm">목록</button>
+			</p>
+
+			<sec:csrfInput />
+		</form>
+	</div>
+</div>
+
+<script src="/resources/js/boardClassCreate.js"></script>

@@ -1,0 +1,15 @@
+package jobja.sort.vo;
+
+import java.util.Map;
+
+import lombok.Data;
+
+@Data
+public class SearchVO {
+
+	private String sortBy;
+	private String keyword;
+	private int currentPage;
+	private String entNo;
+	
+}

@@ -1,0 +1,33 @@
+package jobJa.myPage.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/enter")
+@Controller
+public class EntMyPageController {
+	
+	// 기업 마이페이지 - 아무것도 없는거
+	@GetMapping("/mypage")
+	public String entMypage() {
+		
+		return "mypageEnt/entMyPage";
+	}
+	
+	// 파일함
+	@GetMapping("/filepage")
+	public String filePage() {
+		
+		return "mypageEnt/entSaveFile";
+	}
+	
+//	// 일반 프로필
+//	@GetMapping("/profile")
+//	public String update() {
+//		
+//		return "mypageEnt/entProfile";
+//	}
+
+}
+

@@ -1,0 +1,930 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<style>
+	.fa-info {
+		border : 1px solid #949494;
+		border-radius:50%;
+		padding:3px 6px;
+		font-size:10px
+	}
+</style>
+
+<link rel="stylesheet" type="text/css"
+	href="/resources/css/recruitList.css">
+
+<form:form modelAttribute="recruitFormVO" action="/recruit/list" method="post" enctype="multipart/form-data">
+<input type="hidden" name="currentPage" value="1">
+<input type="hidden" name="memId" value="${memId}">
+<div class="bg-white">
+	<div class="filter-area">
+		<div class="cen-wide flex" style="position: relative;">
+
+			<div class="btn-wrapper">
+				<button type="button" id="job-filter-btn"
+					class="btn btn-sm btn-filter mr-7">직종</button>
+				<div class="job-filter">
+
+					<div class="filter-depth1">
+
+						<ul>
+							<c:forEach var="comCodeInfoVOList" items="${comCodeInfoVOList}"
+								varStatus="stat">
+								<li id="jobplaces" class="selectjobb"
+									value="${comCodeInfoVOList.comCd}" style="cursor: pointer;">${comCodeInfoVOList.comCdNm}</li>
+							</c:forEach>
+
+						</ul>
+
+					</div>
+
+					<div class="filter-depth2">
+						<div class="filter-depth2-wrapper">
+							<div class="chkbox-sig-box" id="jobplace"></div>
+						</div>
+					</div>
+					<div class="filter-footer" style="grid-column: 1/3">
+						<span class="ml-auto">
+							<button  type="submit" class="btn btn-sm bg-sig color-white" id="applyFilters">적용</button>
+							<button class="btn btn-sm resetaa">초기화</button>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-wrapper">
+				<button type="button" id="loc-filter-btn"
+					class="btn btn-sm btn-filter mr-7">근무 지역</button>
+
+				<div class="loc-filter">
+					<div class="loc-wrapper">
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='서울'}"> 
+										<c:set var="sel1" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="서울" ${sel1} 
+								value="서울"> <label for="서울"></label> 
+								<span class="chkbox-txt p-16">서울</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='경기'}"> 
+										<c:set var="sel2" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="경기" ${sel2} 
+								value="경기"> <label for="경기"></label> <span
+								class="chkbox-txt p-16">경기</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='인천'}"> 
+										<c:set var="sel3" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="인천" ${sel3} 
+								value="인천"> <label for="인천"></label> <span
+								class="chkbox-txt p-16">인천</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='부산'}"> 
+										<c:set var="sel4" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="부산" ${sel4} 
+								value="부산"> <label for="부산"></label> <span
+								class="chkbox-txt p-16">부산</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='대구'}"> 
+										<c:set var="sel5" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="대구" ${sel5} 
+								value="대구"> <label for="대구"></label> <span
+								class="chkbox-txt p-16">대구</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='대전'}"> 
+										<c:set var="sel6" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="대전" ${sel6} 
+								value="대전"> <label for="대전"></label> <span
+								class="chkbox-txt p-16">대전</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='광주'}"> 
+										<c:set var="sel7" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="광주" ${sel7} 
+								value="광주"> <label for="광주"></label> <span
+								class="chkbox-txt p-16">광주</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='울산'}"> 
+										<c:set var="sel8" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="울산" ${sel8} 
+								value="울산"> <label for="울산"></label> <span
+								class="chkbox-txt p-16">울산</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='세종'}"> 
+										<c:set var="sel9" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="세종" ${sel9} 
+								value="세종"> <label for="세종"></label> <span
+								class="chkbox-txt p-16">세종</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='강원'}"> 
+										<c:set var="sel10" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="강원" ${sel10} 
+								value="강원"> <label for="강원"></label> <span
+								class="chkbox-txt p-16">강원</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='경남'}"> 
+										<c:set var="sel11" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="경남" ${sel11} 
+								value="경남"> <label for="경남"></label> <span
+								class="chkbox-txt p-16">경남</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='경북'}"> 
+										<c:set var="sel12" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="경북" ${sel12} 
+								value="경북"> <label for="경북"></label> <span
+								class="chkbox-txt p-16">경북</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='전남'}"> 
+										<c:set var="sel13" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="전남" ${sel13} 
+								value="전남"> <label for="전남"></label> <span
+								class="chkbox-txt p-16">전남</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='전북'}"> 
+										<c:set var="sel14" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="전북" ${sel14} 
+								value="전북"> <label for="전북"></label> <span
+								class="chkbox-txt p-16">전북</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='충남'}"> 
+										<c:set var="sel15" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="충남" ${sel15} 
+								value="충남"> <label for="충남"></label> <span
+								class="chkbox-txt p-16">충남</span>
+						</div>
+						<div class="loc">
+						<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='충북'}"> 
+										<c:set var="sel16" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="충북" ${sel16} 
+								value="충북"> <label for="충북"></label> <span
+								class="chkbox-txt p-16">충북</span>
+						</div>
+						<div class="loc">
+						<c:set var="sel" value="" />
+								<c:forEach var="location" items="${recruitLocation}" varStatus="statj">
+									<c:if test="${location =='제주'}"> 
+										<c:set var="sel17" value="checked" />
+									</c:if>
+								</c:forEach>
+							<input class="chkbox-sig check pfrst" type="checkbox" name="recruitLocation" id="제주" ${sel17} 
+								value="제주"> <label for="제주"></label> <span
+								class="chkbox-txt p-16">제주</span>
+						</div>
+					</div>
+					<div class="filter-footer" style="grid-column: 1/3">
+						<span class="ml-auto">
+							<button type="submit" id="applyFilters" class="btn btn-sm bg-sig color-white">적용</button>
+							<button class="btn btn-sm resetab">초기화</button>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-wrapper">
+				<button type="button" id="work-type-btn"
+					class="btn btn-sm btn-filter mr-7">고용 형태</button>
+
+				<div class="work-type-filter">
+					<div class="work-type-wrapper">
+
+						<c:forEach var="comCodeAa" items="${comCodeAa}" varStatus="stat">
+							<div class="work-type">
+								<c:set var="sel" value="" />
+								<c:forEach var="workType" items="${recruitWorkType}" varStatus="statj">
+									<c:if test="${workType==comCodeAa.comDetCd}">
+										<c:set var="sel" value="checked" />
+									</c:if>
+								</c:forEach>
+								<input class="chkbox-sig pfrst check3" type="checkbox"
+									name="recruitWorkType" id="${comCodeAa.comDetCdNm}" 
+									${sel} 
+									value="${comCodeAa.comDetCd}" /> 
+									<label for="${comCodeAa.comDetCdNm}"></label> 
+									<span class="chkbox-txt p-16">${comCodeAa.comDetCdNm}</span>
+							</div>
+						</c:forEach>
+					</div>
+					<div class="filter-footer" style="grid-column: 1/3">
+						<span class="ml-auto">
+							<button type="submit" class="btn btn-sm bg-sig color-white" id="applyFilters">적용</button>
+							<button class="btn btn-sm resetac">초기화</button>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-wrapper">
+				<button type="button" id="acdm-cr-filter-btn"
+					class="btn btn-sm btn-filter mr-7">학력</button>
+
+				<div class="acdm-cr-filter">
+					<div class="acdm-cr-wrapper">
+						<c:forEach var="comCodeAb" items="${comCodeAb}" varStatus="stat">
+							<div class="acdm-cr">
+								<c:set var="sel" value="" />
+								<c:forEach var="studies" items="${selectStudies}" varStatus="statj">
+									<c:if test="${studies==comCodeAb.comDetCd}">
+										<c:set var="sel" value="checked" />
+									</c:if>
+								</c:forEach>
+								<input class="chkbox-sig pfrst check4" type="checkbox"
+									name="recruitAcdmCr" id="${comCodeAb.comDetCdNm}" 
+									${sel}  
+									value="${comCodeAb.comDetCd}"> <label
+									for="${comCodeAb.comDetCdNm}"></label> <span
+									class="chkbox-txt p-16">${comCodeAb.comDetCdNm}</span>
+							</div>
+						</c:forEach>
+
+
+
+
+					</div>
+					<div class="filter-footer" style="grid-column: 1/3">
+						<span class="ml-auto"> <button  type="submit"
+							class="btn btn-sm bg-sig color-white" id="applyFilters">적용</button>
+							<span class="btn btn-sm resetad">초기화</span>
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<a href="/recruit/list" type="button" class="btn btn-sm btn-reset perfectReset">
+				<i class="fa-solid fa-rotate-right " style="color: #85878c;"></i>
+				초기화
+			</a>
+			<div class="ml-auto select-filter">
+			    
+			   <select id="sortingDropdown" class="btn btn-sm btn-filter" style="width: 120px" onchange="handleSort()">
+				    <option value="latest">최신순</option>
+				    <option value="scrap">스크랩순</option>
+				    <option value="deadline">마감임박순</option>
+				</select>
+			    <i class="fa-solid fa-angle-down" style="color: #c5c7cc"></i>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="cen-wide">
+
+		 <div class="rectuit-in-item-box">
+			<i class="fa-solid fa-info txt-gray mr-3"></i>
+			<span class="font-pay txt-gray p-13">상단 노출 공고입니다. </span>
+		</div>
+		<%-- 	    	${interestRecruitVOList} --%>
+		<%-- 	    	${fn:contains(interestRecruitVOList, "REC00003")} --%>
+		<div class="recruit-area">
+
+			<div class="recruit-left">
+
+<!-- 				<div class="pay-item-box"> -->
+<!-- 					<i class="fa-solid fa-circle-info mr-7"></i> -->
+<!-- 					<span class="font-pay">채용공고&nbsp;</span>광고 -->
+<!-- 				</div> -->
+				
+				<div class="recruit-list mb-35" id="chart1">
+				
+				  <!-- 채용공고상품 구매 리스트 뿌려주기. -->
+				  <c:forEach var="paymentVO" items="${paymentVOList}">
+						<div class="recruit-item">
+							<div class="recruit-thumb" onclick="goRecruitDetail(event)">
+								<c:choose>
+									<c:when
+										test="${paymentVO.recruitVO.recruitThumb ne null && paymentVO.recruitVO.recruitThumb  != ''}">
+										<img alt="" src="/resources/upload/${paymentVO.recruitVO.recruitThumb }">
+									</c:when>
+									<c:when
+										test="${paymentVO.enterpriseVO.entLogo ne null && paymentVO.enterpriseVO.entLogo  != ''}">
+										<img alt=""
+											src="/resources/upload/${paymentVO.enterpriseVO.entLogo }">
+									</c:when>
+									<c:otherwise>
+										<img alt="" src="/resources/images/empty-img.png">
+									</c:otherwise>
+								</c:choose>
+
+								<input name="recruitNo" type="hidden"
+									value="${paymentVO.recruitVO.recruitNo }"> 
+									<sec:authorize access="hasRole('ROLE_MEMBER')">
+									
+									<span
+									class="interested-recruit
+			    						<c:if test='${fn:contains(interestRecruitVOList, paymentVO.recruitVO.recruitNo)}'>
+			    							active
+			    						</c:if>
+			    					">
+
+									</span>
+									</sec:authorize>
+							</div>
+							<div class="recruit-cont">
+								<p class="recruit-part" onclick="window.location.href='/recruit/${paymentVO.recruitVO.recruitNo}/detail'">${paymentVO.recruitVO.recruitPart}</p>
+								<div class="recruit-detail">
+									<span class="recruit-carrer">${paymentVO.recruitVO.recruitCareer } 
+									</span> 
+									<div class="v-div-line"></div>
+									<div class="recruit-skill">
+										<c:forEach var="word" items="${fn:split(paymentVO.recruitVO.recruitSkill,'|')}">
+											<span class="dot-div-span p-12 txt-black">${word }</span>
+										</c:forEach>
+									</div>
+								</div>
+								<p class="recruit-ent" onclick="window.location.href='/enterprise/${paymentVO.enterpriseVO.entNo}/info'">
+									<span class="recruit-ent-logo"> 
+										<c:choose>
+											<c:when
+												test="${paymentVO.enterpriseVO.entLogo != null && paymentVO.enterpriseVO.entLogo != '' }">
+												<img alt=""
+													src="/resources/upload/${paymentVO.enterpriseVO.entLogo }">
+											</c:when>
+											<c:otherwise>
+												<img alt="" src="/resources/images/ent-logo.png">
+											</c:otherwise>
+										</c:choose>
+									</span> 
+									<span class="recruit-ent-name">${paymentVO.enterpriseVO.entNm}</span>
+								</p>
+
+
+								<div class="badge-area">
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01001' }">
+										<span class="badge high-salary">
+											높은 연봉
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01002' }">
+										<span class="badge self-develop">
+											자기계발비 지원
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01003' }">
+										<span class="badge work-life-balance">
+											워라밸이 좋은
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01004' }">
+										<span class="badge company-culture">
+											좋은 사내문화
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01005' }">
+										<span class="badge twenty-thirty">
+											2030이 많은
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01006' }">
+										<span class="badge full-bonus">
+											넉넉한 상여금
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01007' }">
+										<span class="badge flexible-working">
+											주 4.5일 근무
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01008' }">
+										<span class="badge solid-company">
+											탄탄한 회사
+										</span>
+									</c:if>
+									<c:if test="${paymentVO.enterpriseVO.entIntWord == 'IKW01008' }">
+										<span class="badge autonomous-commute">
+											자율출퇴근
+										</span>
+									</c:if>
+								</div>
+							</div>
+
+						</div>
+					</c:forEach>
+					
+					<!--end 채용공고상품 구매 리스트 뿌려주기. -->
+					
+				 </div>	
+				 
+				 <div class="recruit-list" id="chart2">
+				 <!--  -->
+					<c:forEach var="recruitVO" items="${recruitVOList}">
+						<div class="recruit-item">
+							<div class="recruit-thumb" onclick="goRecruitDetail(event)">
+								<c:choose>
+									<c:when
+										test="${recruitVO.recruitThumb ne null && recruitVO.recruitThumb  != ''}">
+										<img alt="" src="/resources/upload/${recruitVO.recruitThumb }">
+									</c:when>
+									<c:when
+										test="${recruitVO.enterpriseVO.entLogo ne null && recruitVO.enterpriseVO.entLogo  != ''}">
+										<img alt=""
+											src="/resources/upload/${recruitVO.enterpriseVO.entLogo }">
+									</c:when>
+									<c:otherwise>
+										<img alt="" src="/resources/images/empty-img.png">
+									</c:otherwise>
+								</c:choose>
+
+								<input name="recruitNo" type="hidden"
+									value="${recruitVO.recruitNo }"> 
+									<sec:authorize access="hasRole('ROLE_MEMBER')">
+										<span
+										class="interested-recruit
+				    						<c:if test='${fn:contains(interestRecruitVOList, recruitVO.recruitNo)}'>
+				    							active
+				    						</c:if>
+				    					">
+	
+										</span>
+									</sec:authorize>
+							</div>
+							<div class="recruit-cont">
+								<p class="recruit-part" onclick="window.location.href='/recruit/${recruitVO.recruitNo}/detail'">${recruitVO.recruitPart}</p>
+								<div class="recruit-detail">
+									<span class="recruit-carrer">${recruitVO.recruitCareer } 
+									</span> 
+									<div class="v-div-line"></div>
+									<div class="recruit-skill">
+										<c:forEach var="word" items="${fn:split(recruitVO.recruitSkill,'|')}">
+											<span class="dot-div-span p-12 txt-black">${word }</span>
+										</c:forEach>
+									</div>
+								</div>
+								<p class="recruit-ent" onclick="window.location.href='/enterprise/${recruitVO.enterpriseVO.entNo}/info'">
+									<span class="recruit-ent-logo"> 
+										<c:choose>
+											<c:when
+												test="${recruitVO.enterpriseVO.entLogo != null && recruitVO.enterpriseVO.entLogo != '' }">
+												<img alt=""
+													src="/resources/upload/${recruitVO.enterpriseVO.entLogo }">
+											</c:when>
+											<c:otherwise>
+												<img alt="" src="/resources/images/ent-logo.png">
+											</c:otherwise>
+										</c:choose>
+									</span> 
+									<span class="recruit-ent-name">${recruitVO.enterpriseVO.entNm}</span>
+								</p>
+
+
+								<div class="badge-area">
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01001' }">
+										<span class="badge high-salary">
+											높은 연봉
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01002' }">
+										<span class="badge self-develop">
+											자기계발비 지원
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01003' }">
+										<span class="badge work-life-balance">
+											워라밸이 좋은
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01004' }">
+										<span class="badge company-culture">
+											좋은 사내문화
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01005' }">
+										<span class="badge twenty-thirty">
+											2030이 많은
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01006' }">
+										<span class="badge full-bonus">
+											넉넉한 상여금
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01007' }">
+										<span class="badge flexible-working">
+											주 4.5일 근무
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01008' }">
+										<span class="badge solid-company">
+											탄탄한 회사
+										</span>
+									</c:if>
+									<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01008' }">
+										<span class="badge autonomous-commute">
+											자율출퇴근
+										</span>
+									</c:if>
+								</div>
+							</div>
+
+						</div>
+					</c:forEach>
+				</div>
+
+			
+
+			</div>
+			<div class="recruit-right">
+
+
+				<div class="my-info">
+					<div class="my-info-top">
+						<div class="my-profile-img">
+							<img alt="" src="/resources/images/empty-profile.png">
+						</div>
+						<div class="my-profile">
+							<sec:authorize access="isAnonymous()">
+								<p class="p-25"><a class="login-link" href="/login">로그인</a> 후 이용해 주세요</p>
+							</sec:authorize>
+							<sec:authorize access="hasRole('ROLE_MEMBER')">
+								<p class="my-info-name">${getCurrentLoginVO.memNm }</p>
+								<p class="wish-job">
+									<c:choose>
+										<c:when test="${getCurrentLoginVO.memWishJob != null }">
+											${getCurrentLoginVO.memWishJob }
+										</c:when>
+										<c:otherwise>
+											희망 직군이 없습니다
+										</c:otherwise>
+									</c:choose>
+								</p>
+							</sec:authorize>
+							<sec:authorize access="hasRole('ROLE_CONSULTANT')">
+								<p class="my-info-name">${getCurrentLoginVO.memNm }</p>
+								<p class="wish-job">
+									<c:choose>
+										<c:when test="${getCurrentLoginVO.memWishJob != null }">
+											${getCurrentLoginVO.memWishJob }
+										</c:when>
+										<c:otherwise>
+											희망 직군이 없습니다
+										</c:otherwise>
+									</c:choose>
+								</p>
+							</sec:authorize>
+							<sec:authorize access="hasRole('ROLE_ENTERPRISE')">
+								<p class="my-info-name">${getCurrentLoginVO.memNm }</p>
+								<p class="wish-job">
+									기업회원
+								</p>
+							</sec:authorize>
+						</div>
+					</div>
+
+					<sec:authorize access="isAnonymous()">
+						<a href="/login"
+							class="p-14 mt-25 mb-25 w-100 btn bg-sig color-white bold"> 내
+							이력서 작성하기 </a>
+					</sec:authorize>
+
+					<sec:authorize access="hasRole('ROLE_MEMBER')">
+						<a href="/mypageMem/memberCreateResume"
+							class="p-14 mt-25 mb-25 w-100 btn bg-sig color-white bold"> 내
+							이력서 작성하기 </a>
+					</sec:authorize>
+					<sec:authorize access="hasRole('ROLE_CONSULTANT')">
+						<a href="/mypageMem/memberCreateResume"
+							class="p-14 mt-25 mb-25 w-100 btn bg-sig color-white bold"> 내
+							이력서 작성하기 </a>
+					</sec:authorize>
+					<p class="bold p-14 mb-12">채용 현황</p>
+					<div class="current-employment">
+						<ul class="p-14">
+							<li class="offer"><i class="fa-solid fa-user-plus"
+								style="color: #a4a6ad"></i>
+								<sec:authorize access="hasRole('ROLE_MEMBER')"> 
+									<span>입사 제안</span>
+								</sec:authorize> 
+								<sec:authorize access="hasRole('ROLE_CONSULTANT')"> 
+									<span>입사 제안</span>
+								</sec:authorize> 
+								<sec:authorize access="hasRole('ROLE_ENTERPRISE')"> 
+									<span>채용 제안</span>
+								</sec:authorize> 
+								<sec:authorize
+									access="isAnonymous()">
+									<a class="ml-auto bold" href="/login">확인하기</a>
+								</sec:authorize> 
+								
+								<sec:authorize access="isAuthenticated()">
+									<a class="ml-auto bold" href="/member/myJobOffer">
+										${fn:length(jobOfferVOList) } </a>
+								</sec:authorize></li>
+							<li class="application"><i class="fa-regular fa-building"
+								style="color: #a4a6ad"></i> <span>입사 지원</span> 
+								<sec:authorize
+									access="isAnonymous()">
+									<a class="ml-auto bold" href="/login">확인하기</a>
+								</sec:authorize> 
+								
+								<sec:authorize access="isAuthenticated()">
+									<a class="ml-auto bold" href="/member/myApplicationList">${appCnt }</a>
+								</sec:authorize></li>
+							<li class="interest-recruit">
+								<i class="fa-regular fa-bookmark" style="color: #a4a6ad"></i> 
+								<sec:authorize access="hasRole('ROLE_ENTERPRISE')"> 
+									<span>
+										채용공고</span> 
+								</sec:authorize>
+								<sec:authorize access="hasRole('ROLE_CONSULTANT')"> 
+									<span>저장한
+										채용공고</span> 
+								</sec:authorize>
+								<sec:authorize access="hasRole('ROLE_MEMBER')"> 
+									<span>저장한
+										채용공고</span> 
+								</sec:authorize>
+									<sec:authorize access="isAnonymous()">
+									<a class="ml-auto bold" href="/login">확인하기</a>
+								</sec:authorize> 
+								
+<%-- 								<sec:authorize access="isAuthenticated()"> --%>
+<%-- 									<a id="storedRecruit" class="ml-auto bold" href="/member/myRecruit">${fn:length(interestRecruitVOList) }</a> --%>
+<%-- 								</sec:authorize> --%>
+								<sec:authorize access="hasRole('ROLE_MEMBER')"> 
+										<a id="storedRecruit" class="ml-auto bold" href="/member/myRecruit">${fn:length(interestRecruitVOList) }</a>
+								</sec:authorize>
+								<sec:authorize access="hasRole('ROLE_CONSULTANT')"> 
+										<a id="storedRecruit" class="ml-auto bold" href="/member/myRecruit">${fn:length(interestRecruitVOList) }</a>
+								</sec:authorize>
+								<sec:authorize access="hasRole('ROLE_ENTERPRISE')"> 
+										<a id="storedRecruit" class="ml-auto bold" >5</a>
+								</sec:authorize>
+								</li>
+						</ul>
+					</div>
+				</div>
+
+			</div>
+			</div>
+			<div class="pagez mb-30">${data.getPagingArea4()}</div>
+
+		</div>
+
+
+	</div>
+
+
+
+</form:form>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<script>
+	
+		let jobFilterBtn = document.querySelector("#job-filter-btn");
+	
+		$(".filter-area").on("click", ".btn-filter",function(e) {
+
+			console.log(e.currentTarget);
+
+			console.log(e.currentTarget.classList
+					.contains("active"));
+			let siblings = e.currentTarget.parentElement.parentElement.children;
+			console.log(siblings);
+			if (e.currentTarget.classList.contains("active")) {
+				e.currentTarget.classList.remove("active");
+			} else {
+				for (let i = 0; i < siblings.length; i++) {
+					siblings[i].children[0].classList
+							.remove("active");
+				}
+				e.currentTarget.classList
+						.add("active");
+			}
+		})
+
+		////////////////////// 관심공고 기능
+		$(document).on("click",".interested-recruit",function(e) {
+			
+			console.log(e.target);
+			
+			if(${getCurrentLoginVO == null}){
+				alert("로그인 한 회원만 관심공고를 등록할 수 있습니다.");
+				return;
+			};
+			
+			let recruitNo = e.target.parentElement.children.recruitNo.value;
+			e.target.classList.toggle("active");
+
+			data = {
+				"recruitNo" : recruitNo,
+				"memId" : "${getCurrentLoginVO.memId}"
+			}
+			console.log(data);
+
+			$.ajax({
+				url : "/recruit/ajaxInterestRecruit",
+				data : JSON.stringify(data),
+				type : "post",
+	    		contentType : "application/json;charset=utf-8",
+	    		dataType:"json",
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader(header, token);
+				},
+				success : function(res) {
+					console.log("res", res);
+					
+					$("#storedRecruit").text(res);
+				}
+
+			})
+		})
+	
+			//직군별 필터
+		$(document).ready(function() {
+		    let recruitJob = []; // 선택된 값 추적을 위한 배열
+		 	let mm = "${recruitJobz}";
+		 	
+		    $(document).on("click", ".selectjobb", function(e) {
+		        let a = $(this).attr('value');
+		        let b = $("input[name='memId']").val();
+		        
+		        if (!recruitJob.includes(a)) {
+		            let data = {
+		                "recruitJob": a,
+		                "memId" : b
+		            };
+		
+		            $.ajax({
+		                url: "/recruit/createAjax2",
+		                contentType: "application/json;charset=utf-8",
+		                data: JSON.stringify(data),
+		                type: "post",
+		                dataType: "json",
+		                beforeSend: function(xhr) {
+		                    xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		                },
+		                success: function(rslt) {
+		                    let palinfoContainer = $('<div class="palinfo-container"></div>');
+		
+		                    $.each(rslt, function(index) {
+		                        let palinfo = "";
+		                        
+		                        let sel ='';
+								console.log("Zxx" ,mm);
+								console.log("Zzz" ,rslt[index].comDetCd);
+		                       
+								if(mm.includes(rslt[index].comDetCd)){
+		                        	sel = 'checked';
+		                        
+		                        }
+		                        let checkboxId = 'zzz' + index;
+								
+		                        
+		     			palinfo += '<div><input class="chkbox-sig check2 pfrst" type="checkbox" name="recruitJobs" id="' + checkboxId + '"  value="' + rslt[index].comDetCd +'" '+sel+'>' +
+		                            '<label for="' + checkboxId + '"></label>'+
+		                            '<span class="chkbox-txt p-16">'+rslt[index].comDetCdNm+'</span></div>';
+		
+		                        let checkboxElement = $(palinfo);
+		                       
+		                        palinfoContainer.append(checkboxElement);
+		                    });
+		
+		                    $('#jobplace').empty().append(palinfoContainer); // 이전 선택된 값들을 제거하고 새 값으로 교체
+		                    recruitJob.push(a); // 선택된 값 배열에 현재 값 추가
+		                }
+		            });
+		        } else {
+		            // 이미 선택된 값이면 선택을 취소하고 배열에서 제거
+		            let index = recruitJob.indexOf(a);
+		            if (index > -1) {
+		            	recruitJob.splice(index, 1);
+		            }
+		        }
+		    });
+		});
+					
+
+	$(".resetaa").on("click", function(e) {
+			
+		
+   	 	$(".check2").attr('checked', false);
+	});
+		
+	$(".resetab").on("click", function(e) {
+		
+		
+   	 	$(".check").attr('checked', false);
+	});
+	$(".resetac").on("click", function(e) {
+		
+		
+   	 	$(".check3").attr('checked', false);
+	});
+	$(".resetad").on("click", function(e) {
+		
+		
+   	 	$(".check4").attr('checked', false);
+	});
+	$(".perfectReset").on("click", function(e) {
+		
+		console.log("여기까지오니?");
+    	// 체크된 모든 체크박스들을 초기화
+   	 	$(".check3").attr('checked', false);
+   	 	$(".check").attr('checked', false);
+   	 	$(".check2").attr('checked', false);
+   	 	$(".check4").attr('checked', false);
+	});
+		
+	window.onload = function() {
+	    var selectBox = document.getElementById('sortingDropdown');
+	    var savedValue = localStorage.getItem('selectedOption');
+	    var currentPage = window.location.pathname;
+
+	    if (savedValue && currentPage !== '/recruit/list') {
+	        selectBox.value = savedValue;
+	    } else {
+	        selectBox.value = 'latest';
+	        localStorage.setItem('selectedOption', 'latest');
+	    }
+
+	    selectBox.addEventListener('change', function() {
+	        var selectedValue = selectBox.value;
+	        localStorage.setItem('selectedOption', selectedValue);
+	    });
+	};
+
+	function handleSort() {
+	    var selectElement = document.getElementById('sortingDropdown');
+	    var selectedValue = selectElement.value;
+
+	    if (selectedValue === 'latest') {
+	        window.location.href = '/recruit/list';
+	    } else if (selectedValue === 'scrap') {
+	        window.location.href = '/recruit/scrapList?sort=scrap';
+	    } else if (selectedValue === 'deadline') {
+	        window.location.href = '/recruit/deadlineList?sort=deadlineList';
+	    }
+	}
+	
+	
+	function goRecruitDetail(e){
+		console.log(e.currentTarget.classList[0]);
+		if(e.currentTarget.classList[0] == "recruit-thumb"){				
+			let recNo = e.target.nextElementSibling.value;
+			window.location.href="/recruit/"+recNo+"/detail";
+		}
+	}
+	</script>
+
+<script type="text/javascript" src="/resources/js/filter-area.js"></script>

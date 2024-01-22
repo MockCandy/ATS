@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardNewsMapper">
+	
+	<insert id="createPost" parameterType="boardNewsVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="boardId">
+			SELECT 
+    		'NEW' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BOARD_ID, 4))), 0) + 1, 5, '0') AS NEXT_BOARD_ID
+			FROM  
+    		BOARD_EMPL_NEWS
+		</selectKey>
+	
+		INSERT INTO 
+			BOARD_EMPL_NEWS(BOARD_ID, MEM_ID, BOARD_TITLE, BOARD_CNTNT, BOARD_WRITING_DT, BOARD_UPDT_DT, EMPL_NEWS_AF_ID, BOARD_CNT)
+		VALUES
+		(#{boardId},#{memId},#{boardTitle},#{boardCntnt},SYSDATE,null,#{emplNewsAfId},0)
+	
+	</insert>
+	
+	<resultMap type="boardNewsVO" id="boardNewsMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="emplNewsAfId" column="EMPL_NEWS_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<association property="atchFileVO" resultMap="atchFileMap"></association>
+		
+	</resultMap>
+	
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID"/>
+		<result property="afCreatDt" column="AF_CREAT_DT"/>
+		<result property="afYn" column="AF_YN"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<select id="list" resultMap="boardNewsMap">
+		SELECT T.*
+		FROM (
+    	SELECT ROW_NUMBER() OVER(ORDER BY A.BOARD_WRITING_DT DESC) RNUM,
+        A.BOARD_ID
+        ,A.MEM_ID
+        ,A.BOARD_TITLE
+        ,A.BOARD_CNTNT
+        ,A.BOARD_WRITING_DT
+        ,A.BOARD_UPDT_DT
+        ,A.EMPL_NEWS_AF_ID
+        ,A.BOARD_CNT
+        ,B.AFD_SEQ
+        ,B.AF_ID
+        ,B.AFD_ORIGIN_NM
+        ,B.AFD_SAVE_NM
+        ,B.AFD_FILE_SIZE
+        ,B.AFD_SAVE_PATH
+        ,B.AFD_EXTSN
+        ,B.AFD_CNTNT
+        ,B.AFD_UPLOAD_DT
+    	FROM BOARD_EMPL_NEWS A
+    	LEFT OUTER JOIN ATCH_FILE_DETAIL B
+        ON A.BOARD_ID = B.AF_ID
+		) T
+		WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 5 + 1) AND ((#{currentPage} * 5))
+		
+		
+	</select>
+	
+	<select id="listOrderBy" resultMap="boardNewsMap">
+		SELECT 
+		A.BOARD_ID
+		,A.MEM_ID
+		,A.BOARD_TITLE
+		,A.BOARD_CNTNT
+		,A.BOARD_WRITING_DT
+		,A.BOARD_UPDT_DT
+		,A.EMPL_NEWS_AF_ID
+		,A.BOARD_CNT
+		,B.AFD_SEQ
+		,B.AFD_ORIGIN_NM
+		,B.AFD_SAVE_NM
+		,B.AFD_FILE_SIZE
+		,B.AFD_SAVE_PATH
+		,B.AFD_EXTSN
+		,B.AFD_CNTNT
+		,B.AFD_UPLOAD_DT
+		FROM 
+		BOARD_EMPL_NEWS A , ATCH_FILE_DETAIL B
+		WHERE
+		A.BOARD_ID = B.AF_ID
+        ORDER BY A.BOARD_CNT DESC
+	</select>
+	
+	<update id="countUpHit" parameterType="boardNewsVO">
+		UPDATE BOARD_EMPL_NEWS
+		SET BOARD_CNT = BOARD_CNT + 1
+		WHERE BOARD_ID =#{boardId}
+	</update>
+	
+	<select id="detail" parameterType="String" resultMap="boardNewsMap">
+		SELECT 
+		A.BOARD_ID
+		,A.MEM_ID
+		,A.BOARD_TITLE
+		,A.BOARD_CNTNT
+		,A.BOARD_WRITING_DT
+		,A.BOARD_UPDT_DT
+		,A.EMPL_NEWS_AF_ID
+		,A.BOARD_CNT
+		,B.AFD_SEQ
+		,B.AF_ID
+		,B.AFD_ORIGIN_NM
+		,B.AFD_SAVE_NM
+		,B.AFD_FILE_SIZE
+		,B.AFD_SAVE_PATH
+		,B.AFD_EXTSN
+		,B.AFD_CNTNT
+		,B.AFD_UPLOAD_DT
+		FROM 
+		BOARD_EMPL_NEWS A
+    	LEFT OUTER JOIN ATCH_FILE_DETAIL B
+        ON A.BOARD_ID = B.AF_ID
+		WHERE
+		BOARD_ID=#{boardId}
+	</select>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM BOARD_EMPL_NEWS 
+		WHERE 1=1
+	</select>
+	
+	<update id="updatePost" parameterType="String">
+		UPDATE BOARD_EMPL_NEWS 
+		SET BOARD_TITLE=#{boardTitle}
+			,BOARD_CNTNT=#{boardCntnt}
+			,BOARD_UPDT_DT=SYSDATE
+		WHERE BOARD_ID=#{boardId}
+	</update>
+	
+	<delete id="delAtchdt" parameterType="String">
+		DELETE FROM ATCH_FILE_DETAIL
+		WHERE  AF_ID = #{afId}
+	</delete>
+	
+	<delete id="delAtch" parameterType="String">
+		DELETE FROM ATCH_FILE
+		WHERE  AF_ID = #{afId}
+	</delete>
+	
+	<delete id="deletePost" parameterType="boardNewsVO">
+		DELETE FROM BOARD_EMPL_NEWS
+		WHERE BOARD_ID = #{boardId}
+	
+	</delete>
+	
+	<select id="getPopularList" resultMap="boardNewsMap">
+		
+		SELECT T.*
+		FROM (
+    	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_CNT DESC NULLS LAST) RNUM,
+        A.BOARD_ID
+        ,A.MEM_ID
+        ,A.BOARD_TITLE
+        ,A.BOARD_CNTNT
+        ,A.BOARD_WRITING_DT
+        ,A.BOARD_UPDT_DT
+        ,A.EMPL_NEWS_AF_ID
+        ,A.BOARD_CNT
+        ,B.AFD_SEQ
+        ,B.AF_ID
+        ,B.AFD_ORIGIN_NM
+        ,B.AFD_SAVE_NM
+        ,B.AFD_FILE_SIZE
+        ,B.AFD_SAVE_PATH
+        ,B.AFD_EXTSN
+        ,B.AFD_CNTNT
+        ,B.AFD_UPLOAD_DT
+    	FROM BOARD_EMPL_NEWS A
+    	LEFT OUTER JOIN ATCH_FILE_DETAIL B
+        ON A.BOARD_ID = B.AF_ID
+		) T
+		WHERE 
+        T.RNUM BETWEEN 1 AND 5
+		
+	</select>
+	
+
+</mapper>

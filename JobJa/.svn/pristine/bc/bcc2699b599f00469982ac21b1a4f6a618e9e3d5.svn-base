@@ -1,0 +1,225 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
+    
+<div class="cen bb" style="margin: 50px auto;">
+       <p class="main-tit">오늘의 추천</p>
+    
+        <div class="event-box">
+            <div class="event-card"><a style="background-image: url(/resources/images/배너보드_C타입\ _41_.png);" href="#"></a></div>
+            <div class="event-card"><a style="background-image: url(/resources/images/배너보드_b타입.png);" href="#"></a></div>
+            <div class="event-card"><a style="background-image: url(/resources/images/배너보드A.jpg);" href="https://www.60chicken.com/event/eventView?EVENT_SEQ=90"></a></div>
+            <div class="event-card"><a style="background-image: url(/resources/images/배너보드_a타입\ _41_.png);" href="#"></a></div>
+        </div>
+
+<!-- 		<input type="text" name="prefixCntnt" > -->
+<!-- 		<button class="test">zzzzzz</button> -->
+
+        <div class="ad-mid">
+            <a href="#"><img alt="배너광고" src="/resources/upload/${paymentVO.atchFileDetailVO.afdSaveNm}"></a>
+        </div>
+
+        <p class="main-tit">인기 포지션</p>
+        <div class="popular-recruit-box">
+        	<c:forEach var="recruitVO" begin="0" end="7" items="${recruitVOList }">
+
+	            <div class="popular-recruit-item">
+	                <div class="popular-recruit-img" onclick="window.location.href='/recruit/${recruitVO.recruitNo}/detail'">
+	                	<c:choose>
+	                		<c:when test="${recruitVO.recruitThumb != null }">	                			
+			                    <img src="/resources/upload/${recruitVO.recruitThumb }" alt="">
+	                		</c:when>
+	                		<c:when test="${recruitVO.enterpriseVO.entLogo != null }">
+	                			<img src="/resources/upload/${recruitVO.enterpriseVO.entLogo }" alt="">
+	                		</c:when>
+	                		<c:otherwise>
+	                			<img src="/resources/images/empty-img.png" alt="">	                		
+	                		</c:otherwise>
+	                	</c:choose>
+	                    <div class="hidden-views-interest">
+	                        <div>
+	                            <span class="popular-recruit-views"><i class="fa-solid fa-thumbs-up" style="color: #ffffff; margin-right:3px;"></i> ${recruitVO.cnt }</span>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="popular-recruit-cont">
+	                    <p class="popular-recruit-company" onclick="window.location.href='/enterprise/${recruitVO.enterpriseVO.entNo}/info'">
+	                        ${recruitVO.enterpriseVO.entNm }
+	                    </p>
+	                    <p class="popular-recruit-tit" onclick="window.location.href='/recruit/${recruitVO.recruitNo}/detail'" >
+	                        ${recruitVO.recruitPart }
+	                    </p>
+	                    <p class="popular-recruit-skills prevent-overflow">
+	                    	<c:set var="skills" value="${fn:split(recruitVO.recruitSkill, ',') }"></c:set>
+                        	<c:forEach var="skill" items="${skills }">
+                        		<span class="dot-div-span">${skill }</span>
+                        	</c:forEach>
+	                    </p>
+	                    <p>
+	                        <span class="dot-div-span">${fn:split(fn:split(recruitVO.recruitLocation,' ')[0], ',')[1]} ${fn:split(fn:split(recruitVO.recruitLocation,' ')[1], ' ')[0]}</span>
+	                        <span class="dot-div-span">${recruitVO.recruitCareer }</span>
+	                    </p>
+	                </div>
+	            </div>
+        	</c:forEach>
+       
+            
+
+        </div>
+
+        
+        <p class="sub-tit">전∙현직자가 직접 평가한</p>
+        <p class="main-tit">"생생한 기업 리뷰"</p>
+
+        <div class="main-review-box">
+        	<c:forEach var="reviewVO" begin="0" end="7" items="${entReviewVOList}">
+	            <div class="main-review-item">
+	                <div class="main-review-company">
+	                	<c:choose>
+		                	<c:when test="${reviewVO.enterpriseVO.entLogo != null }">
+		                		<img alt="" src="/resources/upload/${reviewVO.enterpriseVO.entLogo }">
+		                	</c:when>
+		                	<c:otherwise>
+			                    <img src="/resources/images/empty-img.png" alt="">
+		                	</c:otherwise>
+	                	</c:choose>
+	                    <p class="main-review-company-name">
+	                        ${reviewVO.enterpriseVO.entNm }
+	                    </p>
+	                </div>
+	                <div class="main-review-cont">
+	                    <span class="quote"><i class="fa-solid fa-quote-left" style="color: #9297a0;"></i></span>
+	                    <p class="main-review-short-review">
+	                        ${reviewVO.entRevShortReview }
+	                    </p>
+	                    <p class="mb-9">
+	                        <span class="dot-div-span">${reviewVO.comDetCodeVO.comDetCdNm }</span>
+	                        <span class="dot-div-span">
+								<c:if test="${reviewVO.entRevWorkYn == 'Y' }">
+									현직원
+								</c:if>
+								<c:if test="${reviewVO.entRevWorkYn == 'N' }">
+									전직원
+								</c:if>
+							</span>
+	                        <span class="dot-div-span">${reviewVO.entRevWorkLoc}</span>
+	                        <span class="dot-div-span time">${reviewVO.regDate}</span>
+	                    </p>
+                        <div class="rank-right">
+                            <span class="star star-sm">
+	                        	<img src="/resources/images/star_off.png" alt="">
+                                <span class="star-color" style="width: 50%;">
+	                        		<img src="/resources/images/star.png" alt="">
+								</span>
+                            </span>
+                            <span class="rank-rate" style="display:none"><fmt:formatNumber value="${(reviewVO.entRevChances + reviewVO.entRevWelfare + reviewVO.entRevBalance + reviewVO.entRevCulture + reviewVO.entRevManager) / 5 }" pattern="0.0"/></span>
+                        </div>
+	
+	                    <button class="btn card-btn" onclick="window.location.href='/enterprise/${reviewVO.entNo}/review'">${reviewVO.reviewCount }개의 전∙현직자 리뷰</button>
+	                </div>
+	            </div>
+        	</c:forEach>
+        </div>
+
+    </div>
+    <div id="msgStack"></div>
+<script type="text/javascript">
+// 	$(".test").on("click", function(e){
+		
+// 	    let type = '70';
+// 	    let target = "${getCurrentLoginVO.memId}";
+// 	    let content = $("input[name=prefixCntnt]").val();
+// 	    let url = '${contextPath}/member/saveAlarm';
+		
+// 		let data = {
+// 			"memId" : target,
+// 			"contentCd" : type,
+// 			"prefixCntnt" : content,
+// 		}
+		
+// 	    $.ajax({
+// 	        url: '${contextPath}/member/saveAlarm',
+// 			contentType : "application/json; charset=UTF-8",
+// 			data : JSON.stringify(data),
+// 			dataType : "json",
+// 			type : "post",
+// 			beforeSend : function(xhr) {
+// 				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+// 			},
+// 	        success: function(res){    // db전송 성공시 실시간 알림 전송
+// 				console.log(res);
+// 	            socket.send("관리자,"+target+","+content+","+url);	
+// 	        }
+// 	    });
+		
+// 	})
+
+	
+	let skills = document.querySelectorAll(".popular-recruit-skills .dot-div-span");
+	
+	console.log(skills);
+	
+	for(let i=0;i<skills.length;i++){
+		
+		skills[i].innerText = skills[i].innerText.replaceAll("|", " · ");
+		
+	}
+	
+	let time = document.querySelectorAll(".time");
+	
+	console.log(time);
+	
+	for(let i = 0 ; i < time.length; i++){
+		console.log(time[i].innerText);
+		let year = time[i].innerText.split(" ")[5];
+		console.log(year);
+		let month = time[i].innerText.split(" ")[1];
+		if(month == "Jan"){
+			month = '1';
+		}else if(month == "Feb"){
+			month = '2';			
+		}else if(month == "Mar"){
+			month = '3';			
+		}else if(month == "Apr"){
+			month = '4';			
+		}else if(month == "May"){
+			month = '5';			
+		}else if(month == "Jun"){
+			month = '6';			
+		}else if(month == "Jul"){
+			month = '7';			
+		}else if(month == "Aug"){
+			month = '8';			
+		}else if(month == "Sep"){
+			month = '9';			
+		}else if(month == "Oct"){
+			month = '10';			
+		}else if(month == "Nov"){
+			month = '11';			
+		}else if(month == "Dec"){
+			month = '12';			
+		}
+		let day = time[i].innerText.split(" ")[2];
+		console.log(day);
+		
+		time[i].innerText = year+"-"+month+"-"+day
+	}
+	
+	
+	let stars = document.querySelectorAll(".star-color");
+	stars.forEach(function(star){
+		console.log(star.parentElement.nextElementSibling.innerHTML);
+		star.style.width = star.parentElement.nextElementSibling.innerHTML*20 + "%";
+	})
+
+	
+
+
+
+</script>

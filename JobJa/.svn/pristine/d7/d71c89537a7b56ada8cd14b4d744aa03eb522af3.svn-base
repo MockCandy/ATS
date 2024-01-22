@@ -1,0 +1,31 @@
+package jobja.item.vo;
+
+import java.util.Date;
+
+import jobja.mypage.member.vo.MemberVO;
+import lombok.Data;
+
+@Data
+public class ItemVO {
+	
+	private String itemNo;					//상품일련번호
+	private String itemCd;					//상품구분코드(COM_CD)
+	private String itemNm;					//상품명
+	private String itemIntrcn;				//상품소개
+	private String itemSaleYn;				//상품판매여부
+	private int itemSaleQuantity;			//상품판매수량
+	private int itemSalePrice;				//상품판매가격
+	private String itemInfoRegId;			//상품정보등록자ID(상담사ID)
+	private Date itemInfoRegDt;				//상품정보등록일시
+	private String itemInfoUpdtId;			//상품정보수정자ID(상담사ID)
+	private Date itemInfoUpdtDt;			//상품정보수정일시
+	private String itemAfId;				//상품첨부파일ID
+	private String itemClCd;				//상품분류코드(COM_CD)
+	private int itemCount;                  //상담횟수
+	
+	private String conMemId;				//상담사 ID
+	
+	private String memId;					//로그인한 id
+	
+	
+}

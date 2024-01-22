@@ -1,0 +1,343 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
+<link rel="stylesheet" type="text/css" href="/resources/css/search.css">
+     
+
+	
+     
+    <div class="cen">
+    	
+    	<div class="search-main">
+    	
+			<div class="search-main-left">
+				<div class="ents">
+					<div class="div-top">
+						<p class="bold">기업</p>
+						<a href="/enterprise/list?keyword=${param.keyword }" class="hover_underline p-14 ml-auto">
+							기업 더보기
+							<i class="fa-solid fa-angle-right" style="color: #00c362;"></i>
+						</a>
+					</div>
+					
+					
+					<div class="ent-list">
+						<c:choose>
+							<c:when test="${fn:length(enterpriseVOList) == 0 || fn:length(enterpriseVOList) == null}">
+								<p class="bold p-18 flex align-center justify-center" style="grid-column : 1 / 6">해당 검색어에 해당하는 기업 정보가 없습니다.</p>
+							</c:when>
+							<c:otherwise>
+								<c:forEach var="enterpriseVO" items="${enterpriseVOList }">
+									<div class="ent-list-item">
+										<div class="ent-logo">
+											<a href="/enterprise/${enterpriseVO.entNo }/info" class="hover_underline">
+												<c:choose>
+													<c:when test="${enterpriseVO.entLogo != null}">
+														<img alt="" src="/resources/upload/${enterpriseVO.entLogo}" >										
+													</c:when>
+													<c:otherwise>
+														<img alt="" src="/resources/images/empty-img.png" >										
+													</c:otherwise>
+												</c:choose>
+											</a>
+										</div>
+										<p class="ent-name">
+											<a href="#" class="hover_underline">
+												${enterpriseVO.entNm}
+											</a>
+										</p>
+										<p class="ent-sector">${enterpriseVO.comDetCodeInfoVOList[0].comDetCdNm}</p>
+										<div class="ent-rate">
+											<a href="/enterprise/${enterpriseVO.entNo }/review">
+												<i class="fa-solid fa-star" style="color: #ffc107;"></i>
+												<span class="avg-rate"><fmt:formatNumber value="${enterpriseVO.entAvgRate }" pattern="0.0"/></span>
+											</a>
+										</div>
+									</div>
+								</c:forEach>
+							</c:otherwise>						
+						</c:choose>
+						
+					
+						
+					</div>
+					
+				</div>
+				
+				<div class="recruits">
+					<div class="div-top">
+						<p class="bold">채용 공고</p>
+					</div>
+					<div class="recruit-list">
+					
+						<c:if test="${fn:length(recruitVOList) == 0 || fn:length(recruitVOList) == null}">
+							<p class="bold p-18 flex align-center justify-center empty-recruit">해당 검색어에 해당하는 채용 공고가 없습니다.</p>
+						</c:if>
+						<c:forEach var="recruitVO" items="${recruitVOList}">
+							<div class="recruit-list-item">
+								<div class="recruit-grid">
+									<div class="recruit-logo pointer" onclick="window.location.href='/enterprise/${recruitVO.enterpriseVO.entNo}/info'">
+										<c:choose>
+											<c:when test="${recruitVO.enterpriseVO.entLogo != null}">
+												<img alt="" src="/resources/upload/${recruitVO.enterpriseVO.entLogo }">
+											</c:when>
+											<c:otherwise>											
+												<img alt="" src="/resources/images/ent-logo.png">
+											</c:otherwise>
+										</c:choose>
+									</div>
+									<div>
+										<div class="ent-keyword-area mb-5">
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01001' }">
+												<span class="badge high-salary">
+													높은 연봉
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01002' }">
+												<span class="badge self-develop">
+													자기계발비 지원
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01003' }">
+												<span class="badge work-life-balance">
+													워라밸이 좋은
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01004' }">
+												<span class="badge company-culture">
+													좋은 사내문화
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01005' }">
+												<span class="badge twenty-thirty">
+													2030이 많은
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01006' }">
+												<span class="badge full-bonus">
+													넉넉한 상여금
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01007' }">
+												<span class="badge flexible-working">
+													주 4.5일 근무
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01008' }">
+												<span class="badge solid-company">
+													탄탄한 회사
+												</span>
+											</c:if>
+											<c:if test="${recruitVO.enterpriseVO.entIntWord == 'IKW01008' }">
+												<span class="badge autonomous-commute">
+													자율출퇴근
+												</span>
+											</c:if>
+										</div>
+										<div class="recruit-wrap">
+											<div class="recruit-area" onclick="window.location.href='/recruit/${recruitVO.recruitNo}/detail'">
+												<div class="recruit-top">
+													<p class="recruit-title">${recruitVO.recruitPart }</p>
+										
+					    							<input name="recruitNo" type="hidden" value="${recruitVO.recruitNo }">
+													<span class="interest-recruit
+							    						<c:if test='${fn:contains(interestRecruitVOList, recruitVO.recruitNo)}'>
+							    							active
+							    						</c:if>
+							    					"></span>
+		 					    					<c:choose> 
+		 						    					<c:when test="${recruitVO.remainingDate != null }"> 
+		 													<span class="due p-gray">~<fmt:formatDate value="${recruitVO.recruitEddt}" pattern="MM/dd" type="date"/></span> 
+															<span class="badge-nm bg-orange txt-white"> D-${recruitVO.remainingDate}</span>
+		 						    					</c:when> 
+		 						    					<c:otherwise> 
+															<span class="badge-nm bg-sig txt-white">상시채용</span> 						    					
+		 						    					</c:otherwise> 
+		 					    					</c:choose> 
+												</div>
+												<div class="recruit-mid">
+													
+													<p class="loc">${fn:split(fn:split(recruitVO.recruitLocation,',')[1],' ')[0]} ${fn:split(fn:split(recruitVO.recruitLocation,',')[1],' ')[1]}</p>
+													<p class="career">${recruitVO.recruitCareer }</p>
+													<p class="acdm-cr">
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01000' }">학력무관</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01001' }">초등학교졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01002' }">중학교졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01003' }">고등학교졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01004' }">전문대졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01005' }">대학교(학사)재학</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01006' }">대학교(학사)졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01007' }">대학교(석사)졸업</c:if> 
+														<c:if test="${recruitVO.recruitAcdmCr == 'IET01008' }">대학교(박사)졸업</c:if> 
+													</p>
+													<p class="work-type">
+														<c:if test="${recruitVO.recruitWorkType == 'IWS01001' }">비정규직</c:if> 
+														<c:if test="${recruitVO.recruitWorkType == 'IWS01002' }">정규직</c:if> 
+													</p>
+													
+												</div>
+												<div class="recruit-bot">
+													<p class="job-sector">
+														<c:forEach var="skill" items="${fn:split(recruitVO.recruitSkill,'|')}" varStatus="varStatus">
+															<span style="color:#444" class="dot-div-span">${skill}</span>
+													    </c:forEach> 
+													</p>
+													<div class="v-div-line"></div>
+													<p class="job-sector">등록일 <fmt:formatDate value="${recruitVO.recruitStdt}" pattern="yy/MM/dd" type="date"/> </p>
+												</div>
+											</div>
+											<div class="ent-area">
+												<div class="ent-name">
+													<a class="p-lightblue" href="/enterprise/${recruitVO.enterpriseVO.entNo }/info">
+														${recruitVO.enterpriseVO.entNm }
+													</a>
+													<span class="ent-interest
+															<c:forEach var="interestEntVO" items="${interestEntVOList }">
+																<c:if test="${recruitVO.enterpriseVO.entNo == interestEntVO.entNo}">
+																	active
+																</c:if>
+															</c:forEach>
+													">
+														<input type="hidden" name="entNo" value="${recruitVO.enterpriseVO.entNo }">
+													</span>
+												</div>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						</c:forEach>
+						
+						
+					</div>
+					
+					<c:if test="${fn:length(recruitVOList) != 0}">
+						<div class="board-pagi mt-30 pb-30">
+							${data.getPagingArea5() }
+						</div>
+					</c:if>
+					
+				</div>
+				
+				
+			</div>
+			
+			<div class="search-main-right">
+				<div class="hot-recruit">
+					<p class="p-18 bold mb-15">인기 채용 공고</p>
+					<div class="hot-recruit-list">
+						
+						<c:forEach var="recVO" items="${popularRecVOList }">
+							<div class="hot-recruit-item" onclick="window.location.href='/recruit/${recVO.recruitNo}/detail'">
+								<div class="hot-ent-logo">
+									<c:choose>
+										<c:when test="${recVO.enterpriseVO.entLogo != null}">
+											<img alt="" src="/resources/upload/${recVO.enterpriseVO.entLogo }">
+										</c:when>
+										<c:otherwise>
+											<img alt="" src="/resources/images/ent-logo.png">
+										</c:otherwise>
+									</c:choose>
+								</div>
+								<div class="hot-recruit-cont">
+									<p class="hot-recruit-title">${recVO.recruitPart }</p>
+									<p class="hot-ent-name">${recVO.enterpriseVO.entNm }</p>
+								</div>
+							</div>
+						</c:forEach>
+						
+					</div>
+					
+				</div>
+				
+			</div>
+			
+    	</div>
+    </div>
+    <script type="text/javascript">
+
+		////////////////////// 관심공고 기능
+		$(document).on("click",".interest-recruit",function(e) {
+	
+			if(${getCurrentLoginVO == null}){
+				alert("로그인 한 회원만 관심공고를 등록할 수 있습니다.");
+				return;
+			};
+			console.log(e.target);
+			let recruitNo = e.target.parentElement.children.recruitNo.value;
+			e.target.classList.toggle("active");
+	
+			data = {
+				"recruitNo" : recruitNo,
+				"memId" : "${getCurrentLoginVO.memId}"
+			}
+			console.log(data);
+	
+			$.ajax({
+				url : "/recruit/ajaxInterestRecruit",
+				data : JSON.stringify(data),
+				type : "post",
+	    		contentType : "application/json;charset=utf-8",
+	    		dataType:"json",
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader(header, token);
+				},
+				success : function(res) {
+					console.log("res", res);
+					
+					$("#storedRecruit").text(res);
+				}
+	
+			})
+		})
+		
+		
+		let interestEntBtn = $(".ent-interest");
+		// 관심 기업 등록 기능
+		interestEntBtn.on("click", function(e){
+			
+			if(${getCurrentLoginVO == null}){
+				alert("로그인 한 회원만 관심기업을 등록할 수 있습니다.");
+				return;
+			};
+						
+			e.target.classList.toggle("active");
+			
+			let entNo = e.target.children.entNo.value;
+			
+			data = {
+				"entNo" : entNo,
+				"memId" : "${getCurrentLoginVO.memId}"
+			}
+			console.log(data);
+			$.ajax({
+				url : "/enterprise/ajaxInterestEnt",
+				data : JSON.stringify(data),
+				type : "post",
+		   		contentType : "application/json;charset=utf-8",
+		   		dataType:"json",
+				beforeSend : function(xhr) {
+					xhr.setRequestHeader(header, token);
+				},
+				success : function(res) {
+					console.log("res", res);
+		
+					if(res == 1){
+						$(".alert").text("관심기업에 추가되었습니다.");
+						$("#modal-alert").iziModal('open');					
+					}else{
+						$(".alert").text("관심기업에서 제거되었습니다.");
+						$("#modal-alert").iziModal('open');	
+					}
+					
+				}
+		
+			})
+			
+		})
+	</script>

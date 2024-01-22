@@ -1,0 +1,36 @@
+package jobja.item.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jobja.mypage.member.vo.MemberVO;
+import lombok.Data;
+
+@Data
+public class ConsultantReviewVO {
+	private String reviewNo;				//상품리뷰번호
+	private String itemNo;					//상품일련번호(ItemVO)
+	private String reviewMemId;				//일반회원ID(리뷰쓴사람)
+	private String reviewCnsltntId;			//상담사회원ID(상담해준사람)
+	private String reviewRate;				//평점
+	private String reviewCntnt;				//리뷰내용
+	
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date   reviewRegDt;				//리뷰작성날짜
+	
+	private String memNm;					//상담받은회원이름
+	private String conNm;					//상담사이름
+	
+	private String itemNm;					//구매상품명
+	private String itemIntrcn;				//리뷰내용
+	
+	private ItemVO itemVO;
+	
+	private MemberVO memberVO;
+	
+	
+}

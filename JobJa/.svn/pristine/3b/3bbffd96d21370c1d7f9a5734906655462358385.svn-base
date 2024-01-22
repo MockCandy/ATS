@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.mypage.member.mapper.AcademicCareerMapper">
+	
+	<!-- 학력등록 -->
+	<insert id="ajaxinsertmyAcademic" parameterType="AcademicCareerVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="acdmcrNo">
+			SELECT 'ACD' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(ACDMCR_NO),4) + 1,'00000')),'00001')
+			FROM   ACADEMIC_CAREER
+		</selectKey>
+		INSERT INTO ACADEMIC_CAREER
+        (
+            ACDMCR_NO
+          , MEM_ID
+          , ACDMCR_NM
+          , ACDMCR_MAJOR
+          , ACDMCR_DEGREE
+          , ACDMCR_EDUCATION
+          , ACDMCR_ENTRANCE_DT
+          , ACDMCR_GRDTN_DT
+          , ACDMCR_ATTND
+          , ACDMCR_POINT
+          , ACDMCR_YN
+        )
+		VALUES(
+			#{acdmcrNo}
+		  , #{memId}
+		  , #{acdmcrNm}
+		  , #{acdmcrMajor}
+		  , #{acdmcrDegree}
+		  , #{acdmcrEducation}
+		  , #{acdmcrEntranceDt}
+		  , #{acdmcrGrdtnDt}
+		  , #{acdmcrAttnd}
+		  , #{acdmcrPoint}
+		  , #{acdmcrYn}
+		)
+	
+	</insert>
+	
+	<!-- 학력조회  -->
+	<select id="ajaxgetmyAcademic" parameterType="String" resultType="AcademicCareerVO">
+		SELECT 
+        		ACDMCR_NO
+		      , MEM_ID
+		      , ACDMCR_NM
+		      , ACDMCR_MAJOR
+		      , ACDMCR_DEGREE
+		      , ACDMCR_ENTRANCE_DT
+		      , ACDMCR_GRDTN_DT
+		      , ACDMCR_ATTND
+		      , ACDMCR_POINT
+		      , ACDMCR_YN
+		      , ACDMCR_EDUCATION
+		FROM 	ACADEMIC_CAREER
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<!-- 학력삭제 -->
+	<delete id="ajaxdeleteAcademic" parameterType="String">
+		DELETE FROM ACADEMIC_CAREER
+		WHERE ACDMCR_NO = #{acdmcrNo}
+	</delete>
+	
+	<update id="ajaxupdatemyAcademic" parameterType="AcademicCareerVO">
+		UPDATE     ACADEMIC_CAREER
+		SET        ACDMCR_NM            = #{acdmcrNm}
+			     , ACDMCR_MAJOR         = #{acdmcrMajor}
+			     , ACDMCR_DEGREE        = #{acdmcrDegree}
+			     , ACDMCR_ENTRANCE_DT   = #{acdmcrEntranceDt}
+			     , ACDMCR_GRDTN_DT      = #{acdmcrGrdtnDt}
+			     , ACDMCR_ATTND         = #{acdmcrAttnd}
+			     , ACDMCR_POINT         = #{acdmcrPoint}
+			     , ACDMCR_YN            = #{acdmcrYn}
+			     , ACDMCR_EDUCATION     = #{acdmcrEducation}
+		WHERE      ACDMCR_NO = #{acdmcrNo}
+	</update>
+
+
+</mapper>

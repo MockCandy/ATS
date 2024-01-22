@@ -1,0 +1,18 @@
+
+#modal-alert {
+	height:100px!important;
+}
+#modal-alert .iziModal-wrap{
+	display:flex;
+	align-items:center;
+	text-align:center;
+	height:100%!important;
+}
+.icon-close:before {
+    content: "\f00d";
+    display: inline-block;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: #666;
+    cursor: pointer;
+}

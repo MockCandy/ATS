@@ -1,0 +1,34 @@
+package jobja.test;
+
+import java.net.URI;
+
+import org.java_websocket.drafts.Draft_6455;
+import org.json.JSONObject;
+
+public class WebSocketUtilTest {
+
+	public static void main(String[] args) throws InterruptedException {
+		// 실제 uri는 yml에 존재하나, 보안상 다른 예시를 붙여넣는다.
+		URI uri = URI.create("ws://127.0.0.1:8080/messageServerEndpoint");
+		WebSocketUtil webSocketUtil = new WebSocketUtil(uri, new Draft_6455());
+
+		// 웹소켓 커넥팅
+		webSocketUtil.connectBlocking();
+
+		JSONObject obj = new JSONObject();
+
+		// 메세지 던질거 제이슨 형식으로 세팅
+		obj.put("connectionType", "msgConnection");
+		obj.put("message", "Hello World");
+		String message = obj.toString();
+
+		// 웹소켓 메세지 보내기
+		webSocketUtil.send(message);
+
+		JSONObject result = webSocketUtil.getResult();
+		webSocketUtil.close();
+
+		System.out.println(result);
+
+	}
+}

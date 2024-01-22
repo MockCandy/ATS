@@ -1,0 +1,48 @@
+package jobja.util.websocket.msg.web;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.lang3.RandomUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jobja.util.websocket.com.cmm.LoginVO;
+
+
+@Controller
+@RequestMapping(value = { "/msg" })
+public class WebSocketMessageController {
+
+	/**
+	 * 웹 소켓 알림 메시지.. 이동한다.
+	 *
+	 * @param session 사용자세션
+	 * @param model   모델
+	 * @return view name
+	 */
+	@RequestMapping(value = "/websocketMessageMain.do")
+	public String websocketMessengerMain(HttpSession session, ModelMap model) {
+
+		return "msg/websocketMessageMain";
+	}
+
+	@RequestMapping(value = "/session.do")
+	public String websocketSession(HttpSession session, ModelMap model) {
+
+		LoginVO loginVO = new LoginVO();
+		loginVO.setId(String.format("%s", RandomUtils.nextLong(100, 20000)));
+		loginVO.setPassword("raHLBnHFcunwNzcDcfad4PhD11hHgXSUr7fc1Jk9uoQ=");
+		loginVO.setUserSe("USR");
+		loginVO.setEmail("egovframe@nia.or.kr");
+		loginVO.setIhidNum("");
+		loginVO.setName(String.format("쳇_%s", loginVO.getId()));
+		loginVO.setOrgnztId("ORGNZT_0000000000000");
+		loginVO.setUniqId("USRCNFRM_00000000000");
+
+		session.setAttribute("loginVO", loginVO);
+
+		return "blank";
+	}
+
+}

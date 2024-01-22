@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.recruit.mapper.InterestRecruitMapper">
+
+	<select id="ajaxInterestRecruit" parameterType="interestRecruitVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM INTEREST_RECRUIT
+		WHERE MEM_ID=#{memId} AND RECRUIT_NO=#{recruitNo}
+	</select>
+	
+	<insert id="ajaxInterestRecAdd" parameterType="interestRecruitVO">
+		INSERT INTO INTEREST_RECRUIT
+		(MEM_ID, RECRUIT_NO, INTRST_RECRUIT_REG_DT)
+		VALUES (#{memId}, #{recruitNo}, SYSDATE)
+	</insert>
+	
+	<delete id="ajaxInterestRecDel" parameterType="interestRecruitVO">
+		DELETE FROM INTEREST_RECRUIT
+		WHERE MEM_ID=#{memId} AND RECRUIT_NO=#{recruitNo}
+	</delete>
+	
+	<select id="getStoredRecruit" parameterType="interestRecruitVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM INTEREST_RECRUIT
+		WHERE MEM_ID=#{memId}
+	</select>
+	
+</mapper>

@@ -1,0 +1,21 @@
+package jobJa.compare.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("compare")
+public class CompareController {
+
+	@GetMapping("index")
+	public String compare() {
+		
+		return "compare/index";
+	}
+	
+	
+}

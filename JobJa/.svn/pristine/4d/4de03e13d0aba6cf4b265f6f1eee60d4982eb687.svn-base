@@ -1,0 +1,14 @@
+package jobja.item.service;
+
+import java.util.List;
+
+import jobja.item.vo.ItemVO;
+
+public interface ItemService {
+	
+	//배너상품 목록 가져오기
+	public List<ItemVO> getBannerItemList();
+	//채용상품 목록 가져오기
+	public List<ItemVO> getRecruitItemList();
+
+}

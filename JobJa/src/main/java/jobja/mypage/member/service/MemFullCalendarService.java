@@ -1,0 +1,25 @@
+package jobja.mypage.member.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.mypage.member.vo.MemFullCalendarVO;
+
+public interface MemFullCalendarService {
+   
+   //DB에 저장되어 있는 일정 가져오는 메소드.
+   public List<Map<String, Object>> getEvents(String memId);
+   
+   //일정추가
+   public int addEvent(MemFullCalendarVO event);
+   
+   //일정수정
+   public int updateEvent(MemFullCalendarVO event);
+   
+   //일정삭제
+   public int deleteEvent(String scherduleId);
+
+   //일정 중복 체크
+   public int addEventCheck(MemFullCalendarVO event);
+
+}

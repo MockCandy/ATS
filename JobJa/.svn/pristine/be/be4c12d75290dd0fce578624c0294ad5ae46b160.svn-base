@@ -1,0 +1,15 @@
+package jobja.item.mapper;
+
+import java.util.List;
+
+import jobja.item.vo.ItemVO;
+
+public interface ItemMapper {
+	
+	//기업 상품 목록 가져오기.
+	public List<ItemVO> getBannerItemList();
+	
+	//채용 상품 목록 가져오기.
+	public List<ItemVO> getRecruitItemList();
+
+}

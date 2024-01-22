@@ -1,0 +1,264 @@
+package jobJa.admin.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.admin.mapper.AdminMapper;
+import jobJa.admin.service.AdminService;
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.recruit.vo.RecruitVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class AdminServiceImpl implements AdminService {
+
+   @Autowired
+   AdminMapper adminMapper;
+   
+   @Override
+   public List<MemberVO> getMember(Map<String,Object> map) {
+      
+      return this.adminMapper.getMember(map);  
+   }
+
+   @Override
+   public int getTotalMem(Map<String,Object> map) {
+      
+      return this.adminMapper.getTotalMem(map);
+   }
+
+   @Override
+   public MemberVO getMem(Map<String,Object> map) {
+      
+      return this.adminMapper.getMem(map);
+   }
+
+   @Override
+   public int deleteAjax(String memId) {
+      
+      return this.adminMapper.deleteAjax(memId);
+   }
+
+   @Override
+   public int deleteSchedule(String memId) {
+      
+      return this.adminMapper.deleteSchedule(memId);
+   }
+
+   @Override
+   public int deleteInterestEnt(String memId) {
+      
+      return this.adminMapper.deleteInterestEnt(memId);
+   }
+
+   @Override
+   public int deleteAlarm(String memId) {
+      
+      return this.adminMapper.deleteAlarm(memId);
+   }
+
+   @Override
+   public int deleteCertificate(String memId) {
+      
+      return this.adminMapper.deleteCertificate(memId);
+   }
+
+   @Override
+   public int deletePortfolio(String memId) {
+      
+      return this.adminMapper.deletePortfolio(memId);
+   }
+
+   @Override
+   public int deleteInterestRecruit(String memId) {
+      
+      return this.adminMapper.deleteInterestRecruit(memId);
+   }
+
+   @Override
+   public int deleteAuth(String memId) {
+      
+      return this.adminMapper.deleteAuth(memId);
+   }
+
+   @Override
+   public int deleteProduct(String memId) {
+      
+      return this.adminMapper.deleteProduct(memId);
+   }
+
+   @Override
+   public int getTotalCounsel(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalCounsel(map);
+   }
+
+   @Override
+   public List<MemberVO> getCounselor(Map<String, Object> map) {
+      
+      return this.adminMapper.getCounselor(map);
+   }
+
+   @Override
+   public int getTotalCounselOffer(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalCounselOffer(map);
+   }
+
+   @Override
+   public List<MemberVO> getCounselorOffer(Map<String, Object> map) {
+      
+      return this.adminMapper.getCounselorOffer(map);
+   }
+
+   @Override
+   public int updateYn(Map<String,Object> map) {
+      
+      return this.adminMapper.updateYn(map);
+   }
+
+   @Override
+   public int getcsCompleTeCount(Map<String, Object> map) {
+      
+      return this.adminMapper.getcsCompleTeCount(map);
+   }
+
+   @Override
+   public int getcsWaitCount(Map<String, Object> map) {
+      
+      return this.adminMapper.getcsWaitCount(map);
+   }
+
+   @Override
+   public int getcsFalseCount(Map<String, Object> map) {
+      
+      return this.adminMapper.getcsFalseCount(map);
+   }
+
+   @Override
+   public List<MemberVO> getCounselorSuccess(Map<String, Object> map) {
+      
+      return this.adminMapper.getCounselorSuccess(map);
+   }
+
+   @Override
+   public List<MemberVO> getCounselorWaiting(Map<String, Object> map) {
+      
+      return this.adminMapper.getCounselorWaiting(map);
+   }
+
+   @Override
+   public List<MemberVO> getAdminFalseList(Map<String, Object> map) {
+      
+      return this.adminMapper.getAdminFalseList(map);
+   }
+
+   @Override
+   public int getTotalEnter(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalEnter(map);
+   }
+
+   @Override
+   public List<MemberVO> getEnter(Map<String, Object> map) {
+      
+      return this.adminMapper.getEnter(map);
+   }
+
+   @Override
+   public int getTotalEnterOffer(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalEnterOffer(map);
+   }
+
+   @Override
+   public int getEnterWaitCount(Map<String, Object> map) {
+      
+      return this.adminMapper.getEnterWaitCount(map);
+   }
+
+   @Override
+   public int getEnterFalseCount(Map<String, Object> map) {
+      
+      return this.adminMapper.getEnterFalseCount(map);
+   }
+
+   @Override
+   public List<MemberVO> getEnterOffer(Map<String, Object> map) {
+      
+      return this.adminMapper.getEnterOffer(map);
+   }
+
+   @Override
+   public int updateYn2(Map<String, Object> map) {
+      
+      return this.adminMapper.updateYn2(map);
+   }
+
+   @Override
+   public List<MemberVO> getEnterWaiting(Map<String, Object> map) {
+      
+      return this.adminMapper.getEnterWaiting(map);
+   }
+
+   @Override
+   public List<MemberVO> getAdminEnterFalseList(Map<String, Object> map) {
+      
+      return this.adminMapper.getAdminEnterFalseList(map);
+   }
+
+   @Override
+   public int getTotalRecruit(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalRecruit(map);
+   }
+
+   @Override
+   public List<RecruitVO> getRecruitVOList(Map<String, Object> map) {
+      
+      return this.adminMapper.getRecruitVOList(map);
+   }
+
+   @Override
+   public ComCodeInfoVO getComCode(Map<String, Object> map) {
+      
+      return this.adminMapper.getComCode(map);
+   }
+
+   @Override
+   public int deleteRecruitAjax(String recruitNo) {
+      
+      return this.adminMapper.deleteRecruitAjax(recruitNo);
+   }
+
+   @Override
+   public List<RecruitVO> getDeadLineRecruitVOList(Map<String, Object> map) {
+      
+      return this.adminMapper.getDeadLineRecruitVOList(map);
+   }
+
+   @Override
+   public List<RecruitVO> getMoneyRecruitVOList(Map<String, Object> map) {
+
+      return this.adminMapper.getMoneyRecruitVOList(map);
+   }
+
+   @Override
+   public int getTotalReport(Map<String, Object> map) {
+      
+      return this.adminMapper.getTotalReport(map);
+   }
+
+   @Override
+   public List<RecruitVO> getReporttVOList(Map<String, Object> map) {
+      
+      return this.adminMapper.getReporttVOList(map);
+   }
+
+
+}

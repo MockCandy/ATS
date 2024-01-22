@@ -1,0 +1,9 @@
+package jobJa.report.mapper;
+
+import jobJa.report.vo.ReportVO;
+
+public interface ReportMapper {
+
+	int report(ReportVO reportVO);
+
+}

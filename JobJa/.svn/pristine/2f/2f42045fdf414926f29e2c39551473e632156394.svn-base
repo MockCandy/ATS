@@ -1,0 +1,126 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<link rel="stylesheet" href="/resources/css/consult.css">
+<link rel="stylesheet" href="/resources/css/resume.css">
+<link rel="stylesheet" href="/resources/css/mypage.css"> 
+
+<link rel="stylesheet" type="text/css"
+	href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<script src="/resources/js/jquery-3.6.3.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+
+
+<div class="mypage-div">
+	<div class="mypage-left">
+		<div class="mypage-left-tit">상담</div>
+		<ul>
+			<li class="active"><a href="/consultantMyPage/consultantLog">진행한 상담 내역</a></li>
+			<li><a href="/consultantMyPage/consultantHistory">매출 내역</a></li>
+		</ul>
+	</div>
+	
+	<div class="mypage-body-con">
+		<div class="sub-title-area">
+			<div class="body-sub-title">상담 상세</div>
+		</div>
+	
+		<div class="body-sub-con">
+			
+			
+			<p class="p-20 bold mb-12 mt-20">상담자 프로필</p>
+			<div class="memberProfile">
+				<div class="memberImg">
+					<img alt="" src="/resources/upload/${consultantLogVO.buyerVO.memAfId }">
+				</div>
+				<div class="memberDetail">
+					<div class="memberProfile-line">
+						<p class="bold">상담자 이름</p>
+						<p class="p-14">${consultantLogVO.buyerVO.memNm }</p>	
+					</div>
+					<div class="memberProfile-line">
+						<p class="bold">상담자 지역</p>
+						<p class="p-14">${fn:split(consultantLogVO.buyerVO.memAddr," ")[0] } ${fn:split(consultantLogVO.buyerVO.memAddr," ")[1] }</p>	
+					</div>
+					<div class="memberProfile-line">
+						<p class="bold">상담자 이메일</p>
+						<p class="p-14">${consultantLogVO.buyerVO.memEmail }</p>	
+					</div>
+					<div class="memberProfile-line">
+						<p class="bold">희망 직군</p>
+						<p class="p-14">${consultantLogVO.comCodeInfoVO.comCdNm }</p>	
+					</div>
+				</div>
+				
+			</div>
+			
+			<div class="consultArea">
+				<div>
+					<p class="p-20 bold mb-9">상담 제목</p>
+					<div class="consultCont">${consultantLogVO.cnsltntTitle }</div>
+				</div>
+				<div>
+					<p class="p-20 bold mb-9">상담 내용</p>
+					<pre class="consultCont">${consultantLogVO.cnsltntCntnt }</pre>
+				</div>
+			</div>
+		  
+		</div>
+	</div>
+		
+
+	
+	
+</div>
+	
+
+
+
+
+
+<script>
+let time = document.querySelectorAll(".time");
+
+console.log(time);
+
+for(let i = 0 ; i < time.length; i++){
+   console.log(time[i].innerText);
+   let year = time[i].innerText.split(" ")[5];
+   console.log(year);
+   let month = time[i].innerText.split(" ")[1];
+   if(month == "Jan"){
+      month = '1';
+   }else if(month == "Feb"){
+      month = '2';         
+   }else if(month == "Mar"){
+      month = '3';         
+   }else if(month == "Apr"){
+      month = '4';         
+   }else if(month == "May"){
+      month = '5';         
+   }else if(month == "Jun"){
+      month = '6';         
+   }else if(month == "Jul"){
+      month = '7';         
+   }else if(month == "Aug"){
+      month = '8';         
+   }else if(month == "Sep"){
+      month = '9';         
+   }else if(month == "Oct"){
+      month = '10';         
+   }else if(month == "Nov"){
+      month = '11';         
+   }else if(month == "Dec"){
+      month = '12';         
+   }
+   let day = time[i].innerText.split(" ")[2];
+   console.log(day);
+   
+   time[i].innerText = year+"-"+month+"-"+day
+}
+
+</script>

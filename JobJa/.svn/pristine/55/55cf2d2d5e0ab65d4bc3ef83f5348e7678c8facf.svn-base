@@ -1,0 +1,42 @@
+package jobja.mypage.member.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.mypage.member.service.AcademicCareerService;
+import jobja.mypage.member.vo.AcademicCareerVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/academic")
+@Controller
+public class AcademicCareerController {
+	
+	@Autowired
+	AcademicCareerService academicCareerService;
+	
+	//학력등록
+	@PostMapping("/ajaxinsertmyAcademic")
+	@ResponseBody
+	public int ajaxinsertmyAcademic(@RequestBody List<AcademicCareerVO> academicCareerVOList) {
+		
+		log.info("djhsi???????와?");
+		
+		log.info("wpqkkkk재ㅔ발 : " + academicCareerVOList);
+		
+		int result = this.academicCareerService.ajaxinsertmyAcademic(academicCareerVOList);
+		
+		log.info("rhkdus? 고ㅓㅏ연" + result);
+		
+		return result;
+		
+	}
+	
+
+}

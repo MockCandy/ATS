@@ -1,0 +1,6 @@
+package jobJa.myPage.member.service;
+
+
+public interface MemFullCalendarService {
+
+}

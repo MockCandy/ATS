@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardEmplConsultMapper">
+
+<sql id="where">
+	<if test="keyword!=null and keyword!=''">
+		BOARD_TITLE LIKE ('%' || #{keyword} || '%')
+	</if>
+</sql>
+
+	<insert id="createPost" parameterType="boardEmplConsultVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="boardId">
+			SELECT 
+    			'CON' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BOARD_ID, 4))), 0) + 1, 5, '0') AS NEXT_BOARD_ID
+			FROM  
+    			BOARD_EMPL_CONSULT
+		</selectKey>
+	
+		INSERT INTO 
+			BOARD_EMPL_CONSULT(
+				  BOARD_ID
+				, MEM_ID
+				, BOARD_TITLE
+				, BOARD_CNTNT
+				, BOARD_WRITING_DT
+				, BOARD_UPDT_DT
+				, EMPL_CONSULT_AF_ID
+				, BOARD_CNT
+				, BOARD_LIKE
+				, JOB_CATEGORY_CD
+				)
+		VALUES
+			(
+				  #{boardId}
+				, #{memId}
+				, #{boardTitle}
+				, #{boardCntnt}
+				, SYSDATE
+				, null
+				, #{emplConsultAfId}
+				, 0
+				, 0
+				, #{jobCategoryCd}
+			)
+			
+	</insert>
+
+	<resultMap type="BoardEmplConsultVO" id="boardEmpConsultMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="emplConsultAfId" column="EMPL_CONSULT_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="boardLike" column="BOARD_LIKE"/>
+		<result property="jobCategoryCd" column="JOB_CATEGORY_CD"/>
+		<association property="atchFileVO" resultMap="atchFileMap"></association>
+		<association property="memberVO" resultMap="memberVOMap"></association>
+		<collection property="comCodeInfoVOList" resultMap="comCodeInfoVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID"/>
+		<result property="afCreatDt" column="AF_CREAT_DT"/>
+		<result property="afYn" column="AF_YN"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<resultMap type="comCodeInfoVO" id="comCodeInfoVOMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+		<collection property="comDetCodeInfoVO" resultMap="comDetCodeInfoVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoVOMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>	
+	</resultMap>
+	
+	<resultMap type="memberVO" id="memberVOMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memIntWord" column="MEM_INT_WORD"/>
+		<collection property="resumeVOList" resultMap="resumeVOMap"></collection>
+		<collection property="portfolioVOList" resultMap="portfolioMap"></collection>
+		<collection property="academicCareerVOList" resultMap="academicCareerVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="portfolioVO" id="portfolioMap">
+		<id property= "ptflNo"  column= "PTFL_NO" />
+		<id property= "memId"  column= "MEM_ID" />
+		<result property= "ptflTitle"  column= "PTFL_TITLE" />
+		<result property= "ptflWritingDt"  column= "PTFL_WRITING_DT" />
+		<result property= "ptflUpdtDt"  column= "PTFL_UPDT_DT" />
+		<result property= "gubun"  column= "GUBUN" />
+		<result property="rnum" column="RNUM"/>
+		<association property="portfolioBasicVO" resultMap="portBasicMap"></association>
+		<collection property="portfolioFreeVOList" resultMap="portFreeMap"></collection>
+	</resultMap>
+	
+	<resultMap type="portBasicVO" id="portBasicMap">
+		<result property= "ptflNo"  column= "PTFL_NO" />
+		<result property= "memId"  column= "MEM_ID" />
+		<result property= "ptflGrowth"  column= "PTFL_GROWTH" />
+		<result property= "ptflMotive"  column= "PTFL_MOTIVE" />
+		<result property= "ptflPersonality"  column= "PTFL_PERSONALITY" />
+		<result property= "ptflJobExp"  column= "PTFL_JOB_EXP" />
+		<result property= "ptflProjExp"  column= "PTFL_PROJ_EXP" />
+		<result property= "ptflAspirations"  column= "PTFL_ASPIRATIONS" />
+	</resultMap>
+	
+	<resultMap type="portFreeVO" id="portFreeMap">
+		<result property= "ptflNo"  column= "PTFL_NO" />
+		<result property= "memId"  column= "MEM_ID" />
+		<result property= "ptflFreeq"  column= "PTFL_FREEQ" />
+		<result property= "ptflFreea"  column= "PTFL_FREEA" />
+	</resultMap>
+
+	<resultMap type="academicCareerVO" id="academicCareerVOMap">
+		<result property="acdmcrNo" column="ACDMCR_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="acdmcrNm" column="ACDMCR_NM"/>
+		<result property="acdmcrMajor" column="ACDMCR_MAJOR"/>
+		<result property="acdmcrDegree" column="ACDMCR_DEGREE"/>
+		<result property="acdmcrEntranceDt" column="ACDMCR_ENTRANCE_DT"/>
+		<result property="acdmcrGrdtnDt" column="ACDMCR_GRDTN_DT"/>
+		<result property="acdmcrAttnd" column="ACDMCR_ATTND"/>
+		<result property="acdmcrPoint" column="ACDMCR_POINT"/>
+		<result property="acdmcrYn" column="ACDMCR_YN"/>
+	</resultMap>
+	
+	<resultMap type="resumeVO" id="resumeVOMap">
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="resumeTitle" column="RESUME_TITLE"/>
+		<result property="resumeTemp" column="RESUME_TEMP"/>
+		<result property="resumeRep" column="RESUME_REP"/>
+		<result property="resumeCd" column="RESUME_CD"/>
+		<result property="resumeAfId" column="RESUME_AF_ID"/>
+		<result property="resumeYn" column="RESUME_YN"/>
+		<result property="resumeOccp" column="RESUME_OCCP"/>
+		<result property="resumeJob" column="RESUME_JOB"/>
+		<collection property="careerVOList" resultMap="careerVOMap"></collection>
+		<collection property="languageVOList" resultMap="languageVOMap"></collection>
+		<collection property="resultVOList" resultMap="resultVOMap"></collection>
+		<collection property="awardsVOList" resultMap="awardsVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="careerVO" id="careerVOMap">
+		<result property="companyPosition" column="COMPANY_POSITION"/>
+		<result property="companyJob" column="COMPANY_JOB"/>
+		<result property="careerSeq" column="CAREER_SEQ"/>
+		<result property="careerNo" column="CAREER_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="companyNm" column="COMPANY_NM"/>
+		<result property="companyEntranceDt" column="COMPANY_ENTRANCE_DT"/>
+		<result property="companyLeaveDt" column="COMPANY_LEAVE_DT"/>
+		<result property="companyDept" column="COMPANY_DEPT"/>
+		<result property="companySalary" column="COMPANY_SALARY"/>
+		<result property="companyDetCareer" column="COMPANY_DET_CAREER"/>
+	</resultMap>
+	
+	<resultMap type="resultVO" id="resultVOMap">
+		<result property="resultSeq" column="RESULT_SEQ"/>
+		<result property="resultNo" column="RESULT_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="resultTitle" column="RESULT_TITLE"/>
+		<result property="resultCntnt" column="RESULT_CNTNT"/>
+		<result property="resultStdt" column="RESULT_STDT"/>
+		<result property="resultEddt" column="RESULT_EDDT"/>
+	</resultMap>
+	
+	<resultMap type="awardsVO" id="awardsVOMap">
+		<result property="awdNo" column="AWD_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="awdNm" column="AWD_NM"/>
+		<result property="awdCntnt" column="AWD_CNTNT"/>
+		<result property="awdDt" column="AWD_DT"/>
+		<result property="awdOrg" column="AWD_ORG"/>
+		<result property="awdSeq" column="AWD_SEQ"/>
+	</resultMap>
+	
+	<resultMap type="languageVO" id="languageVOMap">
+		<result property="langNo" column="LANG_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="langKind" column="LANG_KIND"/>
+		<result property="langLevel" column="LANG_LEVEL"/>
+		<result property="langSeq" column="LANG_SEQ"/>
+		<collection property="languageDTVOList" resultMap="languageDTVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="languageDTVO" id="languageDTVOMap">
+		<result property="langDetSeqq" column="LANG_DET_SEQQ"/>
+		<result property="langSeq" column="LANG_SEQ"/>
+		<result property="langNo" column="LANG_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="langDetailScore" column="LANG_DETAIL_SCORE"/>
+		<result property="langDetailAcqDt" column="LANG_DETAIL_ACQ_DT"/>
+		<result property="langDetailExpDt" column="LANG_DETAIL_EXP_DT"/>
+		<result property="langDetailName" column="LANG_DETAIL_NAME"/>
+	</resultMap>
+	
+	<select id="list" parameterType="hashMap" resultMap="boardEmpConsultMap">
+		SELECT 
+			  S.*
+		    , M.MEM_NM, M.MEM_POSTNO, M.MEM_ADDR, M.MEM_ADDR2, M.MEM_TEL
+		    , M.MEM_REG_DT, M.MEM_OPEN_RESUME, M.MEM_STATE_CD, M.MEM_BIRTH
+		    , M.MEM_GEN, M.MEM_EMAIL, M.MEM_CD, M.MEM_YN, M.MEM_INTRCN
+		    , M.MEM_NCNM, M.MEM_AF_ID, M.MEM_WISH_JOB_CATE, M.MEM_WISH_JOB
+		    , M.ENABLED, M.MEM_INT_WORD, C.COMPANY_NM, C.COMPANY_ENTRANCE_DT
+		    , C.COMPANY_LEAVE_DT, A.ACDMCR_MAJOR
+		FROM (
+		    SELECT T.*
+		    FROM (
+		        SELECT 
+		          ROW_NUMBER() OVER(ORDER BY A.BOARD_WRITING_DT DESC) RNUM
+		        , A.BOARD_ID, A.MEM_ID, A.BOARD_TITLE, A.BOARD_CNTNT
+		        , A.BOARD_WRITING_DT, A.BOARD_UPDT_DT, A.EMPL_CONSULT_AF_ID
+		        , A.BOARD_CNT, A.BOARD_LIKE, A.JOB_CATEGORY_CD
+		        , B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM
+		        , B.AFD_FILE_SIZE, B.AFD_SAVE_PATH, B.AFD_EXTSN, B.AFD_CNTNT, B.AFD_UPLOAD_DT
+		        FROM BOARD_EMPL_CONSULT A
+		        LEFT OUTER JOIN ATCH_FILE_DETAIL B ON A.BOARD_ID = B.AF_ID
+				<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+				WHERE (A.BOARD_TITLE LIKE '%' || #{keyword} || '%')
+				</if>
+		    ) T
+		    WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+		) S, MEMBER M, RESUME R, CAREER C, ACADEMIC_CAREER A
+		WHERE S.MEM_ID = M.MEM_ID
+		AND   R.MEM_ID = M.MEM_ID
+		AND   R.RESUME_NO = C.RESUME_NO
+		AND   A.MEM_ID = M.MEM_ID
+	</select>
+
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM BOARD_EMPL_CONSULT
+		WHERE 1=1
+	</select>
+	
+	<update id="countUpHit" parameterType="boardEmplConsultVO">
+		UPDATE 
+			BOARD_EMPL_CONSULT
+		SET 
+			BOARD_CNT = BOARD_CNT + 1
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	<select id="detail" parameterType="String" resultMap="boardEmpConsultMap">
+		SELECT 
+			 A.BOARD_ID
+			, A.MEM_ID
+			, A.BOARD_TITLE
+			, A.BOARD_CNTNT
+			, A.BOARD_WRITING_DT
+			, A.BOARD_UPDT_DT
+			, A.EMPL_CONSULT_AF_ID
+			, A.BOARD_CNT
+			, B.AFD_SEQ
+			, B.AF_ID
+			, B.AFD_ORIGIN_NM
+			, B.AFD_SAVE_NM
+			, B.AFD_FILE_SIZE
+			, B.AFD_SAVE_PATH
+			, B.AFD_EXTSN
+			, B.AFD_CNTNT
+			, B.AFD_UPLOAD_DT
+		FROM 
+			BOARD_EMPL_CONSULT A
+		LEFT OUTER JOIN ATCH_FILE_DETAIL B
+		ON A.BOARD_ID = B.AF_ID
+		WHERE	  BOARD_ID = #{boardId}
+	</select>
+	
+	<update id="updatePost" parameterType="String">
+		UPDATE 
+			BOARD_EMPL_CONSULT
+		SET 
+			  BOARD_TITLE = #{boardTitle}
+			, BOARD_CNTNT = #{boardCntnt}
+			, BOARD_UPDT_DT = SYSDATE
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	<delete id="delAtchdt" parameterType="String">
+		DELETE FROM 
+			ATCH_FILE_DETAIL
+		WHERE AF_ID = #{afId}
+	</delete>
+	
+	<delete id="delAtch" parameterType="String">
+		DELETE FROM 
+			ATCH_FILE
+		WHERE AF_ID = #{afId}
+	</delete>
+	
+	<delete id="deletePost" parameterType="boardEmplConsultVO">
+		DELETE FROM 
+			BOARD_EMPL_CONSULT
+		WHERE BOARD_ID = #{boardId}
+	</delete>
+
+</mapper>

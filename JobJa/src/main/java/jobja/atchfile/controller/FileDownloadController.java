@@ -1,0 +1,76 @@
+package jobja.atchfile.controller;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jobja.atchfile.mapper.AtchFileDetailMapper;
+import jobja.atchfile.vo.AtchFileDetailVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/file")
+public class FileDownloadController {
+
+	@Autowired
+	AtchFileDetailMapper atchFileDetailMapper;
+	
+	@GetMapping("/download.do")
+	public void download(AtchFileDetailVO atchFileDetailVO, HttpServletResponse resp, HttpServletRequest req) throws IOException {
+		
+		atchFileDetailVO = atchFileDetailMapper.getOneAtch(atchFileDetailVO);
+		
+		
+		log.info("download.do -> atchFileDetailVO : " + atchFileDetailVO);
+		
+		/*
+		 *Content-Disposition 헤더란
+		 * 
+		 * Content-Disposition: inline (default)
+		 * Content-Disposition: attachment 					 // 파일 다운로드
+		 * Content-Disposition: attachment; filename="a.jpg" // 파일 다운로드
+		 * 
+		 */
+		
+		resp.setContentType("application/octet-stream");
+		
+		// URL에는 공백문자를 포함할 수 없다.
+		// URLEncoding을 하면 공백은 (+)로 표시되기 때문에
+		// (+)문자를 공백문자인 %20으로 바꾸어 준다.
+		resp.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode(atchFileDetailVO.getAfdOriginNm(), "UTF-8").replaceAll("\\+","%20")  +"\"");
+		
+		FileInputStream fis = new FileInputStream(atchFileDetailVO.getAfdSavePath());
+		OutputStream out = resp.getOutputStream();
+		
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		BufferedOutputStream bos = new BufferedOutputStream(out);
+		
+		int data = 0;
+		
+		while((data = bis.read()) != -1) {
+			
+			bos.write(data);
+			
+		}
+		
+		bis.close();
+		bos.close();
+	}
+		
+		
+	
+}

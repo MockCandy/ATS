@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.member.mapper.ResumeMapper">
+	
+	<!-- 
+		select id = "getResumes" 에 쓰인 resultMap은 동영이가 사용하던거
+		(지원현황)가져오려고
+	 -->
+	
+	<resultMap type="resumeVO" id="resumeMap">
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="resumeTitle" column="RESUME_TITLE"/>
+		<result property="resumeTemp" column="RESUME_TEMP"/>
+		<result property="resumeRep" column="RESUME_REP"/>
+		<result property="resumeCd" column="RESUME_CD"/>
+		<result property="resumeAfId" column="RESUME_AF_ID"/>
+		<result property="resumeYn" column="RESUME_YN"/>
+		<result property="resumeSkill" column="RESUME_SKILL"/>
+		<result property="resumeOccp" column="RESUME_OCCP"/>
+		<result property="resumeJob" column="RESUME_JOB"/>
+		<collection property="applicationVOList" resultMap="applicationMap"></collection>
+	</resultMap>
+	<resultMap type="applicationVO" id="applicationMap">
+		<result property="appNo" column="APP_NO"/>
+		<result property="recruitNo" column="RECRUIT_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="appStdt" column="APP_STDT"/>
+		<result property="appStateCd" column="APP_STATE_CD"/>
+		<result property="appStateDt" column="APP_STATE_DT"/>
+		<result property="appApplyDt" column="APP_APPLY_DT"/>
+	</resultMap>
+	<select id="getResumes" parameterType="resumeVO" resultMap="resumeMap">
+		SELECT 
+			a.RESUME_NO, 
+			a.MEM_ID, 
+			a.RESUME_TITLE, 
+			a.RESUME_TEMP, 
+			a.RESUME_REP, 
+			a.RESUME_CD, 
+			a.RESUME_AF_ID, 
+			a.RESUME_YN,
+			b.APP_NO,
+			b.RECRUIT_NO, 
+			b.RESUME_NO, 
+			b.APP_STDT, 
+			b.APP_STATE_CD, 
+			b.APP_STATE_DT, 
+			b.APP_APPLY_DT
+		FROM RESUME a, APPLICATION b
+		WHERE 
+			A.RESUME_NO = B.RESUME_NO(+)
+			AND A.MEM_ID=#{memId}
+	</select>
+	
+	<select id="getApplications" parameterType="String" resultType="applicationVO">
+		SELECT 
+			APP_NO, 
+			RECRUIT_NO, 
+			RESUME_NO, 
+			APP_STDT, 
+			APP_STATE_CD, 
+			APP_STATE_DT, 
+			APP_APPLY_DT
+		FROM APPLICATION
+		WHERE RESUME_NO = #{resumeNo}
+	</select>
+	
+	<!-- 마이페이지 상담사신청 : 나의 이력서 내역 가져오기. -->
+	<select id="myResume" parameterType="String" resultType="resumeVO">
+		SELECT 
+		        RESUME_NO
+		      , RESUME_TITLE
+		      , RESUME_TEMP
+		      , RESUME_REP
+		      , RESUME_CD
+		      , RESUME_AF_ID
+		      , RESUME_YN
+		      , RESUME_SKILL
+		FROM 	RESUME
+		WHERE 	MEM_ID = #{memId}
+	</select>
+	
+	<!-- 마이페이지 상담사신청 : 내가 선택한 이력서 가져오기.  -->
+	<select id="getCheckResume" parameterType="String" resultType="resumeVO">
+		SELECT 
+				RESUME_NO
+		      , RESUME_TITLE    
+		      , RESUME_TEMP
+		      , RESUME_REP
+		      , RESUME_CD
+		      , RESUME_AF_ID
+		      , RESUME_YN
+		      , RESUME_SKILL
+		FROM RESUME
+		WHERE RESUME_NO = #{resumeNo}
+	</select>
+	
+</mapper>

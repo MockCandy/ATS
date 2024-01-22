@@ -1,0 +1,49 @@
+package jobja.board.vo;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.common.vo.ComCodeInfoVO;
+import lombok.Data;
+
+@Data
+public class BoardInterViewVO {
+	
+	private String boardId;					//게시물ID
+	private String memId;					//등록자ID
+	private String interJobCd;				//직군구분코드
+	private String boardTitle;				//게시물제목
+	private String boardCntnt;				//게시물내용
+	private String interNm;					//인터뷰대상자이름
+	private String interEntNm;				//인터뷰대상자회사이름
+	private String interDeptNm;				//인터뷰대상자부서이름
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date boardWritingDt;			//작성일시
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date boardUpdtDt;				//마지막수정일시
+	private String intvAfId;				//인터뷰첨부파일ID
+	private int boardCnt;					//조회수
+	private String boardSeTitle;	        //게시물부제목
+	private String intvProfile;				//게시물프로필사진.
+	
+	private List<BoardInterViewQNAVO> boardInterViewQNAVOList;
+	
+	private List<ComCodeInfoVO> comCodeInfoVOList;
+	
+	private List<AtchFileDetailVO> atchFileDetailVOList;
+	
+	private MultipartFile[] uploadFile;			//게시물 사진.
+		
+	private MultipartFile uploadProFile;		//프로필사진.
+	
+	
+	
+	
+	
+	
+
+}

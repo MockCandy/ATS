@@ -1,0 +1,382 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+
+
+<link rel="stylesheet" href="/resources/css/admin.css">
+<link rel="stylesheet" href="/resources/css/resumeModal.css">
+
+<!-- Favicons -->
+<link href="/resources/assets/img/favicon.png" rel="icon">
+<link href="/resources/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<!-- <link href="https://fonts.gstatic.com" rel="preconnect"> -->
+<!-- <link -->
+<!-- 	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" -->
+<!-- 	rel="stylesheet"> -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap"
+	rel="stylesheet">
+<!-- Vendor CSS Files -->
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="/resources/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/resources/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/resources/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/resources/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/resources/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+
+<section class="section">
+      <div class="row">
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;매월 총 매출</h5>
+				<c:forEach var="tlist" items="${tlist}" varStatus="">
+					<input type="hidden" class="payMonth" value="${tlist.payMonth}">
+					<input type="hidden" class="totalAmount" value="${tlist.totalAmount}">
+				</c:forEach>
+				<c:forEach var="clist" items="${clist}" varStatus="">
+					<input type="hidden" class="payMonth2" value="${clist.payMonth2}">
+					<input type="hidden" class="totalAmount2" value="${clist.totalAmount2}">
+				</c:forEach>
+				<c:forEach var="elist" items="${elist}" varStatus="">
+					<input type="hidden" class="payMonth3" value="${elist.payMonth3}">
+					<input type="hidden" class="totalAmount3" value="${elist.totalAmount3}">
+				</c:forEach>
+				<c:forEach var="erlist" items="${erlist}" varStatus="">
+					<input type="hidden" class="entNm" value="${erlist.entNm}">
+					<input type="hidden" class="totalItemsPurchased" value="${erlist.totalItemsPurchased}">
+				</c:forEach>
+				<c:forEach var="crlist" items="${crlist}" varStatus="">
+					<input type="hidden" class="memNm" value="${crlist.memNm}">
+					<input type="hidden" class="totalItemsPurchased" value="${crlist.totalItemsPurchased}">
+				</c:forEach>
+				
+              <!-- Line Chart -->
+              <canvas id="lineChart" style="max-height: 330px; display: block; box-sizing: border-box; height: 227px; width: 555px;" width="455" height="280"></canvas>
+              <script>
+              
+              document.addEventListener("DOMContentLoaded", () => {
+              	var payMonth = $(".payMonth");
+              	var totalAmount = $(".totalAmount");
+              	var arrayOfPay = [];
+            	var arrayOfTotal = [];
+            	
+            	payMonth.each(function(){
+            		arrayOfPay.push($(this).val());
+            	});
+            	totalAmount.each(function(){
+            		arrayOfTotal.push($(this).val());
+            	});
+            	  var a = arrayOfPay[0];
+                  var b = arrayOfPay[1];
+                  var c = arrayOfPay[2];
+                  var d = arrayOfPay[3];
+                  var e = arrayOfPay[4];
+                  var f = arrayOfPay[5];
+                  var g = arrayOfPay[6];
+                  var h = arrayOfPay[7];
+                  var i = arrayOfPay[8];
+                  var j = arrayOfPay[9];
+                  var k = arrayOfPay[10];
+                  var l = arrayOfPay[11];
+            	 
+//                   var aa = parseInt(arrayOfTotal[0]); // 문자열을 정수로 변환
+                  
+                  var aa = arrayOfTotal[0]
+                  var bb = arrayOfTotal[1]
+                  var cc = arrayOfTotal[2]
+                  var dd = arrayOfTotal[3]
+                  var ee = arrayOfTotal[4]
+                  var ff = arrayOfTotal[5]
+                  var gg = arrayOfTotal[6]
+                  var hh = arrayOfTotal[7]
+                  var ii = arrayOfTotal[8]
+                  var jj = arrayOfTotal[9]
+                  var kk = arrayOfTotal[10]
+                  var ll = arrayOfTotal[11]
+               
+                  console.log("aa",aa);
+                	
+                  new Chart(document.querySelector('#lineChart'), {
+                    type: 'line',
+                    data: {
+                   		labels: ['2월', '3월', '4월', '5월', '6월', '7월', '8월' , '9월' , '10월', '11월', '12월','1월'],
+                        datasets: [{
+                        label: 'Line Chart',
+                        data: [aa, bb, cc, dd, ee, ff, gg, hh, ii, jj, kk, ll],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                });
+              </script>
+              <br>
+             <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;매월 기업/상담사 상품 매출 비교</h5>
+
+			<div class="chart-container">
+	            <canvas id="bar-chart" width="580" height="580" style="display: block; box-sizing: border-box; height: 580px; width: 580px;"></canvas>
+	        </div>
+
+              <script>
+              document.addEventListener("DOMContentLoaded", () => {
+            	  var mybar = $('#bar-chart');
+            	 var payMonth2 = $(".payMonth2");
+                 var totalAmount2 = $(".totalAmount2");
+             	 var payMonth3 = $(".payMonth3");
+              	 var totalAmount3 = $(".totalAmount3");
+                 
+             	var arrayOfPay2 = [];
+            	var arrayOfTotal3 = [];
+            	var arrayOfTotal4 = [];
+              	
+            	payMonth2.each(function(){
+            		arrayOfPay2.push($(this).val());
+            	});
+            	totalAmount2.each(function(){
+            		arrayOfTotal3.push($(this).val());
+            	});
+            	totalAmount3.each(function(){
+            		arrayOfTotal4.push($(this).val());
+            	});
+             	
+            	console.log("arrayOfTotal3",arrayOfTotal3);
+            	console.log("arrayOfTotal4",arrayOfTotal4);
+                 
+                  var counBar ={
+                          type :'bar',
+                          label : '월 별 상담상품 매출액(원)',
+                          data : arrayOfTotal3,
+                          backgroundColor : 'rgba(40, 180, 180, 0.5)',
+                          borderColor : 'black',
+                          borderWidth : 1,
+                          fill : false
+                    }
+                    
+                    //월별 매입액 data
+                    var enterBar ={
+                          type :'bar',
+                          label : '월 별 기업상품 매출액(원)',
+                          data : arrayOfTotal4,
+                          backgroundColor: 'rgba(120, 225, 80, 0.5)', 
+                          borderColor : 'black',
+                          borderWidth : 1,
+                          fill : false
+                    }
+
+             	 var myBarChart = new Chart(mybar,
+                          {
+                             type : 'bar',
+                             data : {
+                                labels : arrayOfPay2 ,
+                                datasets : [counBar, enterBar]
+                             },
+                             options: {
+                                 maintainAspectRatio: false,
+                                 scales: {
+                                     y: {
+                                         beginAtZero: true
+                                     }
+                                 }
+                             }
+                          })
+              })
+              </script>
+              <!-- End Vertical Bar Chart -->
+
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;상품을 가장 많이 구매한 기업</h5>
+
+              <!-- Bar Chart -->
+              <canvas id="barChart" style="max-height: 330px; display: block; box-sizing: border-box; height: 227px; width: 555px;" width="455" height="280"></canvas>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                	 
+                	var entNm = $(".entNm");
+                  	var totalItemsPurchased = $(".totalItemsPurchased");
+                  	var arrayOfNm = [];
+                	var arrayOfTotal = [];
+                	
+                	entNm.each(function(){
+                		arrayOfNm.push($(this).val());
+                	});
+                	totalItemsPurchased.each(function(){
+                		arrayOfTotal.push($(this).val());
+                	});
+                	var a = arrayOfNm[0];
+                    var b = arrayOfNm[1];
+                    var c = arrayOfNm[2];
+                    var d = arrayOfNm[3];
+                    var e = arrayOfNm[4];
+                    
+                    var aa = arrayOfTotal[0]
+                    var bb = arrayOfTotal[1]
+                    var cc = arrayOfTotal[2]
+                    var dd = arrayOfTotal[3]
+                    var ee = arrayOfTotal[4]
+                    
+                  new Chart(document.querySelector('#barChart'), {
+                    type: 'bar',
+                    data: {
+                      labels: [a,b,c,d,e],
+                      datasets: [{
+                        label: 'Bar Chart',
+                        data: [aa,bb,cc,dd,ee],
+                        backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(255, 159, 64, 0.2)',
+                          'rgba(255, 205, 86, 0.2)',
+                          'rgba(75, 192, 192, 0.2)',
+                          'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                          'rgb(255, 99, 132)',
+                          'rgb(255, 159, 64)',
+                          'rgb(255, 205, 86)',
+                          'rgb(75, 192, 192)',
+                          'rgb(54, 162, 235)'
+                        ],
+                        borderWidth: 1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                });
+              </script>
+	<br>
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;현재 가장 많은 상담을 하는 상담사</h5>
+
+              <!-- Pie Chart -->
+              <div id="verticalBarChart" style="min-height: 330px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" class="echart" _echarts_instance_="ec_1704332366229"><div style="position: relative; width: 388px; height: 330px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="388" height="400" style="position: absolute; left: 0px; top: 0px; width: 388px; height: 330px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1) 0s, visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1) 0s, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0s; background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(181px, 122px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">World</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">2011</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">630,230</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">2012</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">681,807</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                	var memNm = $(".memNm");
+                  	var totalItemsPurchased = $(".totalItemsPurchased");
+                  	var arrayOfNm = [];
+                	var arrayOfTotal = [];
+                    
+                	memNm.each(function() {
+                		arrayOfNm.push($(this).val()); // 각 숨은 입력란의 값을 배열에 추가
+                    });
+                	totalItemsPurchased.each(function() {
+                		arrayOfTotal.push($(this).val()); // 각 숨은 입력란의 값을 배열에 추가
+                    });
+                    
+                    var name1 = arrayOfNm[0];
+                    var name2 = arrayOfNm[1];
+                    var name3 = arrayOfNm[2];
+                    var name4 = arrayOfNm[3];
+                    var name5 = arrayOfNm[4];
+                 
+                    var count1 = arrayOfTotal[0];
+                    var count2 = arrayOfTotal[1];
+                    var count3 = arrayOfTotal[2];
+                    var count4 = arrayOfTotal[3];
+                    var count5 = arrayOfTotal[4];
+
+                    echarts.init(document.querySelector("#verticalBarChart")).setOption({
+                    title: {
+                      text: ''
+                    },
+                    tooltip: {
+                      trigger: 'axis',
+                      axisPointer: {
+                        type: 'shadow'
+                      }
+                    },
+                    legend: {},
+                    grid: {
+                      left: '3%',
+                      right: '4%',
+                      bottom: '3%',
+                      containLabel: true
+                    },
+                    xAxis: {
+                      type: 'value',
+                      boundaryGap: [0, 0.01]
+                    },
+                    yAxis: {
+                      type: 'category',
+                      data: [name5, name4, name3, name2, name1]
+                    },
+                    series: [{
+                        name: '2024-01',
+                        type: 'bar',
+                        data: [count5, count4, count3, count2, count1]
+                      }
+//                       {
+//                         name: '2012',
+//                         type: 'bar',
+//                         data: [19325, 23438, 31000, 121594, 134141, 681807]
+//                       }
+                    ]
+                  });
+                });
+              </script>
+              <!-- End Pie CHart -->
+
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Vendor JS Files -->
+<script src="/resources/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/resources/vendor/chart.js/chart.umd.js"></script>
+<script src="/resources/vendor/echarts/echarts.min.js"></script>
+<script src="/resources/vendor/quill/quill.min.js"></script>
+<script src="/resources/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="/resources/vendor/tinymce/tinymce.min.js"></script>
+<script src="/resources/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/resources/js/main.js"></script>
+
+<script src="/resources/js/admin.js"></script>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.alarm.mapper.AlarmMapper">
+
+
+	<insert id="insert" parameterType="alarmVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="alarmNo">
+			SELECT 'ARM' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(ALARM_NO),4) + 1,'00000')),'00001')
+			FROM   ALARM
+		</selectKey>
+		INSERT INTO ALARM
+		(
+			ALARM_NO, 
+			MEM_ID, 
+			CONTENT_CD, 
+			CHECK_DT, 
+			CHECK_CD, 
+			PREFIX_CNTNT
+		)
+		VALUES (
+			#{alarmNo},
+			#{memId},
+			#{contentCd},
+			SYSDATE,
+			'RAT01001',
+			#{prefixCntnt}
+		)
+	</insert>
+
+</mapper>

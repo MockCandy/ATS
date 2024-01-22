@@ -1,0 +1,86 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+    <div class="cen" style="margin: 30px auto;">
+        <div class="login-header">
+            <p class="login-greetings">
+               	<span class="mb-12" style="display:inline-block">반갑습니다</span>
+                <span class="strong flex flex-end align-center justify-center"><a href="/" class="logo normal">날 JOB아줘</a>에 오신 것을 환영합니다!</span>
+            </p>
+        </div>
+		<form action="/login" method="post">
+	        <div class="login-cont">
+	            <p class="main-tit">로그인</p>
+	            <div class="h-div-line"></div>
+	            <input type="text" name="username" class="input01" placeholder="아이디를 입력해 주세요." required>
+	            <input type="password" name="password" class="input01" placeholder="비밀번호를 입력해 주세요." required>
+	            <button type="submit" class="btn btn-login">날 JOB아줘 시작하기</button>
+	
+	            <div class="flex" style="margin-top: 15px; align-items: center;">
+	                <input class="chkbox-sig" type="checkbox" name="" id="keep-logged">
+	                <label for="keep-logged"></label>
+	                <span class="chkbox-txt">로그인 상태 유지</span>
+	
+	                <div style="margin-left: auto; font-size: 14px;">
+	                    <a href="#">아이디 찾기</a>
+	                    <div class="v-div-line"></div>
+	                    <a href="#">비밀번호 찾기</a>
+	                </div>
+	            </div>
+	
+	            <div class="h-div-line"></div>
+	
+	            <p style="text-align: center; font-weight: bold;"><a class="txt-sig"  href="/member/create">회원가입</a></p>
+	            <div style="margin-top:30px;">
+		            <button type="button" class="btn btn-ssm" id="ws1011" >일반회원1</button>
+		            <button type="button" class="btn btn-ssm" id="sl0220" >일반회원2</button>
+		            <button type="button" class="btn btn-ssm" id="tg0101" >상담사회원</button>
+		            <button type="button" class="btn btn-ssm" id="ty1102" >기업회원</button>
+		            <button type="button" class="btn btn-ssm" id="admin" >관리자</button>
+	            </div>
+	        </div>
+	        <sec:csrfInput/>
+        </form>
+
+    </div>
+
+<script src="https://kit.fontawesome.com/96da2afb16.js" crossorigin="anonymous"></script>
+<script src="/resources/js/login.js"></script>
+
+<script type="text/javascript">
+
+	$("#ws1011").on("click", function() {
+		
+		$('input[name=username]').attr('value',"ws1011");
+		$('input[name=password]').attr('value',"java");
+		
+	});
+	$("#sl0220").on("click", function() {
+		
+		$('input[name=username]').attr('value',"sl0220");
+		$('input[name=password]').attr('value',"java");
+		
+	});
+	$("#ty1102").on("click", function() {
+		
+		$('input[name=username]').attr('value',"ty1102");
+		$('input[name=password]').attr('value',"java");
+		
+	});
+	$("#tg0101").on("click", function() {
+		
+		$('input[name=username]').attr('value',"tg0101");
+		$('input[name=password]').attr('value',"java");
+		
+	});
+	$("#admin").on("click", function() {
+		
+		$('input[name=username]').attr('value',"admin");
+		$('input[name=password]').attr('value',"java");
+		
+	});
+	
+
+</script>

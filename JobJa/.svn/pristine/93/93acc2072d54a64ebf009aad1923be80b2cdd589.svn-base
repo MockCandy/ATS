@@ -1,0 +1,339 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+
+
+<link rel="stylesheet" href="/resources/css/admin.css">
+<link rel="stylesheet" href="/resources/css/resumeModal.css">
+
+<!-- Favicons -->
+<link href="/resources/assets/img/favicon.png" rel="icon">
+<link href="/resources/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<!-- <link href="https://fonts.gstatic.com" rel="preconnect"> -->
+<!-- <link -->
+<!-- 	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" -->
+<!-- 	rel="stylesheet"> -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap"
+	rel="stylesheet">
+<!-- Vendor CSS Files -->
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="/resources/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/resources/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/resources/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/resources/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/resources/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<section class="section">
+      <div class="row">
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">
+              <i class="fa-solid fa-chart-simple"></i>&nbsp;매월 가입 기업수</h5>
+				<c:forEach var="memberEnterVO" items="${enterChart}" varStatus="">
+					<input type="hidden" class="one" value="${memberEnterVO.memberCount}">
+				</c:forEach>
+				<c:forEach var="entInterChart" items="${enterInterChart}">
+					<input type="hidden" class="eName" value="${entInterChart.entNm}">
+					<input type="hidden" class="countENO" value="${entInterChart.countByEntNo}">
+				</c:forEach>
+					<input type="hidden" class="b1" value="${b1}">
+					<input type="hidden" class="b2" value="${b2}">
+					<input type="hidden" class="b3" value="${b3}">
+					<input type="hidden" class="r1" value="${r1}">
+					<input type="hidden" class="r2" value="${r2}">
+					<input type="hidden" class="r3" value="${r3}">
+              <!-- Line Chart -->
+              <canvas id="lineChart" style="max-height: 330px; display: block; box-sizing: border-box; height: 227px; width: 555px;" width="455" height="280"></canvas>
+              <script>
+              
+                document.addEventListener("DOMContentLoaded", () => {
+                    var counts = $(".one"); // 클래스명이 one인 모든 요소를 가져옴
+                    var arrayOfCounts = []; // 값을 담을 배열 초기화
+                   
+                    counts.each(function() {
+                        arrayOfCounts.push($(this).val()); // 각 숨은 입력란의 값을 배열에 추가
+                    });
+                    
+                   
+                    console.log("b", arrayOfCounts[1]);
+                    
+                    var a = arrayOfCounts[0];
+                    var b = arrayOfCounts[1];
+                    var c = arrayOfCounts[2];
+                    var d = arrayOfCounts[3];
+                    var e = arrayOfCounts[4];
+                    var f = arrayOfCounts[5];
+                    var g = arrayOfCounts[6];
+                    var h = arrayOfCounts[7];
+                    var i = arrayOfCounts[8];
+                    var j = arrayOfCounts[9];
+                    var k = arrayOfCounts[10];
+                    var l = arrayOfCounts[11];
+			
+                    console.log("a", a);
+                	
+                  new Chart(document.querySelector('#lineChart'), {
+                    type: 'line',
+                    data: {
+                      labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월','12월'],
+                      datasets: [{
+                        label: 'Line Chart',
+                        data: [a, b, c, d, e, f, g, h, i, j, k, l],
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                });
+              </script>
+              <br>
+             <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;관심기업 TOP5</h5>
+
+              <!-- Vertical Bar Chart -->
+              <div id="verticalBarChart" style="min-height: 330px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); position: relative;" class="echart" _echarts_instance_="ec_1704332366229"><div style="position: relative; width: 388px; height: 330px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="388" height="400" style="position: absolute; left: 0px; top: 0px; width: 388px; height: 330px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div><div class="" style="position: absolute; display: block; border-style: solid; white-space: nowrap; z-index: 9999999; box-shadow: rgba(0, 0, 0, 0.2) 1px 2px 10px; transition: opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1) 0s, visibility 0.2s cubic-bezier(0.23, 1, 0.32, 1) 0s, transform 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0s; background-color: rgb(255, 255, 255); border-width: 1px; border-radius: 4px; color: rgb(102, 102, 102); font: 14px / 21px &quot;Microsoft YaHei&quot;; padding: 10px; top: 0px; left: 0px; transform: translate3d(181px, 122px, 0px); border-color: rgb(255, 255, 255); pointer-events: none; visibility: hidden; opacity: 0;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="font-size:14px;color:#666;font-weight:400;line-height:1;">World</div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#5470c6;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">2011</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">630,230</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="margin: 10px 0 0;line-height:1;"><div style="margin: 0px 0 0;line-height:1;"><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#91cc75;"></span><span style="font-size:14px;color:#666;font-weight:400;margin-left:2px">2012</span><span style="float:right;margin-left:20px;font-size:14px;color:#666;font-weight:900">681,807</span><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div><div style="clear:both"></div></div></div></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                	var names = $(".eName"); // 클래스명이 one인 모든 요소를 가져옴
+                    var arrayOfNames = []; // 값을 담을 배열 초기화
+                    
+                    names.each(function() {
+                    	arrayOfNames.push($(this).val()); // 각 숨은 입력란의 값을 배열에 추가
+                    });
+                    
+                    var name1 = arrayOfNames[0];
+                    var name2 = arrayOfNames[1];
+                    var name3 = arrayOfNames[2];
+                    var name4 = arrayOfNames[3];
+                    var name5 = arrayOfNames[4];
+                    
+                    var counts = $(".countENO"); // 클래스명이 one인 모든 요소를 가져옴
+                    var arrayOfcounts = []; // 값을 담을 배열 초기화
+                    
+                    counts.each(function() {
+                    	arrayOfcounts.push($(this).val()); // 각 숨은 입력란의 값을 배열에 추가
+                    });
+                    
+                    var count1 = arrayOfcounts[0];
+                    var count2 = arrayOfcounts[1];
+                    var count3 = arrayOfcounts[2];
+                    var count4 = arrayOfcounts[3];
+                    var count5 = arrayOfcounts[4];
+
+                    echarts.init(document.querySelector("#verticalBarChart")).setOption({
+                    title: {
+                      text: ''
+                    },
+                    tooltip: {
+                      trigger: 'axis',
+                      axisPointer: {
+                        type: 'shadow'
+                      }
+                    },
+                    legend: {},
+                    grid: {
+                      left: '3%',
+                      right: '4%',
+                      bottom: '3%',
+                      containLabel: true
+                    },
+                    xAxis: {
+                      type: 'value',
+                      boundaryGap: [0, 0.01]
+                    },
+                    yAxis: {
+                      type: 'category',
+                      data: [name5, name4, name3, name2, name1]
+                    },
+                    series: [{
+                        name: '2024-01',
+                        type: 'bar',
+                        data: [count5, count4, count3, count2, count1]
+                      }
+//                       {
+//                         name: '2012',
+//                         type: 'bar',
+//                         data: [19325, 23438, 31000, 121594, 134141, 681807]
+//                       }
+                    ]
+                  });
+                });
+              </script>
+              <!-- End Vertical Bar Chart -->
+
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;기업 관련 상품별 매출건수</h5>
+
+              <!-- Bar Chart -->
+              <canvas id="barChart" style="max-height: 330px; display: block; box-sizing: border-box; height: 227px; width: 555px;" width="455" height="280"></canvas>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                	 
+                    var b1 = $(".b1").val();
+                    var b2 = $(".b2").val();
+                    var b3 = $(".b3").val();
+                    var r1 = $(".r1").val();
+                    var r2 = $(".r2").val();
+                    var r3 = $(".r3").val();
+                    
+                    console.log("b1", typeof b1);
+                    console.log("b2",b2);
+                    console.log("b3",b3);
+                    console.log("r1",r1);
+                    console.log("r2",r2);
+                    console.log("r3",r3);
+                    
+                  new Chart(document.querySelector('#barChart'), {
+                    type: 'bar',
+                    data: {
+                      labels: ['배너광고1주', '배너광고2주', '배너광고3주', '상위노출1주', '상위노출2주', '상위노출3주'],
+                      datasets: [{
+                        label: 'Bar Chart',
+                        data: [b1, b2, b3, r1, r2, r3],
+                        backgroundColor: [
+                          'rgba(255, 99, 132, 0.2)',
+                          'rgba(255, 159, 64, 0.2)',
+                          'rgba(255, 205, 86, 0.2)',
+                          'rgba(75, 192, 192, 0.2)',
+                          'rgba(54, 162, 235, 0.2)',
+                          'rgba(153, 102, 255, 0.2)',
+                          'rgba(201, 203, 207, 0.2)'
+                        ],
+                        borderColor: [
+                          'rgb(255, 99, 132)',
+                          'rgb(255, 159, 64)',
+                          'rgb(255, 205, 86)',
+                          'rgb(75, 192, 192)',
+                          'rgb(54, 162, 235)',
+                          'rgb(153, 102, 255)',
+                          'rgb(201, 203, 207)'
+                        ],
+                        borderWidth: 1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                      }
+                    }
+                  });
+                });
+              </script>
+	<br>
+            <div class="card-body">
+              <h5 class="card-title"><i class="fa-solid fa-chart-simple"></i>&nbsp;각 상품별 매출액</h5>
+
+              <!-- Pie Chart -->
+              <canvas id="pieChart" style="max-height: 330px; display: block; box-sizing: border-box; height: 330px; width: 594px;" width="594" height="400"></canvas>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                	var b1 = $(".b1").val();
+                	var b11 = parseInt(b1) * 120000;
+                	
+                	var b2 = $(".b2").val();
+                	var b22 = parseInt(b2) * 250000;
+                	
+                	var b3 = $(".b3").val();
+                	var b33 = parseInt(b3) * 380000;
+                	
+                	var r1 = $(".r1").val();
+                	var r11 = parseInt(r1) * 200000;
+                	
+                	var r2 = $(".r2").val();
+                	var r22 = parseInt(r2) * 350000;
+                	
+                	var r3 = $(".r3").val();
+                	var r33 = parseInt(r3) * 600000;
+                	
+                	console.log("r33",r33);
+                	
+                  new Chart(document.querySelector('#pieChart'), {
+                    type: 'pie',
+                    data: {
+                      labels: [
+                        '배너광고1주',
+                        '배너광고2주',
+                        '배너광고3주',
+                        '상위노출1주',
+                        '상위노출2주',
+                        '상위노출3주',
+                      ],
+                      datasets: [{
+                        label: 'My First Dataset',
+                        data: [b11, b22, b33 ,r11 ,r22 ,r33],
+                        backgroundColor: [
+                          'rgb(255, 99, 132)',
+                          'rgb(54, 162, 235)',
+                          'rgb(255, 205, 86)',
+                          'rgb(102, 204, 102)',
+                          'rgb(204 ,255 ,000)',
+                          'rgb(000 ,153 ,051)'
+                        ],
+                        hoverOffset: 4
+                      }]
+                    }
+                  });
+                });
+              </script>
+              <!-- End Pie CHart -->
+
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Vendor JS Files -->
+<script src="/resources/vendor/apexcharts/apexcharts.min.js"></script>
+<script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/resources/vendor/chart.js/chart.umd.js"></script>
+<script src="/resources/vendor/echarts/echarts.min.js"></script>
+<script src="/resources/vendor/quill/quill.min.js"></script>
+<script src="/resources/vendor/simple-datatables/simple-datatables.js"></script>
+<script src="/resources/vendor/tinymce/tinymce.min.js"></script>
+<script src="/resources/vendor/php-email-form/validate.js"></script>
+
+<!-- Template Main JS File -->
+<script src="/resources/js/main.js"></script>
+
+<script src="/resources/js/admin.js"></script>

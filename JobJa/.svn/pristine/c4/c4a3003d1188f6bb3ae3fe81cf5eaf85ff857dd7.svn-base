@@ -1,0 +1,623 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/mypage.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<style>
+
+.rcmd-list{
+   grid-template-rows: none !important;
+}
+.con-review-title{
+   margin-top: 16px;
+}
+.modal-custom{
+   padding: 40px 0 40px 40px;
+   max-width: 640px !important;
+    height: 720px!important;
+
+}
+.modal-review{
+   padding: 40px 0 40px 40px;
+   max-width: 640px !important;
+    height: 800px!important;
+
+}
+.review-title{
+   margin-bottom: 24px;
+}
+.btn-parent{
+   display: flex;
+    justify-content: flex-end;
+}
+.review-cont{
+   width: 560px;
+   margin-bottom: 32px;
+}
+.icon-close:before{ 
+    content: "\f00d"; 
+     display: inline-block; 
+     font-family: "Font Awesome 5 Free"; 
+     font-weight: 900; 
+     color: #666; 
+} 
+.modal-custom .icon-close {
+    background: #FFF;
+    margin-bottom: 10px;
+    position: absolute;
+    right: -15px;
+    top: -50px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a9a9a9;
+    cursor: pointer;
+}
+.modal-review section{
+   height: 720px;
+    overflow-y: auto;
+}
+
+.modal-review .icon-close {
+    background: #FFF;
+    margin-bottom: 10px;
+    position: absolute;
+    right: -15px;
+    top: -50px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a9a9a9;
+    cursor: pointer;
+}
+.modal-custom section{
+   height: 720px;
+    overflow-y: auto;
+}
+   
+.con-review{
+   font-size: 16px !important;
+   font-weight: 500;
+   cursor: pointer;
+   margin-left: 16px;
+   color: #2bca34;
+}
+.con-review:hover{
+   font-weight: 700 !important;
+}
+.detail-one-line{
+   align-items: center;
+}
+
+.consult-textarea{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 100%;
+    min-height: 360px;
+    border-radius: 15px 15px;
+    padding: 8px;
+    resize: none;
+    
+}
+.consult-textarea:focus{
+   outline: none;
+}
+.btn-parents{
+   display: flex;
+   justify-content: flex-end;
+   margin-right: 39px;
+}
+.rcmd-list-non{
+   text-align: center;
+   font-size: 36px;
+   font-weight: 700;
+}
+.con-non-review{
+	color: #2bca34;
+	font-weight: 400;
+}
+</style>
+
+
+
+
+<div class="mypage-div">
+	<div class="mypage-left">
+		<div class="mypage-left-tit">프리미엄</div>
+		<ul>
+			<li class="active"><a href="/memberPremium/consultantLog">상담 내역</a></li>
+			<li><a href="/memberPremium/items">상품 목록</a></li>
+			<li><a href="/memberPremium/payitems">결제 목록</a></li>
+		</ul>
+	</div>
+	
+	<div class="mypage-body-con">
+	   <div class="sub-title-area">
+	      <div class="body-sub-title">
+	         	상담 내역
+	      </div>
+	   </div>
+	   <div class="body-sub-con">
+	      <c:choose>
+	           <c:when test="${empty consultantLogVOList}">
+	               <div class="rcmd-list-non">
+	                   <p>상담기록이 없습니다.</p>
+	               </div>
+	           </c:when>
+	           <c:otherwise>
+	               <!-- 기존 코드 유지 -->
+	      <c:forEach var="conVOList" items="${consultantLogVOList}" varStatus="stat">
+	         <div class="consult-item">
+		         <p class="bold p-24 con-review-title mb-25">${conVOList.conNm} 상담사와의 기록  
+		         	
+		         	<c:choose>
+		         		<c:when test="${conVOList.count  < 1}"> 
+		         			<span class="con-review p-13 ml-auto">리뷰작성</span>
+		         		</c:when>
+		         		<c:otherwise>
+		         			<span class="con-non-review p-13">모든 상담이 끝난 뒤 리뷰를 남겨주세요!</span>
+		         		</c:otherwise>
+		         	</c:choose>
+		            
+		            <input type="hidden" value="${conVOList.payNo}"></p>
+		            <input type="hidden" value="${conVOList.itemNo}"></p>
+		         <div class="rcmd-list">
+		            <c:forEach var="conVO" items="${conVOList.consultantLogVO}" varStatus="stat">
+		               <div class="rcmd-item">
+		                  <div class="rcmd-item-img">
+		                  <c:choose>
+		                  		<c:when test="${conVOList.memAfId ne null && conVOList.memAfId != ''}">
+		                           <img alt="프로필" src="/resources/upload/${conVOList.memAfId}">
+		                  		</c:when>
+		                  		<c:otherwise>
+		                  			<img alt="프로필" src="/resources/images/default_profile.png">
+		                  		</c:otherwise>
+		                  </c:choose>
+		                  </div>
+		                  <div class="rcmd-item-info">
+		                     <div class="rcmd-item-top">
+		                        <p class="bold p-16 consult-tit">${conVO.cnsltntTitle}</p>
+		                        <span class="txt-skyblue p-13 ml-auto preview con-log-btn">상담기록</span>
+		                        <input type="hidden" name="cnsltntNo" value="${conVO.cnsltntNo}">
+		                        <input type="hidden" name="memId" value="${conVOList.memId}">
+		                        <input type="hidden" name="conMemId" value="${conVO.conMemId}">
+		                        <input type="hidden" name="payNo" value="${conVO.payNo}">
+		                     </div>
+		                     <div>
+<!-- 		                        <p class="bold p-14 mb-7"> -->
+<%-- 		                           <span class="workPeriod">${conVO.cnsltntTimes}회차상담 </span> --%>
+<!-- 		                        </p> -->
+		                        <p class="txt-gray p-12 mb-3">
+		                           상담날짜 : <fmt:formatDate value="${conVO.cnsltntDt}" pattern="yyyy-MM-dd"/>
+		                        </p>
+		                     </div>
+		                  </div>
+		               </div><!-- end rcmd-item -->
+		               
+		            </c:forEach>
+		            
+		         </div><!-- end rcmd-list -->
+	         </div>
+	         
+	         </c:forEach>
+	       </c:otherwise>
+	       </c:choose>
+	            
+	   
+	   
+	   </div><!-- end body-sub-con -->
+	   
+	   
+	   
+	   
+	   
+	   <div class="modal-custom">
+	      <section>
+	           <button data-izimodal-close="" class="icon-close"></button>
+	           <p class="modal-title bold p-24 review-title">상담 기록</p>
+	           <div class="modal-con modal-log-con">
+	           
+	           
+	           </div><!-- end modal-con -->
+	         </section>
+	   </div>
+	   
+	   
+	   <div class="modal-review">
+	      <section>
+	           <button data-izimodal-close="" class="icon-close"></button>
+	           <p class="modal-title bold p-24 review-title">리뷰남기기</p>
+	           <div class="modal-con modal-review-con">
+	              <div class="review-info-con">
+	                   
+	            </div>
+	                <div class="mb-12 p-15 detail-one-line">
+	               <p class="bold">평점</p>
+	               <div class="cnsltntDt rate-area">
+	                         <span class="star">
+	                                ★★★★★
+	                             <span style="width: 20%;">★★★★★</span>
+	                             <input type="range" id="entRevBalance" name="reviewRate" oninput="drawStar(this)" value="1" step="1" min="1" max="5">
+	                         </span>
+	               </div>
+	            </div>
+	            
+	            <div class="h-div-line" style="width:95%; margin:35px 0;"></div>
+	            
+	            <div class="review-cont">
+	               <textarea class="consult-textarea" name="reviewCntnt"></textarea>
+	            </div>
+	            
+	            <div class="btn-parents">
+	               <button type="button" class=" btn-sm btn-write btn review-con-submit">작성완료</button>
+	               
+	               <button type="button" id="review-conplete" class=" btn-sm btn-write btn">자동완성</button>
+	            </div>
+	            
+	             </div><!-- end modal-con -->
+	         </section>
+	   </div>
+	   
+	</div>
+
+
+</div>
+
+
+
+
+<script type="text/javascript">
+
+//JAVASCRIPT CODE
+const drawStar = (target) => {
+   console.log(target.value)
+   console.dir(target.previousElementSibling);
+   target.previousElementSibling.style.width = target.value * 20 + "%";
+}
+document.querySelector(".star input").addEventListener("change", function(e){
+    console.dir(e.target.value);
+})
+
+$(document).ready(function(){
+   $('.preview').off("click").on("click", function(e){
+       let cnsltntNo = e.target.nextElementSibling.defaultValue;
+       
+       let data = {"cnsltntNo" : cnsltntNo};
+       
+       $.ajax({
+          url: "/memberPremium/ajaxgetOneReview",
+          contentType: "application/json;charset=utf-8",
+           dataType: 'json',
+         type: 'post',
+         data : JSON.stringify(data),
+         beforeSend:function(xhr){
+            xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+         },
+         success:function(rst){
+            
+            let cont = `
+            
+                      <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">이름</p>    
+                     <p class="memNm">\${rst.memNm}</p>
+                  </div>
+                      <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">제목</p>    
+                     <p class="cnsltntTitle">\${rst.cnsltntTitle}</p>
+                  </div>
+                      <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">상담일시</p>    
+                     <p class="cnsltntDt">\${rst.cnsltntDt}</p>
+                  </div>
+                  
+                  <div class="h-div-line" style="width:95%; margin:35px 0;"></div>
+                  
+                  <div class="review-cont">
+                     <div>\${rst.cnsltntCntnt}</div>
+                  </div>
+            
+            `;
+            
+            $('.modal-log-con').html(cont);
+            
+         },
+         error:function(xnr,status,error){
+            console.log('Error:', xhr, status, error);
+         }
+          
+          
+       });//end preview ajax
+       
+       
+       $('.modal-custom').iziModal('open');
+       
+       
+    });//end preview click
+    
+    //리뷰 작성 클릭시
+    $('.con-review').off("click").on("click", function(e){
+       
+    	$('.modal-review').iziModal();
+       
+       console.dir(e.target.nextElementSibling);
+       
+       let payNo = e.target.nextElementSibling.defaultValue;
+       
+       console.log("anjfRKdyasdfasd 뭘까요 :"  + payNo);
+       
+       let data ={"payNo" : payNo};
+       
+       
+       $.ajax({
+          url:"/memberPremium/ajaxgetReviewInfo",
+          contentType: 'application/json;charset-utf-8',
+         dataType: 'json',
+         type: 'post',
+         data: JSON.stringify(data),
+         beforeSend:function(xhr){
+            xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+         },
+         success:function(rst){
+        	 
+        	 console.log("rst" , rst);
+            
+            let cont = `
+            
+                  <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">이름</p>    
+                     <p class="memNm">\${rst.memNm}</p>
+                     <input type="hidden" name="itemNo" value="\${rst.itemCompanyNo}">
+                     <input type="hidden" name="reviewCnsltntId" value="\${rst.payConId}">
+                     <input type="hidden" name="reviewMemId" value="\${rst.payUserId}">
+                  </div>
+                      <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">상담사 이름</p>    
+                     <p class="cnsltntTitle">\${rst.conNm}</p>
+                  </div>
+                      <div class="mb-12 p-15 detail-one-line">
+                     <p class="bold">상담 일시</p>    
+                     <p class="cnsltntDt">\${rst.conStartDt} ~ \${rst.conEndDt}</p>
+                  </div>
+            `;
+            
+            $('.review-info-con').html(cont);
+            
+            
+         },
+         error:function(xnr,status,error){
+            console.log('Error:', xhr, status, error);
+         }
+       });
+       
+       $('.modal-review').iziModal('open');
+       
+       $('.review-con-submit').off("click").on("click", function(){
+             
+         if (confirm('리뷰를 작성 하시겠습니까?\n한번 작성된 리뷰는 수정,삭제 할 수 없습니다.')) {
+            
+        	 console.log(document.querySelector('input[name="itemNo"]'))
+        	 
+             let itemNo  = document.querySelector('input[name="itemNo"]').value;
+             let reviewMemId = document.querySelector('input[name="reviewMemId"]').value;
+             let reviewCnsltntId = document.querySelector('input[name="reviewCnsltntId"]').value;
+             let reviewRate = document.querySelector('input[name="reviewRate"]').value;
+             let reviewCntnt = document.querySelector('textarea[name="reviewCntnt"]').value;
+             
+             
+             console.log("itemNo : " + itemNo);
+             console.log("reviewMemId : " + reviewMemId);
+             console.log("reviewCnsltntId : " + reviewCnsltntId);
+             console.log("reviewRate : " + reviewRate);
+             console.log("reviewCntnt : " + reviewCntnt);
+             
+             let data = {
+                   "itemNo" : itemNo,
+                   "reviewMemId" : reviewMemId,
+                   "reviewCnsltntId" : reviewCnsltntId,
+                   "reviewRate" : reviewRate,
+                   "reviewCntnt" : reviewCntnt
+             }
+             console.log(data);
+             
+             $.ajax({
+                 url:"/memberPremium/ajaxinsertReview",
+                 contentType: 'application/json;charset-utf-8',
+                dataType: 'json',
+                type: 'post',
+                data: JSON.stringify(data),
+                beforeSend:function(xhr){
+                   xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+                },
+                success:function(rst){
+                   if(rst == 1){
+                      
+                      alert("작성하신 리뷰가 등록 되었습니다.");
+                      
+                      $("textarea[name='reviewCntnt']").val("");
+                      $(".star").children("span").eq(0).css("width","20%");
+                      
+                      $('.modal-review').iziModal('close');
+                   }else{
+                      alert("등록실패");
+                   }
+                   
+                   
+                   
+                },
+                error:function(xnr,status,error){
+                   console.log('Error:', xhr, status, error);
+                }
+              });
+             
+             
+             
+          
+          
+         
+         
+          
+          
+          } else { 
+             
+             alert("작성 취소 되었습니다.");
+             $('.modal-review').iziModal('close');
+             
+             
+             
+          }
+         
+         
+         
+      });//end review con submit
+       
+       
+    });//end conreview
+    
+   
+   
+   
+   
+   
+   $(".modal-custom").iziModal({
+        title: '',
+        subtitle: '',
+        headerColor: '#88A0B9',
+        background: null,
+        theme: '',  // light
+        icon: null,
+        iconText: null,
+        iconColor: '',
+        rtl: false,
+        width: 400,
+        top: null,
+        bottom: null,
+        borderBottom: true,
+        padding: 0,
+        radius: 3,
+        zindex: 999,
+        iframe: false,
+        iframeHeight: 400,
+        iframeURL: null,
+        focusInput: true,
+        group: '',
+        loop: false,
+        arrowKeys: true,
+        navigateCaption: true,
+        navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+        history: false,
+        restoreDefaultContent: false,
+        autoOpen: 0, // Boolean, Number
+        bodyOverflow: false,
+        fullscreen: false,
+        openFullscreen: false,
+        closeOnEscape: true,
+        closeButton: true,
+        appendTo: 'body', // or false
+        appendToOverlay: 'body', // or false
+        overlay: true,
+        overlayClose: true,
+        overlayColor: 'rgba(0, 0, 0, 0.4)',
+        timeout: false,
+        timeoutProgressbar: false,
+        pauseOnHover: false,
+        timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+        transitionIn: 'comingIn',
+        transitionOut: 'comingOut',
+        transitionInOverlay: 'fadeIn',
+        transitionOutOverlay: 'fadeOut',
+        onFullscreen: function(){},
+        onResize: function(){},
+        onOpening: function(){},
+        onOpened: function(){},
+        onClosing: function(){},
+        onClosed: function(){},
+        afterRender: function(){}
+    });// end modal
+    
+    
+   $(".modal-review").iziModal({
+        title: '',
+        subtitle: '',
+        headerColor: '#88A0B9',
+        background: null,
+        theme: '',  // light
+        icon: null,
+        iconText: null,
+        iconColor: '',
+        rtl: false,
+        width: 400,
+        top: null,
+        bottom: null,
+        borderBottom: true,
+        padding: 0,
+        radius: 3,
+        zindex: 999,
+        iframe: false,
+        iframeHeight: 400,
+        iframeURL: null,
+        focusInput: true,
+        group: '',
+        loop: false,
+        arrowKeys: true,
+        navigateCaption: true,
+        navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+        history: false,
+        restoreDefaultContent: false,
+        autoOpen: 0, // Boolean, Number
+        bodyOverflow: false,
+        fullscreen: false,
+        openFullscreen: false,
+        closeOnEscape: true,
+        closeButton: true,
+        appendTo: 'body', // or false
+        appendToOverlay: 'body', // or false
+        overlay: true,
+        overlayClose: true,
+        overlayColor: 'rgba(0, 0, 0, 0.4)',
+        timeout: false,
+        timeoutProgressbar: false,
+        pauseOnHover: false,
+        timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+        transitionIn: 'comingIn',
+        transitionOut: 'comingOut',
+        transitionInOverlay: 'fadeIn',
+        transitionOutOverlay: 'fadeOut',
+        onFullscreen: function(){},
+        onResize: function(){},
+        onOpening: function(){},
+        onOpened: function(){},
+        onClosing: function(){},
+        onClosed: function(){},
+        afterRender: function(){}
+    });// end modal
+    
+});
+
+	$(document).on("click", "#review-conplete", function() {
+		
+		$('textarea[name="reviewCntnt"]').val(`존경하는 상담사,
+저는 최근 상담 내용에 대한 상담을 받았던 내용 대해 깊은 감사의 인사를 전하고 싶습니다. 
+여러 어려움에 직면했을 때 나누어주신 지혜로운 조언과 따뜻한 지지는 제게 큰 힘이 되었습니다.
+상담 과정에서 당신의 전문성과 따뜻한 소통 능력을 느끼며, 안전하고 지지받는 느낌을 받을 수 있었습니다. 
+제게는 매우 의미 있는 경험이었고, 이를 통해 많은 것을 배우게 되었습니다.
+
+다시 한번 감사의 마음을 전하며, 당신의 높은 전문성과 따뜻한 성의에 감사드립니다. 
+앞으로도 당신의 도움으로 더 나은 길을 찾아 나아가겠습니다.
+감사합니다.
+
+고마운 마음을 담아`);
+		
+		
+	});
+
+</script>

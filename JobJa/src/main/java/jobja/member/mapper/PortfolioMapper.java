@@ -1,0 +1,68 @@
+package jobja.member.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.member.vo.PortfolioBasicVO;
+import jobja.member.vo.PortfolioFreeVO;
+import jobja.member.vo.PortfolioVO;
+
+public interface PortfolioMapper {
+
+	// 자기소개서 목록 
+	public List<PortfolioVO> list(Map<String, Object> map);
+	
+	// 총 페이지 수
+	public int getTotal(Map<String, Object> map);
+
+	// 자기소개서 기본키 +1
+	public String getPtflNo();
+
+	// 자기소개서 기본양식 등록
+	public int createForm(PortfolioVO portfolioVO);
+	
+	// 자기소개서 자유양식 등록
+	public int freeCreateForm(PortfolioVO portfolioVO);
+	
+	// 자기소개서 기본양식 등록
+	public int portBasicCreate(PortfolioBasicVO portfolioBasicVO);
+	
+	// 자기소개서 자유양식 등록
+	public int portFreeCreate(PortfolioFreeVO portfolioFreeVO);
+	
+	// 자기소개서 상세보기
+	public PortfolioVO detail(String ptflNo);
+
+	// 자기소개서 자유양식 상세보기
+	public PortfolioVO freeDetail(String ptflNo);
+	
+	// 자기소개서 공통 수정
+	public int update(PortfolioVO portfolioVO);
+	
+	// 자기소개서 기본양식 수정
+	public int portBasicUpdate(PortfolioBasicVO portfolioBasicVO);
+
+	// 자기소개서 자유양식 수정
+	public int freeUpdatePost(PortfolioVO portfolioVO);
+	
+	// 자기소개서 자유양식 수정
+	public int portFreeUpdate(PortfolioFreeVO portfolioFreeVO);
+
+	// 자기소개서 삭제
+	public int deletePost(PortfolioVO portfolioVO);
+	
+	//마이페이지 상담사신청 -> 자기소개서 가져오기.
+	public List<PortfolioVO> myPortfolio(String memId);
+	
+	//마이페이지 상담사 신청 -> 내가선택한 자소서 가져오기
+	public PortfolioVO getCheckPortfolio(String ptflNo);
+
+	public int portFreeDelete(PortfolioVO portfolioVO);
+
+	// 자기소개서(베이직) 모달
+	public PortfolioBasicVO appPortfolioBasic(PortfolioBasicVO portfolioBasicVO);
+
+	//자기소개서(자유) 모달
+	public List<PortfolioFreeVO> appPortfolioFree(PortfolioFreeVO portfolioFreeVO);
+
+}

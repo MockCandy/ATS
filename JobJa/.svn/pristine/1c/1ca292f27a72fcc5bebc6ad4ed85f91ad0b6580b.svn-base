@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.item.mapper.ConsultReviewMapper">
+
+
+	<resultMap type="consultantReviewVO" id="consultantReviewVOMap">
+		<result property="reviewNo" column="REVIEW_NO"/>
+		<result property="itemNo" column="aITEM_NO"/>
+		<result property="reviewMemId" column="REVIEW_MEM_ID"/>
+		<result property="reviewCnsltntId" column="REVIEW_CNSLTNT_ID"/>
+		<result property="reviewRate" column="REVIEW_RATE"/>
+		<result property="reviewCntnt" column="REVIEW_CNTNT"/>
+		<result property="reviewRegDt" column="REVIEW_REG_DT"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="conNm" column="CON_NM"/>
+		<association property="itemVO" resultMap="itemVOMap"></association>
+	</resultMap>
+	<resultMap type="itemVO" id="itemVOMap">
+		<result property="itemNo" column="bITEM_NO"/>
+		<result property="itemCd" column="ITEM_CD"/>
+		<result property="itemNm" column="ITEM_NM"/>
+		<result property="itemIntrcn" column="ITEM_INTRCN"/>
+	</resultMap>
+
+	<select id="getMyconsultReview" parameterType="hashMap" resultMap="consultantReviewVOMap">
+		SELECT T.* FROM
+                 ( 
+        SELECT 	   
+                   ROW_NUMBER() OVER(ORDER BY A.REVIEW_NO DESC) RNUM, 
+                   A.REVIEW_NO, A.ITEM_NO as aITEM_NO, A.REVIEW_MEM_ID
+			     , (SELECT MAX(D.MEM_NM) FROM MEMBER D WHERE D.MEM_ID = A.REVIEW_MEM_ID) MEM_NM
+			     , A.REVIEW_CNSLTNT_ID
+			     , (SELECT MAX(C.MEM_NM) FROM MEMBER C WHERE C.MEM_ID = A.REVIEW_CNSLTNT_ID) CON_NM
+			     , A.REVIEW_RATE, A.REVIEW_CNTNT, A.REVIEW_REG_DT
+			     , B.ITEM_NO as bITEM_NO
+			     , B.ITEM_NM
+			     , B.ITEM_INTRCN
+		FROM  	   CONSULTANT_REVIEW A, ITEM B
+		WHERE      A.ITEM_NO = B.ITEM_NO
+		AND        A.REVIEW_MEM_ID = #{memId}
+        )T
+        WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+        FROM     CONSULTANT_REVIEW
+        WHERE   REVIEW_MEM_ID = #{memId}
+	</select>
+
+
+	<select id="getTotalByConId" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) FROM CONSULTANT_REVIEW
+		WHERE REVIEW_CNSLTNT_ID = #{memId}
+	</select>
+
+	<select id="getConsultRevByConId" parameterType="hashMap" resultType="consultantReviewVO">
+		SELECT T.* FROM 
+		(
+			SELECT
+				ROW_NUMBER() OVER(ORDER BY REVIEW_REG_DT DESC) RNUM,
+				REVIEW_NO, 
+				ITEM_NO, 
+				REVIEW_MEM_ID, 
+				REVIEW_CNSLTNT_ID, 
+				REVIEW_RATE, 
+				REVIEW_CNTNT, 
+				REVIEW_REG_DT
+			 FROM CONSULTANT_REVIEW
+			WHERE REVIEW_CNSLTNT_ID = #{memId}
+		) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+</mapper>

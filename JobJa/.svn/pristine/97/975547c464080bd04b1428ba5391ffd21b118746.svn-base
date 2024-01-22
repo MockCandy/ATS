@@ -1,0 +1,18 @@
+package jobJa.myPage.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/enter")
+@Controller
+public class EntMyPageController {
+	
+	//기업
+	@GetMapping("/mypage")
+	public String entMypage() {
+		
+		return "mypageEnt/entMyPage";
+	}
+
+}

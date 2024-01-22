@@ -1,0 +1,378 @@
+package jobja.board.controller;
+
+import java.awt.print.Book;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jobja.atchfile.mapper.AtchFileDetailMapper;
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.atchfile.vo.AtchFileVO;
+import jobja.board.service.BoardQNAService;
+import jobja.board.vo.BoardQNAVO;
+import jobja.likes.mapper.LikesMapper;
+import jobja.likes.vo.LikesVO;
+import jobja.reply.service.ReplyService;
+import jobja.reply.vo.ReplyVO;
+import jobja.sort.vo.SearchVO;
+import jobja.util.ArticlePage;
+import jobja.util.TimeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/boardQNA")
+public class BoardQNAController {
+
+	@Autowired
+	BoardQNAService boardQNAService;
+	
+	@Autowired
+	ReplyService replyService;
+	
+	@Autowired
+	LikesMapper likesMapper;
+	
+	@Autowired
+	AtchFileDetailMapper atchFileDetailMapper;
+	
+	@Autowired
+	TimeUtil timeUtil;
+	
+	@GetMapping("/list")
+	public String list(
+			@RequestParam(value="keyword", required = false, defaultValue = "") String keyword,
+			@RequestParam(value="currentPage", required = false, defaultValue = "1") int currentPage,
+			@RequestParam(value="sort", required = false, defaultValue = "") String sort,
+			Model model) {
+		
+		log.info("list -> keyword : " + keyword);
+		log.info("list -> currentPage : " + currentPage);
+		log.info("list -> sort : " + sort);
+		
+		int size = 5;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword", keyword);
+		map.put("currentPage", currentPage);
+		map.put("size", size);		
+		map.put("sortBy", sort);		
+		
+		log.info("list -> map : " + map);
+		
+		List<BoardQNAVO> boardQNAVOList = boardQNAService.list(map);
+		
+		log.info("list -> BoardQNAVOList : " + boardQNAVOList);
+		
+		for(int i = 0; i < boardQNAVOList.size(); i++) {
+			Date date = boardQNAVOList.get(i).getBoardUpdtDt();
+			
+			log.info("list -> date : " + date);
+			
+			String passedTime = timeUtil.calculateTime(date);
+			boardQNAVOList.get(i).setPassedTime(passedTime);
+			
+			List<ReplyVO> list = replyService.getReply(boardQNAVOList.get(i).getBoardId());
+			
+			boardQNAVOList.get(i).setReplys(list);
+			
+		}
+		
+		int total = this.boardQNAService.getTotal(map);
+
+		log.info("list -> total : " + total);
+		
+		ArticlePage<BoardQNAVO> data = new ArticlePage<BoardQNAVO>(total, currentPage, 5, boardQNAVOList);
+
+		data.setKeyword(keyword);
+		data.setUrl("/boardQNA/list");
+		data.setSort(sort);
+
+		log.info("list -> data : " + data);
+		
+		List<BoardQNAVO> popularQNAList = boardQNAService.getPopular5();
+		
+		model.addAttribute("data" , data);
+		model.addAttribute("boardQNAVOList", boardQNAVOList);
+		model.addAttribute("popularQNAList", popularQNAList);
+		model.addAttribute("total", total);
+		model.addAttribute("sort", sort);
+		
+		return "boardQNA/list";
+	}
+
+	@ResponseBody
+	@PostMapping("/ajaxList")
+	public ArticlePage<BoardQNAVO> ajaxList(
+			@RequestParam Map<String, Object> searchMap,
+			Model model) {
+
+		
+		int size = 5;
+		
+		searchMap.put("size", size);		
+		
+		log.info("searchMap : "+searchMap);
+		
+		
+		List<BoardQNAVO> boardQNAVOList = boardQNAService.list(searchMap);
+
+		log.info("list -> BoardQNAVOList : " + boardQNAVOList);
+		
+		for(int i = 0; i < boardQNAVOList.size(); i++) {
+			Date date = boardQNAVOList.get(i).getBoardUpdtDt();
+			
+			log.info("list -> date : " + date);
+			
+			String passedTime = timeUtil.calculateTime(date);
+			boardQNAVOList.get(i).setPassedTime(passedTime);
+			
+			List<ReplyVO> list = replyService.getReply(boardQNAVOList.get(i).getBoardId());
+			
+			boardQNAVOList.get(i).setReplys(list);
+			
+		}
+		
+		int total = this.boardQNAService.getTotal(searchMap);
+
+		log.info("list -> total : " + total);
+		
+		log.info("searchMap.get(\"currentPage\") : " + searchMap.get("currentPage"));
+		
+		ArticlePage<BoardQNAVO> data = new ArticlePage<BoardQNAVO>(total, Integer.parseInt((String.valueOf(searchMap.get("currentPage")))), 5, boardQNAVOList, String.valueOf(searchMap.get("recent")));
+
+		data.setKeyword((String) searchMap.get("keyword"));
+		data.setUrl("/boardQNA/list");
+
+		log.info("list -> data : " + data);
+		
+		data.setSort(String.valueOf(searchMap.get("sortBy")));
+		
+		model.addAttribute("data" , data);
+		model.addAttribute("boardQNAVOList", boardQNAVOList);
+		model.addAttribute("total", total);
+		model.addAttribute("sort", searchMap.get("sortBy"));
+		
+		return data;
+	}
+	
+	@GetMapping("/create")
+	public String create() {
+		return "boardQNA/create";
+	}
+
+	@PostMapping("/createForm")
+	public String createForm(BoardQNAVO boardQNAVO) {
+
+		log.info("boardQNAVO : " + boardQNAVO);
+		
+		String boardId = boardQNAService.getBoardId();
+
+		log.info("boardId : " + boardId);
+		
+		boardQNAVO.setBoardId(boardId);
+		
+		log.info("createForm -> boardQNAVO : " + boardQNAVO);
+		
+		int result = boardQNAService.createPost(boardQNAVO);
+
+		log.info("createForm -> result : " + result);
+		
+		return "redirect:/boardQNA/list";
+	}
+
+	@Transactional
+	@GetMapping("/detail")
+	public String detail(BoardQNAVO boardQNAVO, Model model, HttpServletRequest req, HttpServletResponse resp) {
+		
+		Cookie oldCookie = null;
+		Cookie[] cookies = req.getCookies();
+		// 쿠키가 비어있지 않으면
+		if(cookies != null) {
+			for(Cookie cookie : cookies) {
+				// 쿠키중에 boardCnt라는 이름의 쿠키가 있다면
+				if(cookie.getName().equals("boardCnt")) {
+					log.info("cookie.getName().equals(boardCnt)");
+					// oldCookie에 cookie(boardCnt)를 담는다
+					oldCookie = cookie;
+				}
+			}
+		}
+		if(oldCookie != null) { // boardCnt라는 cookie가 있다면
+			// 쿠키에 해당 게시물의 boardId가 적혀있지 않으면
+			if(!oldCookie.getValue().contains("[" + boardQNAVO.getBoardId().toString() + "]")) {
+				boardQNAService.countUp(boardQNAVO.getBoardId());
+	            oldCookie.setValue(oldCookie.getValue() + "_[" + boardQNAVO.getBoardId() + "]");
+	            oldCookie.setPath("/");
+	            oldCookie.setMaxAge(60 * 60 * 24);
+	            resp.addCookie(oldCookie);
+			}
+		}else { // boardCnt라는 cookie가 없다면
+			boardQNAService.countUp(boardQNAVO.getBoardId());
+			// boardCnt라는 cookie를 새로 만들어줌
+	        Cookie newCookie = new Cookie("boardCnt", "[" + boardQNAVO.getBoardId() + "]");
+	        newCookie.setPath("/");
+	        newCookie.setMaxAge(60 * 60 * 24);
+	        // 생성한 쿠키를 response객체를 통해 응답헤더에 추가
+	        resp.addCookie(newCookie);
+	    }
+		
+		log.info("detail- > boardQNAVO : " + boardQNAVO);
+		
+		boardQNAVO = boardQNAService.detail(boardQNAVO);
+		
+		log.info("detail -> boardQNAVO : " + boardQNAVO);
+		
+		log.info("detail -> boardQNAVO.getBoardWritingDt : " + boardQNAVO.getBoardUpdtDt());
+		log.info("detail -> boardQNAVO.getBoardWritingDt : " + boardQNAVO.getBoardUpdtDt().getClass().getName());
+		
+		Date date = boardQNAVO.getBoardUpdtDt();
+		
+		String passedTime = timeUtil.calculateTime(date);
+		boardQNAVO.setPassedTime(passedTime);
+		
+		log.info("passedTime : " + passedTime);
+		
+		List<ReplyVO> replyVOList = replyService.getReply(boardQNAVO.getBoardId());
+		log.info("detail -> replyVOList : " + replyVOList);
+		
+		for(int i = 0; i < replyVOList.size(); i++) {
+			date = replyVOList.get(i).getReplyWritingDt();
+			passedTime = timeUtil.calculateTime(date);
+			replyVOList.get(i).setPassedTime(passedTime);
+		}
+		
+		List<LikesVO> likesVOList = likesMapper.getLikes(boardQNAVO.getBoardId());
+		
+		log.info("likesVOList : " + likesVOList);
+		
+
+		model.addAttribute("likesVOList",likesVOList);
+		
+		model.addAttribute("passedTime",passedTime);
+		
+		model.addAttribute("boardQNAVO", boardQNAVO);
+		
+		model.addAttribute("replyVOList", replyVOList);
+		
+		
+		
+		return "boardQNA/detail";
+	}
+	
+	@ResponseBody
+	@PostMapping("/ajaxWriteReply")
+	public List<ReplyVO> ajaxWriteReply(@RequestBody ReplyVO replyVO){
+		
+		log.info("ajaxWriteReply -> replyVO : " + replyVO);
+		
+		if(replyVO.getParentReplyNo() == null) {
+			replyVO.setParentReplyNo("0");
+		}
+		
+		int result = replyService.writeReply(replyVO);
+		log.info("ajaxWriteReply -> result : " + result);
+		
+		List<ReplyVO> replyVOList = replyService.getReply(replyVO.getBoardId());
+		log.info("ajaxWriteReply -> replyVOList : " + replyVOList);
+		
+		return replyVOList;
+		
+	}
+
+	@GetMapping("/update")
+	public String update(BoardQNAVO boardQNAVO, Model model) {
+
+		log.info("detail -> boardQNAVO : " + boardQNAVO);
+		
+		boardQNAVO = boardQNAService.detail(boardQNAVO);
+		
+		log.info("detail -> boardQNAVO : " + boardQNAVO);
+		
+		model.addAttribute("boardQNAVO", boardQNAVO);
+		
+		return "boardQNA/update";
+	}
+
+	@PostMapping("/updateForm")
+	public String updateForm(BoardQNAVO boardQNAVO, RedirectAttributes redirectAttributes) {
+
+		log.info("updateForm -> boardQNAVO : " + boardQNAVO);
+		
+		int result = boardQNAService.update(boardQNAVO);
+
+		log.info("updateForm -> result : " + result);
+		
+		log.info("updateForm -> boardQNAVO : " + boardQNAVO);
+		
+		redirectAttributes.addFlashAttribute("boardQNAVO", boardQNAVO);
+		
+		return "redirect:/boardQNA/detail?boardId="+boardQNAVO.getBoardId();
+	}
+
+	
+	@GetMapping("/delete")
+	public String delete(BoardQNAVO boardQNAVO, Model model) {
+
+		log.info("delete -> boardQNAVO : " + boardQNAVO);
+
+		int result = boardQNAService.delete(boardQNAVO);
+
+		log.info("delete -> result : " + result);
+		
+		return "redirect:/boardQNA/list";
+	}
+	
+
+	@ResponseBody
+	@PostMapping("/ajaxLikeUp")
+	public BoardQNAVO ajaxLikeUp(@RequestBody BoardQNAVO boardQNAVO) {
+		
+		log.info("ajaxLikeUp -> boardQNAVO : " + boardQNAVO);
+		
+		int result = boardQNAService.ajaxLikeUp(boardQNAVO);
+		
+		log.info("ajaxLikeUp -> result : " + result);
+
+		log.info("ajaxLikeUp -> boardQNAVO : " + boardQNAVO);
+
+		return boardQNAVO;
+	}
+	
+	@ResponseBody
+	@PostMapping("/ajaxLikeCancel")
+	public BoardQNAVO ajaxLikeCancel(@RequestBody BoardQNAVO boardQNAVO) {
+		
+		boardQNAVO = boardQNAService.detail(boardQNAVO);
+		
+		log.info("ajaxLikeCancel -> boardQNAVO : " + boardQNAVO);
+		
+		int result = boardQNAService.ajaxLikeCancel(boardQNAVO);
+
+		log.info("ajaxLikeCancel -> result : " + result);
+
+		log.info("ajaxLikeCancel -> boardQNAVO : " + boardQNAVO);
+		
+		return boardQNAVO;
+	}
+	
+
+}

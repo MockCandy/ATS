@@ -1,0 +1,20 @@
+package jobja.mypage.member.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class ConAprvVO {
+	
+	private String memId;
+	private String resumeNo;
+	private String ptflNo;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date conAprvDt;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date conAprvUpdt;
+
+}

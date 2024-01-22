@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.member.mapper.JobOfferMapper">
+	
+	<select id="getOffers" parameterType="memberVO" resultType="jobOfferVO">
+		SELECT ENT_NO,
+			 MEM_ID,
+			 OFFER_DT, 
+			 OFFER_TITLE, 
+			 OFFER_CNTNT, 
+			 OFFER_RESULT
+		FROM JOB_OFFER
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+</mapper>

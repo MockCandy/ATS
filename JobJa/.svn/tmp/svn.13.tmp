@@ -1,0 +1,166 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+<style>
+#toggleElement {
+	display: none;
+	margin-top: 20px;
+	padding: 10px;
+	border: 1px solid #ccc;
+}
+</style>
+
+   <header>
+        <div class="header-top">
+            <a class="header-top-logo" href="/">
+                <img src="/resources/images/logo.svg" alt="">
+            </a>
+
+            <div class="header-top-menu">
+                <ul>
+                    <li class="li-entRanking"><a href="/entRanking/list">기업 랭킹</a></li>
+                    <li class="li-recruit"><a href="/recruit/list">채용</a></li>
+                    <li class="li-boardQna"><a href="/boardQNA/list">취업Q&A</a></li>
+                    <li class="li-devCarr" id="sub"><a href="/boardInterView/list">커리어성장</a>
+	                    <ul class="sub-menu"> 
+	                    	<li class="boardInterView"><a href="/boardInterView/list">현직자인터뷰</a></li>
+	                    	<li class="boardClass"><a href="/boardClass/list">강의클래스</a></li>
+	                    	<li class="news"><a href="/news/list">취업뉴스</a></li>
+	                    	<li class="boardConsulting"><a href="/boardConsulting/list">취업상담</a></li>
+	                    </ul>
+                    </li>
+                </ul>
+            </div>
+		
+            <div class="header-top-right">
+            	
+            	<sec:authorize access="isAnonymous()">
+	                <a href="/login">로그인</a>
+	                <a href="/member/create">회원가입</a>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                	<!-- MemberVO memberVO = this.memberMapper.detail(username); -->
+                	<sec:authentication property="principal.memberVO" var="memberVO"/>
+                		<span>
+                			<div>
+                				<i class="fa-brands fa-rocketchat" id="chatting"></i>
+                			</div>
+                		</span>
+                		<span>
+	                		<a href="#" id="msgStack">
+		                		<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M7.2335 24.9695C6.88401 24.9695 6.59105 24.8513 6.35463 24.6149C6.11821 24.3784 6 24.0855 6 23.736C6 23.3865 6.11821 23.0936 6.35463 22.8571C6.59105 22.6207 6.88401 22.5025 7.2335 22.5025H8.467V13.868C8.467 12.1617 8.98096 10.6455 10.0089 9.31947C11.0368 7.99346 12.3731 7.12487 14.0178 6.7137V5.85025C14.0178 5.33629 14.1976 4.89943 14.5574 4.53966C14.9172 4.17989 15.354 4 15.868 4C16.382 4 16.8188 4.17989 17.1786 4.53966C17.5384 4.89943 17.7183 5.33629 17.7183 5.85025V6.7137C19.3629 7.12487 20.6992 7.99346 21.7271 9.31947C22.755 10.6455 23.269 12.1617 23.269 13.868V22.5025H24.5025C24.852 22.5025 25.145 22.6207 25.3814 22.8571C25.6178 23.0936 25.736 23.3865 25.736 23.736C25.736 24.0855 25.6178 24.3784 25.3814 24.6149C25.145 24.8513 24.852 24.9695 24.5025 24.9695H7.2335ZM15.868 28.67C15.1896 28.67 14.6088 28.4284 14.1257 27.9453C13.6426 27.4622 13.401 26.8814 13.401 26.203H18.335C18.335 26.8814 18.0934 27.4622 17.6103 27.9453C17.1272 28.4284 16.5464 28.67 15.868 28.67Z" fill="#8D9EA5"/>
+								</svg>
+							</a>
+						</span>
+						<sec:authorize access="hasRole('ROLE_ADMIN')">
+							<span>관리자</span>
+						</sec:authorize>
+						<sec:authorize access="hasRole('ROLE_MEMBER')">
+							<span>일반회원</span>
+						</sec:authorize>
+						<sec:authorize access="hasRole('ROLE_ENTERPRISE')">
+							<span>기업회원</span>
+						</sec:authorize>
+						<span class="profile-img">
+							<a href="/member/mypage">
+								<c:choose>
+									<c:when test="${memberVO.memAfId != null}">
+										<img alt="" src="/resources/upload/${memberVO.memAfId }">
+									</c:when>
+									<c:otherwise>
+										<img alt="" src="/resources/images/img_profilenodata.svg">
+									</c:otherwise>
+								</c:choose>
+								
+							</a>
+						</span>
+                	<span>${memberVO.memNm}</span>
+                	
+	                	<form action="/logout" method="post">
+	                			<button type="submit" style="border:none; background: none;">로그아웃</button>
+	                		<sec:csrfInput/>
+	                	</form>
+                </sec:authorize>
+            </div>
+        </div>
+
+        <div class="header-bot">
+            <div class="schbar">
+                <input class="schbar-input" onkeyup="search(event)" placeholder="기업, 채용공고를 검색해보세요." type="text" name="" id="">
+            </div>
+        </div>
+    </header>
+        
+    <header id="scroll-header">
+        <a class="header-top-logo" href="/">
+            <img src="/resources/images/logo.svg" alt="">
+        </a>
+        <div class="schbar">
+            <input class="schbar-input" onkeyup="search(event)" placeholder="기업, 채용공고를 검색해보세요." type="text" name="" id="">
+        </div>
+    </header>
+    
+	<div id="toggleElement">
+		<!-- 토글될 내용을 넣어주세요 -->
+		<div>내용이 여기에 들어갑니다.</div>
+	</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+
+
+<!-- websocket -->
+<script type="text/javascript">
+var socket = null; // 소켓 전역변수 선언
+
+$(document).ready(function() {
+<sec:authorize access="isAuthenticated()">
+connectWS();
+</sec:authorize>
+});
+
+// 웹소켓 연결 함수
+function connectWS() {
+var ws = new SockJS("/echo"); // 소켓 객체 생성
+socket = ws;
+
+console.log("웹소켓: ", socket);
+
+ws.onopen = onOpen;
+ws.onmessage = onMessage;
+ws.onclose = onClose;
+ws.onerror = onError;
+}
+
+// 소켓 연결
+function onOpen() {
+console.log("소켓 연결 (onopen)");
+// socket.send("원종찬");
+};
+
+// 메시지 수신
+function onMessage(evt) {
+console.log("onMessage 함수: ", evt.data);
+
+};
+
+// 소켓 종료
+function onClose() {
+console.log("소켓 종료 (onclose)");
+};
+
+// 소켓 에러
+function onError() {
+console.log("소켓 에러 (onerror)");
+};
+
+$(document).ready(function() {
+	$('#chatting').click(function() {
+		$('#toggleElement').slideToggle();
+	});
+});
+
+
+</script>
+

@@ -1,0 +1,82 @@
+package jobJa.myPage.controller;
+
+import java.util.List;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jobJa.recruit.vo.RecruitVO;
+
+@RequestMapping("/enter")
+@Controller
+public class EntMyPageController {
+	
+	// 기업 마이페이지 - 아무것도 없는거
+	@GetMapping("/mypage")
+	public String entMypage() {
+		
+		return "mypageEnt/entMyPage";
+	}
+	
+	// 파일함
+	@GetMapping("/filepage")
+	public String filePage() {
+		
+		return "mypageEnt/entSaveFile";
+	}
+	
+	// 채용공고 목록
+	@GetMapping("/recruit")
+	public String recruitList() {
+		
+		
+		
+		return "mypageEnt/entRecruitList";
+	}
+	
+	// 채용공고 등록
+	@GetMapping("/recruitCreate")
+	public String recruitCreate() {
+		
+		return "mypageEnt/entRecruitCreate";
+	}
+	
+	// 지원자 목록
+	@GetMapping("/application")
+	public String applicationList() {
+		
+		return "mypageEnt/entApplicationList";
+	}
+
+	// 일정관리
+	@GetMapping("/calendar")
+	public String calendar() {
+		
+		return "mypageEnt/entCalendar";
+	}
+	
+	// 맞춤인재(입사제안)
+	@GetMapping("/jobOffer")
+	public String jobOffer() {
+		
+		return "mypageEnt/entJobOffer";
+	}
+	
+	// 기업리뷰
+	@GetMapping("/review")
+	public String review() {
+		
+		return "mypageEnt/entReview";
+	}
+
+	// 기업 상품
+	@GetMapping("/items")
+	public String items() {
+		
+		return "mypageEnt/entItems";
+	}
+	
+
+}
+

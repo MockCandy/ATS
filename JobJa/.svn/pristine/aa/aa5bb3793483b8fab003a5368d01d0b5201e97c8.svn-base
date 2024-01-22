@@ -1,0 +1,9 @@
+package jobJa.report.service;
+
+import jobJa.report.vo.ReportVO;
+
+public interface ReportService {
+
+	int report(ReportVO reportVO);
+
+}

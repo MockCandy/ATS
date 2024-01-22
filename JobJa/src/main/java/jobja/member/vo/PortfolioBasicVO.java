@@ -1,0 +1,21 @@
+package jobja.member.vo;
+
+import lombok.Data;
+/**
+ * 자기소개서 기본양식
+ */
+@Data
+public class PortfolioBasicVO {
+	
+	private String ptflNo;				// 자기소개서번호
+	private String memId;				// 작성자ID
+	private String ptflGrowth;			// 성장과정
+	private String ptflMotive;			// 지원동기
+	private String ptflPersonality;		// 성격 및 장단점
+	private String ptflJobExp;			// 관련 업무 경험 및 경력
+	private String ptflProjExp;			// 프로젝트 경험
+	private String ptflAspirations;	// 입사 후 포부
+	private String ptflTitle;		// 자소서 제목
+	
+
+}

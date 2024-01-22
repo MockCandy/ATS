@@ -1,0 +1,30 @@
+package jobja.item.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobja.item.mapper.ItemMapper;
+import jobja.item.service.ItemService;
+import jobja.item.vo.ItemVO;
+
+@Service
+public class ItemServiceImpl implements ItemService {
+	
+	@Autowired
+	ItemMapper itemMapper;
+	
+	//배너상품 목록 가져오기.
+	@Override
+	public List<ItemVO> getBannerItemList() {
+		return this.itemMapper.getBannerItemList();
+	}
+	
+	//채용상품 목록 가져오기.
+	@Override
+	public List<ItemVO> getRecruitItemList() {
+		return this.itemMapper.getRecruitItemList();
+	}
+
+}

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.chatting.mapper.ChattingMapper">
+
+
+	<select id="getConsultantList" parameterType="String" resultType="memberVO">
+	
+		SELECT
+		      A.MEM_ID
+		    , A.MEM_PASS
+		    , A.MEM_NM
+		    , A.MEM_POSTNO
+		    , A.MEM_ADDR
+		    , A.MEM_ADDR2
+		    , A.MEM_TEL
+		    , A.MEM_REG_DT
+		    , A.MEM_OPEN_RESUME
+		    , A.MEM_STATE_CD
+		    , A.MEM_BIRTH
+		    , A.MEM_GEN
+		    , A.MEM_EMAIL
+		    , A.MEM_CD
+		    , A.MEM_YN
+		    , A.MEM_INTRCN
+		    , A.MEM_NCNM
+		    , A.MEM_AF_ID
+		    , A.MEM_WISH_JOB_CATE
+		    , A.MEM_WISH_JOB
+		    , A.ENABLED
+		    , A.MEM_INT_WORD
+		    , A.MEM_MG_POSITION
+		FROM MEMBER A, PAYMENT B
+		WHERE A.MEM_ID = B.PAY_CON_ID
+		AND B.PAY_USER_ID = #{memId}
+	</select>
+	
+	<select id="getMemberList" parameterType="String" resultType="memberVO">
+	    select 
+	    	m.*
+	    from 
+	    	PAYMENT p inner join member m on p.pay_user_id = m.mem_id
+	    where PAY_CON_ID = #{memId}
+	</select>
+	
+	<insert id="createRoom" parameterType="hashMap">
+		<selectKey resultType="String" order="BEFORE" keyProperty="chatRoomId">
+			SELECT 'CHT' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(CHAT_ROOM_ID),4) + 1,'00000')),'00001')
+			FROM   CHAT_ROOM
+		</selectKey>
+		
+		INSERT INTO CHAT_ROOM(
+			  CHAT_ROOM_ID
+			, CHAT_CON_MEM_ID
+			, CHAT_MEM_ID
+			, CHAT_CLOSE
+		)
+		VALUES(
+			  #{chatRoomId}
+			, #{memIdCon}
+			, #{memId}
+			, '1'
+		)
+	</insert>
+
+
+	<select id="getChatRoom" parameterType="hashMap" resultType="chatRoomVO">
+		SELECT AA.*
+		   ,(SELECT CHAT_CNTNT FROM message m WHERE m.CHAT_ROOM_ID = aa.CHAT_ROOM_ID AND m.CHAT_DATE = AA.max_chat_date) as last_chat_cntnt
+		FROM 
+		(SELECT
+		    CHAT_ROOM_ID
+		    ,CHAT_CON_MEM_ID
+		    ,
+		    (SELECT MEM_NM
+		    FROM MEMBER SA
+		    WHERE SA.MEM_ID = A.CHAT_CON_MEM_ID
+		    ) AS CHAT_CON_MEM_NM
+		    ,CHAT_MEM_ID
+		    ,
+		    (SELECT MEM_NM
+		    FROM MEMBER SA
+		    WHERE SA.MEM_ID = A.CHAT_MEM_ID
+		    ) AS CHAT_MEM_NM
+		    ,(select max(CHAT_DATE)  from message m
+		     where m.CHAT_ROOM_ID = a.CHAT_ROOM_ID) as max_chat_date
+		FROM
+		    CHAT_ROOM A )  AA
+		<if test="memCd == 'MCC01000'">
+		WHERE CHAT_MEM_ID = #{memId}
+		</if>
+		<if test="memCd == 'MCC01002'">
+		WHERE CHAT_CON_MEM_ID = #{memId}
+		</if>
+	</select>
+	
+	<insert id="sendMessage" parameterType="hashMap">
+		<selectKey resultType="String" order="BEFORE" keyProperty="messageId">
+			SELECT 'MSG' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(MESSAGE_ID),4) + 1,'00000')),'00001')
+			FROM   MESSAGE
+		</selectKey>
+		
+		INSERT INTO MESSAGE (
+		    MESSAGE_ID, CHAT_ROOM_ID, CHAT_CNTNT, CHAT_DATE, MEM_ID
+		)
+		VALUES (
+			  #{messageId}
+			, #{chatRoomId}
+			, #{chatCntnt}
+			, TO_DATE(#{chatDate}, 'YYYY-MM-DD HH24:MI:SS')
+			, #{memId}
+		)
+	</insert>
+	
+	<select id="getMessageList" parameterType="String" resultType="messageVO">
+		SELECT
+		      MESSAGE_ID
+		    , CHAT_ROOM_ID
+		    , CHAT_CNTNT
+		    , MEM_ID
+		    , TO_CHAR(CHAT_DATE, 'YYYY-MM-DD HH24:MI:SS') AS CHAT_DATE
+		    , (
+		        SELECT
+		            MEM_NM
+		        FROM
+		            MEMBER MEM
+		        WHERE MEM.MEM_ID = MSG.MEM_ID
+		    ) as MEM_NM
+		    , (
+		        SELECT
+		            MEM_AF_ID
+		        FROM
+		            MEMBER MEM
+		        WHERE MEM.MEM_ID = MSG.MEM_ID
+		    ) as MEM_AF_ID
+		FROM
+		    MESSAGE MSG
+		WHERE CHAT_ROOM_ID = #{chatRoomId}
+		ORDER BY CHAT_DATE ASC
+	</select>
+	
+	<select id="getRoomInfo" parameterType="String" resultType="chatRoomVO">
+		SELECT
+		      CHAT_ROOM_ID
+		    , CHAT_CON_MEM_ID
+		    , CHAT_MEM_ID
+		    , CHAT_CLOSE
+		FROM
+		    CHAT_ROOM
+		WHERE CHAT_ROOM_ID = #{chatRoomId}
+	</select>
+	
+	<update id="decreaseCnt" parameterType="String">
+	
+		UPDATE PAYMENT
+			SET PAY_REMNDR_CNT = PAY_REMNDR_CNT-1
+			WHERE PAY_CON_ID = 
+			    (SELECT
+			        CHAT_CON_MEM_ID
+			    FROM
+			        CHAT_ROOM
+			    WHERE CHAT_ROOM_ID = #{chatRoomId})
+			AND PAY_USER_ID = 
+			    (SELECT
+			        CHAT_MEM_ID
+			    FROM
+			        CHAT_ROOM
+			    WHERE CHAT_ROOM_ID = #{chatRoomId})
+	</update>
+	
+	<update id="chatClose" parameterType="String">
+		UPDATE CHAT_ROOM
+			SET CHAT_CLOSE = '0'
+			WHERE CHAT_ROOM_ID = #{chatRoomId}
+	</update>
+	
+	<select id="payRemndrCnt" parameterType="String" resultType="Integer">
+		SELECT
+		    P.PAY_REMNDR_CNT
+		FROM
+		    PAYMENT P, CHAT_ROOM C
+		    WHERE P.PAY_CON_ID = C.CHAT_CON_MEM_ID
+		    AND P.PAY_USER_ID = C.CHAT_MEM_ID
+		    AND C.CHAT_ROOM_ID = #{chatRoomId}
+	</select>
+	
+	<select id="chatCloseCheck" parameterType="String" resultType="String">
+		SELECT
+			CHAT_CLOSE
+		FROM 
+			CHAT_ROOM
+		WHERE CHAT_ROOM_ID = #{chatRoomId}
+	</select>
+	
+	<select id="getChatRoomInfo" parameterType="String" resultType="chatRoomVO">
+		SELECT
+		      CHAT_ROOM_ID
+		    , CHAT_CON_MEM_ID
+		    , CHAT_MEM_ID
+		    , CHAT_CLOSE
+		FROM CHAT_ROOM
+		WHERE CHAT_ROOM_ID = #{bang_id}
+	</select>
+	
+	<select id="getConName" parameterType="String" resultType="String">
+		SELECT 
+			MEM_NM
+		FROM 
+			MEMBER
+		WHERE MEM_ID = #{conTempId}
+		
+	</select>
+	
+	<select id="getMemName" parameterType="String" resultType="String">
+		SELECT 
+			MEM_NM
+		FROM 
+			MEMBER
+		WHERE MEM_ID = #{memTempId}
+	</select>
+	
+
+</mapper>

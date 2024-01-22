@@ -1,0 +1,5 @@
+package jobJa.myPage.member.mapper;
+
+public interface MemFullCalendarMapper {
+
+}

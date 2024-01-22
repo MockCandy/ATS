@@ -1,0 +1,46 @@
+package jobja.member.vo;
+
+import java.util.List;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.mypage.member.vo.MemberVO;
+import lombok.Data;
+
+/**
+ * 기업승인 VO
+ * 회원ID = 인사담당자회원ID
+ * 사업자등록번호 = 사업자등록번호
+ * 
+ * 회원테이블에서 회원ID가 PK
+ * 기업정보에서 사업자등록번호가 PK
+ */
+@Data
+public class EntAprvVO {
+	
+	@NotBlank
+	private String entAprvNo;		// 기업승인번호 => PK
+	@NotBlank			
+	private String memId;			// 인사담당자회원ID
+	@NotBlank	
+	private String entNo;			// 사업자등록번호
+	private String entYn;			// 인사당담자승인여부
+	private String entMgPosition;	// 인사담당자직급
+
+	// 공통코드 상세
+	private List<ComDetCodeInfoVO> comDetCodeInfoVOList;
+	
+	// 첨부파일
+	private List<AtchFileDetailVO> atchFileDetailVOList;
+	
+	// 회원
+	private List<MemberVO> memberVOList;
+	
+	// 기업회원
+	private List<EnterpriseVO> enterpriseVOList;
+	
+	
+
+}

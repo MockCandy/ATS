@@ -1,0 +1,425 @@
+package jobja.mypage.enterprise.controller;
+
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+import jobja.application.service.ApplicationService;
+import jobja.atchfile.mapper.AtchFileDetailMapper;
+import jobja.board.service.BoardEntReviewService;
+import jobja.common.mapper.ComCodeMapper;
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.member.service.EnterpriseService;
+import jobja.member.service.PortfolioService;
+import jobja.member.vo.ApplicationVO;
+import jobja.member.vo.PortfolioBasicVO;
+import jobja.member.vo.PortfolioFreeVO;
+import jobja.member.vo.PortfolioVO;
+import jobja.mypage.enterprise.service.EntProfileService;
+import jobja.mypage.member.service.MemProfileService;
+import jobja.mypage.member.service.MemberService;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.recruit.service.RecruitService;
+import jobja.recruit.vo.RecruitVO;
+import jobja.util.ArticlePage;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@RequestMapping("/entApplicant")
+@Slf4j
+@Controller
+public class EnterApplicantController {
+	
+	@Autowired
+	EntProfileService entProfileService;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+
+	@Autowired
+	MemProfileService memProfileService;
+	
+	@Autowired
+	MemberService memberService;
+	
+	@Autowired
+	EnterpriseService enterpriseService;
+	
+	@Autowired
+	BoardEntReviewService boardEntReviewService;
+	
+	@Autowired
+	ComCodeMapper comCodeMapper;
+	
+	@Autowired
+	RecruitService recruitService;
+	
+	@Autowired
+	ApplicationService applicationService;
+	
+	@Autowired
+	AtchFileDetailMapper atchFileDetailMapper;
+	
+	@Autowired
+	PortfolioService portfolioService;
+	
+	/**
+	 * 지원자 현황의 채용공고 목록
+	 * @param model
+	 * @param currentPage
+	 * @param recruitNo 
+	 * @return
+	 */
+	@GetMapping("/appRecruit")
+	public String applicationRecList(Model model,
+			@RequestParam(value = "keyword",required = false) String keyword	,
+			@RequestParam(value = "currentPage",required = false, defaultValue = "1") int currentPage	
+			) {
+		
+		log.info("applicationRecList -> keyword : " + keyword);
+		
+		int size = 15;
+		int pageSize = 5;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword", keyword);
+		map.put("currentPage", currentPage);
+		map.put("size", size);
+		map.put("pageSize", pageSize);
+		
+		// 현재 로그인한 회원 정보
+		MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+
+		map.put("memId", memId);
+		
+		log.info("recruitVOList -> memberVO : " + memberVO);
+		int appCount = 0;
+		
+		// 채용공고 목록
+		List<RecruitVO> recruitVOList = this.recruitService.recruitList(map);
+		log.info("recruitVOList -> recruitVO : " +recruitVOList);
+		
+		int total = recruitService.recruitListCount(map);
+		
+		// 공통코드 - 지원상태코드
+		List<ComDetCodeInfoVO> comDetCodeInfoVOList = this.applicationService.comDetCdState();
+		
+		// 입사 관련
+		List<ApplicationVO> applicationVOList = this.applicationService.applicationVOList();
+		log.info("recruit -> applicationVOList : " +applicationVOList);
+		
+
+		ArticlePage<RecruitVO> info = new ArticlePage<RecruitVO>(total, currentPage, 10, 5, recruitVOList);
+
+		info.setUrl("/entApplicant/appRecruit");
+		
+		map.put("recruitVOList", recruitVOList);
+		map.put("applicationVOList", applicationVOList);
+		map.put("appCount", appCount);
+
+		model.addAttribute("recruitVO", recruitVOList);
+		model.addAttribute("comDetCodeInfoVO", comDetCodeInfoVOList);
+		model.addAttribute("applicationVO", applicationVOList);
+		model.addAttribute("appCount", appCount);
+		model.addAttribute("info", info);
+		model.addAttribute("total", total);
+		
+		return "mypageEnt/entApplicationList";
+	}
+	
+	/**
+	 * 지원자 목록
+	 * @param keyword
+	 * @param recruitNo
+	 * @param currentPage
+	 * @param model
+	 * @return
+	 * @throws JsonProcessingException
+	 */
+	@GetMapping("/applicationList")
+	public String applicationList(
+			@RequestParam(value="keyword",required=false) String keyword
+			, @RequestParam(value="recruitNo",required=false) String recruitNo
+			, @RequestParam(value="currentPage",required=false, defaultValue="1") int currentPage
+			, Model model) throws JsonProcessingException {
+		
+		log.info("applicationList -> keyword : " + keyword);
+		log.info("applicationList -> currentPage : " + currentPage);
+		
+		int size = 10;
+		int pageSize = 5;
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("recruitNo", recruitNo);
+		map.put("keyword",keyword);
+		map.put("currentPage",currentPage);
+		
+	    MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+	    String memId = memberVO.getMemId();
+	    log.info("applicationList -> memberVO: " + memId);
+	    log.info("applicationList -> memberVO: " + memberVO);
+
+	    map.put("memId",memId);
+	    
+	    List<RecruitVO> recruitVOList = recruitService.recruitList(map);
+
+	    log.info("applicationList -> recruitVOList: " + recruitVOList);
+	    
+	    List<ComCodeInfoVO> comCodeInfoVO = recruitService.getComCode();
+		log.info("comCodeInfoVOList : "+ comCodeInfoVO);
+		
+		List<ComDetCodeInfoVO> comCodeAb = this.recruitService.getComCodeInfoa();
+		log.info("comCodeAb : "+ comCodeAb);
+		
+		List<ApplicationVO> applicationVOList = applicationService.applicationList(map);
+		log.info("applicationList -> applicationVOList: " + applicationVOList);
+		
+	    for (ApplicationVO applicationVO : applicationVOList) {
+	        applicationVO.setRecruitNo(recruitNo);
+	    }
+	    
+	    // 지원자 상태 공통코드
+	    List<ComDetCodeInfoVO> comDetCodeInfoVOList = applicationService.comDetCdState();
+	    log.info("applicationList -> comDetCodeInfoVOList: " + comDetCodeInfoVOList);
+
+	    int total = this.applicationService.appTotal(map);
+	    map.put("total", total);
+	    log.info("applicationList -> total : "+total);
+
+	    ArticlePage<ApplicationVO> data = new ArticlePage<ApplicationVO>(total, currentPage, size, pageSize, applicationVOList);
+		log.info("applicationList - > data"+data);
+		
+	    data.setUrl("/entApplicant/applicationList");
+	    data.setRecruitNo(recruitNo);
+		
+	    log.info("applicationList -> recNo : "+recruitNo);
+	    log.info("applicationList -> data!!! recruitNo : "+data);
+	    
+	    model.addAttribute("recruitVO", recruitVOList);
+	    model.addAttribute("applicationVO", applicationVOList);
+	    model.addAttribute("comDetCodeInfoVO", comDetCodeInfoVOList);
+	    model.addAttribute("comCodeInfoVO", comCodeInfoVO);
+	    model.addAttribute("data", data);
+
+	    return "mypageEnt/applicationList";
+	}
+	
+	/**
+	 * 지원자 엑셀 다운로드
+	 * @param response
+	 * @param year
+	 * @param month
+	 * @throws IOException
+	 */
+	@GetMapping("/excell")
+    public void download(HttpServletResponse response, String recruitNo) throws IOException {
+		Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("첫번째 시트");
+        int rowNum = 0;
+        Cell cell = null;
+        Row row = null;
+        
+        log.info("recruitNo??? 오냐??? : " + recruitNo);
+        
+        
+        //엑셀로 만들 데이터를 select 해서 일단 가져옴.
+        //공고 당 입사지원 현황 가져오기.
+        List<ApplicationVO> applicationVOList = this.applicationService.getOneEntapplicationList(recruitNo);
+        
+        log.info("download->applicationVOList : " + applicationVOList);
+ 
+        //createRow = 행을 하나 만듬.
+        
+        // Header 스타일 생성
+        CellStyle headerCellStyle = wb.createCellStyle();
+        Font headerFont = wb.createFont();
+        headerFont.setFontHeightInPoints((short) 12); // 글자 크기 설정
+        headerFont.setBold(true); // 볼드체 설정
+        headerCellStyle.setFont(headerFont);
+        headerCellStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // 다른 밝은 색상 설정
+        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+        // Header 너비 설정
+        int[] columnWidths = { 8, 12, 12, 15, 15, 15 }; // 각 열의 너비를 배열로 저장
+
+        for (int i = 0; i < columnWidths.length; i++) {
+            sheet.setColumnWidth(i, columnWidths[i] * 256); // 각 헤더 열의 너비 설정
+        }
+
+        // Header 생성 및 스타일 적용
+        int cellNum = 0;
+        row = sheet.createRow(rowNum++);
+        String[] headers = { "No", "이름", "성별", "전화번호", "지원일", "지원상태" }; // 각 헤더 열의 제목을 배열로 저장
+
+        for (String header : headers) {
+            cell = row.createCell(cellNum++);
+            cell.setCellValue(header);
+            cell.setCellStyle(headerCellStyle); // 헤더 셀 스타일 적용
+            
+            // 셀 값을 가운데 정렬로 설정
+            headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
+            cell.setCellStyle(headerCellStyle); 
+        }	
+        
+        row.setHeightInPoints(20);
+
+        // Body에 대한 내용은 유지하면서, 각 셀에 스타일을 적용해주시면 됩니다.
+        
+        int no = 1;
+        
+        // Body
+        for (ApplicationVO applicationVO : applicationVOList) {
+             cellNum = 0;
+             row = sheet.createRow(rowNum++);
+             cell = row.createCell(cellNum++);
+             cell.setCellValue(no++);
+             //이름 넣기.
+	         cell = row.createCell(cellNum++);
+	         cell.setCellValue(applicationVO.getMemNm());
+	         
+	         if(applicationVO.getMemGen().equals("0")) {
+	        	 applicationVO.setMemGen("남자");
+	        	 
+	        	 cell = row.createCell(cellNum++);
+	             cell.setCellValue(applicationVO.getMemGen());
+	         }else {
+				applicationVO.setMemGen("여자");
+				cell = row.createCell(cellNum++);
+	            cell.setCellValue(applicationVO.getMemGen());
+			 }
+	         
+	         cell = row.createCell(cellNum++);
+	         cell.setCellValue(applicationVO.getMemTel());
+	         
+	         //Date 처리
+	         Date applyDt = applicationVO.getAppApplyDt();
+	         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	         String applyDtStr = simpleDateFormat.format(applyDt);
+	         cell = row.createCell(cellNum++);
+	         cell.setCellValue(applyDtStr);
+	         
+	         switch(applicationVO.getAppStateCd()) {
+	         	
+	         case "APP01001" :
+	        	 applicationVO.setAppStateCd("지원미확인");
+	        	 break;
+	         case "APP01002" :
+	        	 applicationVO.setAppStateCd("면접대기");
+	        	 break;
+	         case "APP01003" :
+	        	 applicationVO.setAppStateCd("불합격");
+	        	 break;
+	         case "APP01004" :
+	        	 applicationVO.setAppStateCd("합격");
+	        	 break;
+	         }
+	         cell = row.createCell(cellNum++);
+	         cell.setCellValue(applicationVO.getAppStateCd());
+	         
+        }
+ 
+        // Download
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=student.xlsx");
+        try {
+            wb.write(response.getOutputStream());
+        } finally {
+            wb.close();
+        }
+    }
+	
+
+	/**
+	 * 지원자 상태 변경
+	 * @param applicationVO
+	 * @param model
+	 * @return
+	 */
+/*	 let data = {
+		"appNo":APP00014,
+		"appStateCd":APP01004
+	}; 								*/
+	@ResponseBody
+	@PostMapping("/appUpdate")
+	public int applicationUpdate(@RequestBody ApplicationVO applicationVO, Model model) {
+		
+	   	int result = this.applicationService.updatePost(applicationVO);
+		log.info("applicationUpdate -> updatePost : "+result);
+		
+		return result;
+	}
+
+   /**
+    * 자기소개서(베이직) 모달
+    * @param model
+    * @param map
+    * @param ptflNo
+    * @return
+    */
+   @ResponseBody
+   @PostMapping("/appPortfolioBasic")
+   public  PortfolioBasicVO appPortfolioBasic(@RequestBody PortfolioBasicVO portfolioBasicVO) {
+      // 자기소개서 기본 양식 디테일
+      portfolioBasicVO = this.portfolioService.appPortfolioBasic(portfolioBasicVO);
+      log.info("portfolioBasicVO : " + portfolioBasicVO);
+//      
+//      // 자기소개서 자유양식 디테일
+//      List<PortfolioFreeFormVO> portfolioFreeVOList = this.portfolioService.freeDetail(ptflNo);
+//      portfolioFreeVOList.set
+//      
+	   return portfolioBasicVO;
+   } 
+   
+   /**
+    * 자기소개서(자유) 모달
+    * @param model
+    * @param map
+    * @param ptflNo
+    * @return
+    */
+   @ResponseBody
+   @PostMapping("/appPortfolioFree")
+   public  List<PortfolioFreeVO> appPortfolioFree(@RequestBody PortfolioFreeVO portfolioFreeVO) {
+	   // 자기소개서 기본 양식 디테일
+	   List<PortfolioFreeVO> portfolioFreeVOList = this.portfolioService.appPortfolioFree(portfolioFreeVO);
+	   log.info("portfolioFreeVOList : " + portfolioFreeVOList);
+//      
+//      // 자기소개서 자유양식 디테일
+//      List<PortfolioFreeFormVO> portfolioFreeVOList = this.portfolioService.freeDetail(ptflNo);
+//      portfolioFreeVOList.set
+//      
+	   return portfolioFreeVOList;
+   } 
+}
+

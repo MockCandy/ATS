@@ -1,0 +1,44 @@
+package jobja.util;
+
+import java.util.List;
+
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
+//import kr.or.ddit.mapper.CommonMapper;
+//import kr.or.ddit.vo.CommonDetailVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * springcontext가 초기화 된 후 실행되는 로직
+ * 
+ * @author PC-26
+ */
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class StartApplicationUtil implements ApplicationListener<ContextRefreshedEvent> {
+
+//	private final CommonMapper commonMapper;
+//	private final ConfigurableApplicationContext applicationContext;
+//	public static List<CommonDetailVO> commonDetailList;
+
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+
+		log.info("Spring Context 초기화 완료");
+
+//		commonDetailList = this.commonMapper.getCommonDetailList();
+
+//		for (CommonDetailVO commonDetailVO : commonDetailList) {
+//			log.error(commonDetailVO + "");
+//		}
+
+//		this.applicationContext.getBeanFactory().registerSingleton("commonDetailList", commonDetailList);
+
+	}
+
+}

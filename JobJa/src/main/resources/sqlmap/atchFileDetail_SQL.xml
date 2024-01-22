@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.atchfile.mapper.AtchFileDetailMapper">
+
+	<insert id="insertAtchFile" parameterType="atchFileVO">
+		
+		INSERT INTO ATCH_FILE
+			(AF_ID, AF_CREAT_DT, AF_YN)
+		VALUES
+			(#{afId}, SYSDATE, 'Y')
+								
+	</insert>
+	
+	
+		
+	
+	<insert id="insertAtchFileDetail" parameterType="atchFileDetailVO">
+		<selectKey resultType="int" order="BEFORE" keyProperty="afdSeq">
+			SELECT NVL(MAX(TO_NUMBER(AFD_SEQ)),0)+1 FROM ATCH_FILE_DETAIL
+			WHERE AF_ID = #{afId}
+		</selectKey>
+		
+		INSERT INTO ATCH_FILE_DETAIL
+			(AFD_SEQ, AF_ID, AFD_ORIGIN_NM, AFD_SAVE_NM, AFD_FILE_SIZE,
+			AFD_SAVE_PATH, AFD_EXTSN, AFD_CNTNT, AFD_UPLOAD_DT)
+		VALUES
+			(#{afdSeq},#{afId},#{afdOriginNm},#{afdSaveNm},#{afdFileSize},
+			#{afdSavePath},#{afdExtsn},#{afdCntnt}, SYSDATE)
+								
+	</insert>
+	
+	<delete id="deleteOneAtch" parameterType="atchFileDetailVO">
+		DELETE FROM ATCH_FILE_DETAIL
+		WHERE AF_ID=#{afId} AND AFD_SEQ=#{afdSeq}
+	</delete>
+	
+	<delete id="deleteAtchFile" parameterType="String">
+		DELETE FROM ATCH_FILE
+		WHERE AF_ID=#{afId}
+	</delete>
+	
+	<select id="list" parameterType="atchFileDetailVO" resultType="atchFileDetailVO">
+		SELECT * FROM ATCH_FILE_DETAIL
+		WHERE AF_ID=#{afId}
+	</select>
+	
+	<delete id="deleteRelated" parameterType="boardQNAVO">
+		DELETE FROM ATCH_FILE
+		WHERE AF_ID = #{boardId}
+	</delete>
+	
+	<select id="getCount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM ATCH_FILE_DETAIL
+		WHERE AF_ID=#{afId}
+	</select>
+	
+	<select id="getAfdSaveNm" parameterType="String" resultType="String">
+		SELECT AFD_SAVE_NM FROM ATCH_FILE_DETAIL
+		WHERE AF_ID=#{afId}
+	</select>
+	
+	<select id="getOneAtch" parameterType="atchFileDetailVO" resultType="atchFileDetailVO">
+		SELECT * FROM ATCH_FILE_DETAIL
+		WHERE AF_ID=#{afId} AND AFD_SEQ=#{afdSeq}
+	</select>
+	
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID"/>
+		<result property="afCreatDt" column="AF_CREAT_DT"/>
+		<result property="afYn" column="AF_YN"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap" ></collection>
+	</resultMap>
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	<select id="getAtchByAfId" parameterType="String" resultMap="atchFileMap">
+		SELECT 
+			a.AF_ID,
+			a.AF_CREAT_DT,
+			a.AF_YN,
+			b.AFD_SEQ,
+			b.AFD_ORIGIN_NM,
+			b.AFD_SAVE_NM,
+			b.AFD_FILE_SIZE,
+			b.AFD_SAVE_PATH,
+			b.AFD_EXTSN,
+			b.AFD_CNTNT,
+			b.AFD_UPLOAD_DT
+		FROM ATCH_FILE a, ATCH_FILE_DETAIL b
+		WHERE a.AF_ID = b.AF_ID
+		AND a.AF_ID=#{recruitNo}
+	</select>
+	
+	<select id="checkAfId" parameterType="String" resultType="int">
+		select 
+			count(*)
+		FROM 
+			ATCH_FILE
+		WHERE AF_ID = #{checkAfId}
+	</select>
+	
+	<!-- 
+	 {"afdSeq":"6","afId":"a111"}
+	 -->
+	<delete id="deleteFileAjax" parameterType="atchFileDetailVO">
+		DELETE FROM 
+			ATCH_FILE_DETAIL
+		WHERE AFD_SEQ = #{afdSeq} 
+		AND	  AF_ID = #{afId}
+	</delete>
+
+</mapper>

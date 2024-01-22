@@ -1,0 +1,33 @@
+package jobJa.atchFile.vo;
+
+import java.util.Date;
+
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
+
+import lombok.Data;
+
+@Data
+public class AtchFileDetailVO {
+	
+	@NotNull
+	private int afdSeq;
+	
+	@NotBlank
+	private String afId;
+	
+	private String afdOriginNm;
+	
+	private String afdSaveNm;
+	
+	private long afdFileSize;
+	
+	private String afdSavePath;
+	
+	private String afdExtsn;
+	
+	private String afdCntnt;
+	
+	private Date afdUploadDt;
+}

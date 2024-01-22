@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.application.mapper.ApplicationMapper">
+
+
+	<insert id="insert" parameterType="applicationVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="appNo">
+			SELECT 'APP' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(APP_NO),4) + 1,'00000')),'00001')
+			FROM   APPLICATION
+		</selectKey>
+		
+		INSERT INTO APPLICATION 
+		(
+			APP_NO, 
+			RECRUIT_NO, 
+			RESUME_NO, 
+			PTFL_NO, 
+			APP_STATE_CD, 
+			APP_APPLY_DT,
+			MEM_ID
+		)
+		VALUES
+		(
+			#{appNo},
+			#{recruitNo},
+			#{resumeNo},
+			#{ptflNo},
+			'app01001',
+			SYSDATE,
+			#{memId}
+		)
+	</insert>
+
+	<select id="isApplicated" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) FROM APPLICATION 
+		WHERE RECRUIT_NO = #{recruitNo} AND MEM_ID=#{memId}
+	</select>
+
+
+</mapper>

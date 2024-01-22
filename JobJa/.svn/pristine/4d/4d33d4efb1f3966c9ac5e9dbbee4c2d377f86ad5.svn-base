@@ -1,0 +1,22 @@
+package jobja.item.vo;
+
+import java.util.Date;
+
+import lombok.Data;
+
+@Data
+public class PaymentVO {
+	
+	private String payConId;			//상담사ID
+	private String payNo;				//결제일련번호	
+	private String itemCompanyNo;		//상품일련번호
+	private String payUserId;			//결제자ID
+	private int payAmount;				//결제금액
+	private String payMethod;			//결제수단
+	private Date payDt;					//결제일시
+	private int payRemndrCnt;			//잔여횟수
+	private Date payStdt;				//시작일
+	private Date payEddt;				//종료일
+	
+	
+}

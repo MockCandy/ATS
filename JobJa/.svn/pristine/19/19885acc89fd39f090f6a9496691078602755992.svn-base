@@ -1,0 +1,113 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+<style>
+.mypage-body-con {
+	background-color: #fff;
+	border-radius: 30px;
+	padding: 24px;
+	height: 800px;
+}
+
+.body-sub-title {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.title-hr {
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+}
+
+#fileBtn {
+	font-size: 14px;
+	display: inline-block;
+	box-sizing: border-box;
+	color: rgb(0, 195, 98);
+	border: 1px solid rgb(0, 195, 98);
+	border-radius: 6px;
+	padding: 9px 12px;
+	margin-top: 10px;
+	background: #fff;
+	cursor: pointer;
+	opacity: 0;
+}
+
+.fileBtn {
+	font-size: 14px;
+	display: inline-block;
+	box-sizing: border-box;
+	color: rgb(0, 195, 98);
+	border: 1px solid rgb(0, 195, 98);
+	border-radius: 6px;
+	padding: 9px 12px;
+	margin-top: 10px;
+	background: #fff;
+	cursor: pointer;
+}
+
+.file-sel {
+	width: 95%;
+	height: 72px;
+	border: 1px solid rgb(229, 230, 233);
+	border-radius: 12px;
+	padding: 20px 24px;
+	display: flex;
+	-webkit-box-align: center;
+	align-items: center;
+	box-sizing: border-box;
+	display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+}
+</style>
+
+<!-- 파일에 대한 정보만 넘길까? -->
+<div class="mypage-body-con">
+	<div class="sub-con-area">
+		<div class="body-sub-title">기업 파일함</div>
+		<hr class="title-hr" />
+	</div>
+
+	<div class="body-sub-con">
+
+		<ul class="css-1eiddtd">
+			<li class="file-sel mt-20"><div class="css-5llbis">
+					<label class="select-category"><a class="btn_sel">~</a>
+					<select class="">
+						<option value="portfolio">포트폴리오</option>
+						<option value="resume">이력서</option>
+						<option value="certification">증명서</option>
+						<option value="license">자격증</option>
+						<option value="reference">추천서</option>
+						<option value="etc">기타</option>
+					</select></label>
+					<i class="jp-chevron-down"></i>
+				</div>
+				
+				<div class="css-1sg2lsz">
+					<img src="https://jpassets.jobplanet.co.kr/production/uploads/material/media/10491/icon_file_jpg.svg"
+						alt="jpg 아이콘">
+					<a href="https://www.jobplanet.co.kr/api/v1/job/file_access/profile_attachment?access_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6OTYzNDgsImV4cCI6MTcxMDcyMDAwMH0.PZQPvQKSZck8FUUcq85uCxsCwbsLQdQ8sNIWbZ-ajzQ"
+						class="css-1v8dexn" target="_blank">
+						<p>사진이름</p> <span>.jpg(확장자)</span></a>
+					<p class="css-11o2wzw">36.7KB(파일크기)</p>
+				</div>
+				<div class="css-hjej5x">
+					<p class="css-15bb0p8">2023.12.19</p>
+					<button type="button" class="css-jwearv">
+						<i class="jp-trash-2"></i>
+					</button>
+				</div></li>
+		</ul>
+
+<!-- 		<form action="upload" method="post" enctype="multipart/form-data"> -->
+		    <label for="fileBtn" class="fileBtn"> + 파일선택 </label>
+		    <input type="file" id="fileBtn" name="uploadFile" accept=".pdf, .doc, .docx, .jpg, .jpeg, .png, .odt " multiple />
+<!-- 		</form> -->
+		
+	</div>
+</div>
+
+

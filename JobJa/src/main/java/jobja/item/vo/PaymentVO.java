@@ -1,0 +1,87 @@
+package jobja.item.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.member.vo.EnterpriseVO;
+import jobja.recruit.vo.RecruitVO;
+import lombok.Data;
+
+@Data
+public class PaymentVO {
+	
+	private String payConId;			//상담사ID
+	private String payNo;				//결제일련번호	
+	private String itemCompanyNo;		//상품일련번호
+	private String payUserId;			//결제자ID
+	private int payAmount;				//결제금액
+	private String payMethod;			//결제수단
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date payDt;					//결제일시
+	
+	private int payRemndrCnt;			//잔여횟수
+	
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date payStdt;				//시작일
+	
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date payEddt;				//종료일
+	
+	
+	private String memNm;				//일반회원 이름
+	private String conNm;				//상담사 이름
+	private String payEntNo;			//기업 사업자 등록번호
+	
+	
+	private AtchFileDetailVO atchFileDetailVO;      //배너광고 기업
+	private MultipartFile uploadFile;				//기업배너 업로드
+	
+	private EnterpriseVO enterpriseVO;				//채용상품 구매 기업
+	private RecruitVO recruitVO;					//채용상품 구매 공고
+	
+	private String itemNm;							//구매한 상품 이름
+	private String remainingDays;					//남은일수
+	
+	private int totalPayAmount; 					//구매총액
+	
+	private String logCnt;							//상담회차
+	
+	private String payMonth;
+	
+	private int totalAmount;
+	
+	private String payMonth2;
+	
+	private int totalAmount2;
+	
+	private String payMonth3;
+	
+	private int totalAmount3;
+	
+	private int totalItemsPurchased;
+	
+	private String entNm;
+	
+	private int totalSales;
+	
+	private int transactionCount;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date conStartDt;			//상담 처음 시작일시
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone = "Asia/Seoul")
+	private Date conEndDt;			//상담 최종 종료일시
+	
+	
+}

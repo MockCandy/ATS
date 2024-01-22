@@ -1,0 +1,163 @@
+package jobJa.admin.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobJa.admin.service.AdminService;
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.common.vo.ComDetCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.util.ArticlePage;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/admin")
+@Controller
+public class AdminController {
+
+	@Autowired
+	AdminService adminService;
+
+	
+	@GetMapping("/main")
+	public String page() {
+		return "admin/mainPage";
+	}
+
+	@RequestMapping(value = "/adminMemberMyPage")
+	public String admin(MemberVO memberVO,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("memberVOzzeze" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+				
+		int totalMem = this.adminService.getTotalMem(map);
+
+		List<MemberVO> memberVOList  = this.adminService.getMember(map);
+
+		ArticlePage<MemberVO> info 
+			= new ArticlePage<MemberVO>(totalMem, currentPage, 12, memberVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminMemberMyPage");
+		
+		log.info("MEMBERVOLIST : " + memberVOList);
+		
+		model.addAttribute("memberVOList", memberVOList);
+		
+		model.addAttribute("totalMem", totalMem);
+		
+		model.addAttribute("info", info);
+		
+		log.info("totalMem : " + totalMem);
+		
+		return "admin/adminMemberMyPage";
+	}
+	
+	@ResponseBody
+	@PostMapping("/selectAjax")
+	public MemberVO selectAjax(Model model,@RequestBody MemberVO memberVO) {
+		log.info("와야한다");
+		log.info("memberVOgg" + memberVO);
+		
+		String memberId = memberVO.getMemId();
+		
+		String comCd = memberVO.getMemWishJobCate();
+		
+		log.info("comCdzzee" + comCd );
+		
+		String comDetCd = memberVO.getMemWishJob();
+		
+		log.info("comDetCdzzee " + comDetCd);
+		
+		String memIntWord = memberVO.getMemIntWord();
+		
+		log.info("memIntWordZZEE" + memIntWord);
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		map.put("memId", memberId);
+		
+		map.put("memWishJobCate", comCd);
+		
+		map.put("memWishJob", comDetCd);
+		
+		
+		
+		MemberVO memberVO2 = this.adminService.getMem(map);
+		
+		memberVO2.setMemIntWord(memIntWord);
+		
+		log.info("memberVO2" + memberVO2);
+		
+		return memberVO2;
+	}
+	
+	
+	@ResponseBody
+	@PostMapping("/deleteAjax")
+	public int deleteAjax(Model model,@RequestBody MemberVO memberVO) {
+		
+		String memId = memberVO.getMemId();
+		
+		log.info("여쿠"+memId);
+		
+		//멤버 일정관리 삭제 
+		int result = this.adminService.deleteSchedule(memId); 
+		
+		//관심기업테이블 회원 삭제
+		result += this.adminService.deleteInterestEnt(memId);
+		
+		//알림 테이블 회원 삭제
+		result += this.adminService.deleteAlarm(memId);
+		
+		//자격증 테이블 회원 삭제
+		result += this.adminService.deleteCertificate(memId);
+		
+		//자기소개서 테이블 회원 삭제
+		result += this.adminService.deletePortfolio(memId);
+		
+		//관심 채용공고 테이블 회원 삭제
+		result += this.adminService.deleteInterestRecruit(memId);
+		
+		//권한 테이블 회원 삭제
+		result += this.adminService.deleteAuth(memId);
+		
+		//상품결제 테이블 회원삭제
+		result += this.adminService.deleteProduct(memId);
+		
+		//멤버 테이블 회원삭제
+		result += this.adminService.deleteAjax(memId);
+		
+		return result;
+		
+	}
+	
+//	@ResponseBody
+//	@PostMapping("/serchName")
+//	public List<MemberVO> serchName(@RequestBody MemberVO memberVO,Model model){
+//		
+//		String memNm = memberVO.getMemNm();
+//		
+//		//이름 필터 
+//		List<MemberVO> serchNmList = this.adminService.serchName(memNm);
+//	}
+}

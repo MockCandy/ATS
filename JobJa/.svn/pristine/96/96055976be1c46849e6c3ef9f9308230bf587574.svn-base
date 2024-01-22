@@ -1,0 +1,28 @@
+package jobJa.application.service.impl;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.application.mapper.ApplicationMapper;
+import jobJa.application.service.ApplicationService;
+import jobJa.member.vo.ApplicationVO;
+
+@Service
+public class ApplicationServiceImpl implements ApplicationService {
+
+	@Autowired
+	ApplicationMapper applicationMapper;
+	
+	@Override
+	public int insert(ApplicationVO applicationVO) {
+		return applicationMapper.insert(applicationVO) ;
+	}
+
+	@Override
+	public int isApplicated(Map<String, Object> appMap) {
+		return applicationMapper.isApplicated(appMap);
+	}
+
+}

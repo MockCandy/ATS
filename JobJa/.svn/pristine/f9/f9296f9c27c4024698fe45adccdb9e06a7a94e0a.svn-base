@@ -1,0 +1,28 @@
+package jobJa.reply.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.reply.mapper.ReplyMapper;
+import jobJa.reply.service.ReplyService;
+import jobJa.reply.vo.ReplyVO;
+
+@Service
+public class ReplyServiceImpl implements ReplyService{
+
+	@Autowired
+	ReplyMapper replyMapper;
+	
+	@Override
+	public List<ReplyVO> getReply(String boardId) {
+		return replyMapper.getReply(boardId);
+	}
+
+	@Override
+	public int writeReply(ReplyVO replyVO) {
+		return replyMapper.writeReply(replyVO);
+	}
+
+}

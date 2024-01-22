@@ -1,0 +1,80 @@
+package jobJa.search.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jobJa.common.mapper.ComCodeMapper;
+import jobJa.member.service.EnterpriseService;
+import jobJa.member.vo.EnterpriseVO;
+import jobJa.member.vo.InterestRecruitVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.recruit.mapper.InterestRecruitMapper;
+import jobJa.recruit.service.RecruitService;
+import jobJa.recruit.vo.RecruitVO;
+import jobJa.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/search")
+@Controller
+public class SearchController {
+
+	@Autowired
+	EnterpriseService enterpriseService;
+	
+	@Autowired
+	RecruitService recruitService;
+	
+	@Autowired
+	ComCodeMapper comCodeMapper;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+
+	@Autowired
+	InterestRecruitMapper interestRecruitMapper;
+	
+	@GetMapping("/list")
+	public String list(@RequestParam(value = "keyword" ,required = false, defaultValue = "") String keyword,
+						Model model) {
+		
+		// 현재 로그인한 회원 정보
+		MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+	      
+		// keyword => 검색어
+		log.info("keyword : " + keyword);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("keyword", keyword);
+		
+		log.info("map : " + map);
+		
+		// 해당 키워드에 맞는 기업 리스트 5개 불러오기
+		List<EnterpriseVO> enterpriseVOList = enterpriseService.list5(map);
+		log.info("enterpriseVOList : " + enterpriseVOList);
+
+		// 해당 키워드에 맞는 채용공고 리스트
+		List<RecruitVO> recruitVOList = recruitService.getList(map);
+		log.info("recruitVOList : " + recruitVOList);
+		
+		// 로그인한 회원의 관심 채용공고 리스트
+		List<InterestRecruitVO> interestRecruitVOList = recruitService.getInterestRecruit(memberVO);
+		log.info("interestRecruitVOList : " + interestRecruitVOList);
+
+		model.addAttribute("enterpriseVOList",enterpriseVOList);
+		model.addAttribute("recruitVOList",recruitVOList);
+		model.addAttribute("interestRecruitVOList",interestRecruitVOList);
+		
+		return "search/list";
+		
+	}
+	
+}

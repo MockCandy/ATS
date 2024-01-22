@@ -1,0 +1,198 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<link rel="stylesheet" href="/resources/css/ranking.css">   
+<link rel="stylesheet" href="/resources/css/enterprise.css">   
+    
+<div class="cen">
+		
+        <div class="ranking-box">
+            <div class="ranking-item">
+                <p class="rank-category">복지 및 급여</p>
+                
+                <c:forEach var="entVO" items="${entWelfareDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+								<div class="bar-rate bar-rate-sm">
+									<span class="bar-rate-val"></span>
+								</div>
+								<span class="sep-rate-point"><fmt:formatNumber value="${entVO.sumEntRevWelfare}" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=welfare">전체보기</a> 
+                	</button>
+                </div>
+        
+            </div>
+            <div class="ranking-item">
+                <p class="rank-category">승진 기회 및 가능성</p>
+                
+                <c:forEach var="entVO" items="${entChancesDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+								<div class="bar-rate bar-rate-sm">
+									<span class="bar-rate-val"></span>
+								</div>
+								<span class="sep-rate-point"><fmt:formatNumber value="${entVO.sumEntRevChances}" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=chances">전체보기</a> 
+                	</button>
+                </div>
+            </div>
+            <div class="ranking-item">
+                <p class="rank-category">업무와 삶의 균형</p>
+                
+                <c:forEach var="entVO" items="${entBalanceDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+								<div class="bar-rate bar-rate-sm">
+									<span class="bar-rate-val"></span>
+								</div>
+								<span class="sep-rate-point"><fmt:formatNumber value="${entVO.sumEntRevBalance}" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=balance">전체보기</a> 
+                	</button>
+                </div>
+            </div>
+            <div class="ranking-item">
+                <p class="rank-category">사내문화</p>
+                
+                <c:forEach var="entVO" items="${entCultureDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+								<div class="bar-rate bar-rate-sm">
+									<span class="bar-rate-val"></span>
+								</div>
+								<span class="sep-rate-point"><fmt:formatNumber value="${entVO.sumEntRevCulture}" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=culture">전체보기</a> 
+                	</button>
+                </div>
+            </div>
+            <div class="ranking-item">
+                <p class="rank-category">경영진</p>
+                
+                <c:forEach var="entVO" items="${entManagerDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+								<div class="bar-rate bar-rate-sm">
+									<span class="bar-rate-val"></span>
+								</div>
+								<span class="sep-rate-point"><fmt:formatNumber value="${entVO.sumEntRevManager}" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=manager">전체보기</a> 
+                	</button>
+                </div>
+            </div>
+            <div class="ranking-item">
+                <p class="rank-category">총 만족도</p>
+                
+                <c:forEach var="entVO" items="${entAvgDescList }" begin="0" end="4" varStatus="stat">
+	                <div class="ranking">
+	                    <span class="
+	                    	<c:if test="${stat.count <= 3}">txt-red</c:if>
+	                    ">${stat.count }</span>
+	                    <div>
+	                    	<a href="/enterprise/${entVO.entNo }/info">
+		                        <span class="rank-ent-name hover_underline">${entVO.entNm }</span>
+	                    	</a>
+	                        <div class="rank-right">
+	                            <span class="star star-sm">
+	                                	★★★★★
+	                                <span class="star-color" style="width: 50%;">★★★★★</span>
+	                            </span>
+	                            <span class="rank-rate"><fmt:formatNumber value="${entVO.entAvgRate }" pattern="0.0"/></span>
+	                        </div>
+	                    </div>
+	                </div>
+                </c:forEach>
+                <div class="flex mt-20">
+                	<button class="btn-arr ml-auto">
+                		<a href="/entRanking/sortList?sort=avgScore">전체보기</a> 
+                	</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+    	let stars = document.querySelectorAll(".star-color");
+    	stars.forEach(function(star){
+    		console.log(star.parentElement.nextElementSibling.innerHTML);
+    		star.style.width = star.parentElement.nextElementSibling.innerHTML*20 + "%";
+    	})
+	
+
+		let barRate = document.querySelectorAll(".sep-rate-point");
+
+		for(let i = 0; i < barRate.length; i++){
+			let bar = barRate[i].previousElementSibling.children[0];
+			bar.style.width = barRate[i].innerText * 20 + '%'
+		}
+    	
+    </script>
+    <script src="https://kit.fontawesome.com/96da2afb16.js" crossorigin="anonymous"></script>
+	
+    

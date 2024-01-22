@@ -1,0 +1,45 @@
+
+.ranking-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color:#fff;
+}
+
+.ranking-item > * {
+	padding: 0 40px;
+}
+
+.ranking-item {
+	border-right:1px solid #e8e9eb;
+	border-bottom:1px solid #e8e9eb;
+	padding:20px;
+}
+
+.rank-category {
+    font-size: 18px;
+    margin-bottom: 15px;
+    padding-top : 20px;
+}
+
+.ranking {
+    display: flex;
+    gap: 15px;
+    margin-bottom:7px;
+    height:53px;
+}
+.ranking:last-child {
+	padding-bottom:20px;
+}
+.rank-right {
+    display: flex;
+    align-items: center;
+}
+.rank-ent-name {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.rank-rate {
+    font-size: 13px;
+    margin-left: 10px;
+}

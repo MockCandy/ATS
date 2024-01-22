@@ -1,0 +1,26 @@
+package jobJa.board.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.board.vo.BoardClassVO;
+import jobJa.board.vo.BoardEntReviewVO;
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.member.vo.EnterpriseVO;
+
+
+public interface BoardEntReviewService {
+
+	int createPost(BoardEntReviewVO boardEntReviewVO);
+
+	List<BoardEntReviewVO> getByEntNo(Map<String, Object> map);
+
+	int ajaxLikeUp(BoardEntReviewVO boardEntReviewVO);
+
+	int getTotalCount(String entNo);
+
+	EnterpriseVO ajaxGetEntInfo(EnterpriseVO enterpriseVO);
+
+
+
+}

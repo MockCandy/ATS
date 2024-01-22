@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.item.mapper.ConsultMapper">
+
+	<sql id="where">
+		<if
+			test='keyword !=null and keyword!="" and !keyword.equals("null") '>
+			AND (MEM_NM LIKE '%' || #{keyword} || '%')
+		</if>
+	</sql>
+
+	<sql id="order">
+		<choose>
+			<when test="sort=='recentSort'">
+				ORDER BY CNSLTNT_DT DESC
+			</when>
+			<when test="sort=='olderSort'">
+				ORDER BY CNSLTNT_DT ASC
+			</when>
+			<otherwise>
+				ORDER BY CNSLTNT_DT DESC
+			</otherwise>
+		</choose>
+	</sql>
+
+
+	<sql id="order2">
+		<choose>
+			<when test="sort=='recentSort'">
+				ORDER BY REVIEW_REG_DT DESC
+			</when>
+			<when test="sort=='olderSort'">
+				ORDER BY REVIEW_REG_DT ASC
+			</when>
+			<otherwise>
+				ORDER BY REVIEW_REG_DT DESC
+			</otherwise>
+		</choose>
+	</sql>
+
+	<resultMap type="memberVO" id="memberVOMap">
+		<result property="memId" column="MEM_ID" />
+		<result property="memPass" column="MEM_PASS" />
+		<result property="memNm" column="MEM_NM" />
+		<result property="memPostno" column="MEM_POSTNO" />
+		<result property="memAddr" column="MEM_ADDR" />
+		<result property="memAddr2" column="MEM_ADDR2" />
+		<result property="memTel" column="MEM_TEL" />
+		<result property="memRegDt" column="MEM_REG_DT" />
+		<result property="memOpenResume" column="MEM_OPEN_RESUME" />
+		<result property="memStateCd" column="MEM_STATE_CD" />
+		<result property="memBirth" column="MEM_BIRTH" />
+		<result property="memGen" column="MEM_GEN" />
+		<result property="memEmail" column="MEM_EMAIL" />
+		<result property="memCd" column="MEM_CD" />
+		<result property="memYn" column="MEM_YN" />
+		<result property="memIntrcn" column="MEM_INTRCN" />
+		<result property="memNcnm" column="MEM_NCNM" />
+		<result property="memAfId" column="MEM_AF_ID" />
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE" />
+		<result property="memWishJob" column="MEM_WISH_JOB" />
+		<result property="memMgPosition" column="MEM_MG_POSITION" />
+		<result property="enabled" column="ENABLED" />
+		<result property="memIntWord" column="MEM_INT_WORD" />
+	</resultMap>
+
+	<resultMap type="consultantLogVO" id="consultantLogMap">
+		<result property="cnsltntNo" column="CNSLTNT_NO" />
+		<result property="payNo" column="PAY_NO" />
+		<result property="conMemId" column="CON_MEM_ID" />
+		<result property="cnsltntTitle" column="CNSLTNT_TITLE" />
+		<result property="cnsltntCntnt" column="CNSLTNT_CNTNT" />
+		<result property="cnsltntTimes" column="CNSLTNT_TIMES" />
+		<result property="cnsltntDt" column="CNSLTNT_DT" />
+		<association property="paymentVO" resultMap="paymentMap"></association>
+		<association property="buyerVO" resultMap="buyerMap"></association>
+		<association property="comCodeInfoVO"
+			resultMap="comCodeInfoMap"></association>
+		<association property="comDetCodeInfoVO"
+			resultMap="comDetCodeInfoMap"></association>
+	</resultMap>
+	<resultMap type="paymentVO" id="paymentMap">
+		<result property="payNo" column="PAY_NO" />
+		<result property="itemCompanyNo" column="ITEM_COMPANY_NO" />
+		<result property="payAmount" column="PAY_AMOUNT" />
+		<result property="payMethod" column="PAY_METHOD" />
+		<result property="payDt" column="PAY_DT" />
+		<result property="payUserId" column="PAY_USER_ID" />
+		<result property="payRemndrCnt" column="PAY_REMNDR_CNT" />
+		<result property="payStdt" column="PAY_STDT" />
+		<result property="payEddt" column="PAY_EDDT" />
+	</resultMap>
+	<resultMap type="memberVO" id="buyerMap">
+		<result property="memId" column="MEM_ID" />
+		<result property="memPass" column="MEM_PASS" />
+		<result property="memNm" column="MEM_NM" />
+		<result property="memPostno" column="MEM_POSTNO" />
+		<result property="memAddr" column="MEM_ADDR" />
+		<result property="memAddr2" column="MEM_ADDR2" />
+		<result property="memTel" column="MEM_TEL" />
+		<result property="memRegDt" column="MEM_REG_DT" />
+		<result property="memOpenResume" column="MEM_OPEN_RESUME" />
+		<result property="memStateCd" column="MEM_STATE_CD" />
+		<result property="memBirth" column="MEM_BIRTH" />
+		<result property="memGen" column="MEM_GEN" />
+		<result property="memEmail" column="MEM_EMAIL" />
+		<result property="memCd" column="MEM_CD" />
+		<result property="memYn" column="MEM_YN" />
+		<result property="memIntrcn" column="MEM_INTRCN" />
+		<result property="memNcnm" column="MEM_NCNM" />
+		<result property="memAfId" column="MEM_AF_ID" />
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE" />
+		<result property="memWishJob" column="MEM_WISH_JOB" />
+		<result property="memMgPosition" column="MEM_MG_POSITION" />
+		<result property="enabled" column="ENABLED" />
+		<result property="memIntWord" column="MEM_INT_WORD" />
+		<collection property="memberAuthVOList"
+			resultMap="memberAuthMap"></collection>
+		<collection property="resumeVOList" resultMap="resumeVOMap"></collection>
+		<collection property="academicCareerVOList"
+			resultMap="academicCareerVOMap"></collection>
+	</resultMap>
+	<resultMap type="comCodeInfoVO" id="comCodeInfoMap">
+		<result property="comCd" column="COM_CD" />
+		<result property="comCdNm" column="COM_CD_NM" />
+		<result property="comCdDescriptions"
+			column="COM_CD_DESCRIPTIONS" />
+	</resultMap>
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoMap">
+		<result property="comDetCd" column="COM_DET_CD" />
+		<result property="comCd" column="COM_CD" />
+		<result property="comDetCdNm" column="COM_DET_CD_NM" />
+		<result property="comDetDescriptions"
+			column="COM_DET_DESCRIPTIONS" />
+	</resultMap>
+	<resultMap type="memberAuthVO" id="memberAuthMap">
+		<result property="memId" column="MEM_ID" />
+		<result property="role" column="ROLE" />
+	</resultMap>
+	<resultMap type="academicCareerVO" id="academicCareerVOMap">
+		<result property="acdmcrNo" column="ACDMCR_NO" />
+		<result property="memId" column="MEM_ID" />
+		<result property="acdmcrNm" column="ACDMCR_NM" />
+		<result property="acdmcrMajor" column="ACDMCR_MAJOR" />
+		<result property="acdmcrDegree" column="ACDMCR_DEGREE" />
+		<result property="acdmcrEntranceDt" column="ACDMCR_ENTRANCE_DT" />
+		<result property="acdmcrGrdtnDt" column="ACDMCR_GRDTN_DT" />
+		<result property="acdmcrAttnd" column="ACDMCR_ATTND" />
+		<result property="acdmcrPoint" column="ACDMCR_POINT" />
+		<result property="acdmcrYn" column="ACDMCR_YN" />
+	</resultMap>
+	<resultMap type="resumeVO" id="resumeVOMap">
+		<result property="resumeSkill" column="RESUME_SKILL" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="memId" column="MEM_ID" />
+		<result property="resumeTitle" column="RESUME_TITLE" />
+		<result property="resumeTemp" column="RESUME_TEMP" />
+		<result property="resumeRep" column="RESUME_REP" />
+		<result property="resumeCd" column="RESUME_CD" />
+		<result property="resumeAfId" column="RESUME_AF_ID" />
+		<result property="resumeYn" column="RESUME_YN" />
+		<result property="resumeOccp" column="RESUME_OCCP" />
+		<result property="resumeJob" column="RESUME_JOB" />
+		<collection property="careerVOList" resultMap="careerVOMap"></collection>
+		<collection property="resultVOList" resultMap="resultVOMap"></collection>
+		<collection property="languageVOList"
+			resultMap="languageVOMap"></collection>
+		<collection property="awardsVOList" resultMap="awardsVOMap"></collection>
+	</resultMap>
+
+	<resultMap type="careerVO" id="careerVOMap">
+		<result property="companyPosition" column="COMPANY_POSITION" />
+		<result property="companyJob" column="COMPANY_JOB" />
+		<result property="careerSeq" column="CAREER_SEQ" />
+		<result property="careerNo" column="CAREER_NO" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="companyNm" column="COMPANY_NM" />
+		<result property="companyEntranceDt"
+			column="COMPANY_ENTRANCE_DT" />
+		<result property="companyLeaveDt" column="COMPANY_LEAVE_DT" />
+		<result property="companyDept" column="COMPANY_DEPT" />
+		<result property="companySalary" column="COMPANY_SALARY" />
+		<result property="workPeriod" column="WORK_PERIOD" />
+		<result property="companyDetCareer" column="COMPANY_DET_CAREER" />
+	</resultMap>
+
+	<resultMap type="resultVO" id="resultVOMap">
+		<result property="resultSeq" column="RESULT_SEQ" />
+		<result property="resultNo" column="RESULT_NO" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="resultTitle" column="RESULT_TITLE" />
+		<result property="resultCntnt" column="RESULT_CNTNT" />
+		<result property="resultStdt" column="RESULT_STDT" />
+		<result property="resultEddt" column="RESULT_EDDT" />
+	</resultMap>
+
+	<resultMap type="awardsVO" id="awardsVOMap">
+		<result property="awdNo" column="AWD_NO" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="awdNm" column="AWD_NM" />
+		<result property="awdCntnt" column="AWD_CNTNT" />
+		<result property="awdDt" column="AWD_DT" />
+		<result property="awdOrg" column="AWD_ORG" />
+		<result property="awdSeq" column="AWD_SEQ" />
+	</resultMap>
+
+	<resultMap type="languageVO" id="languageVOMap">
+		<result property="langNo" column="LANG_NO" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="langKind" column="LANG_KIND" />
+		<result property="langLevel" column="LANG_LEVEL" />
+		<result property="langSeq" column="LANG_SEQ" />
+		<collection property="languageDTVOList"
+			resultMap="languageDTVOMap"></collection>
+	</resultMap>
+
+	<resultMap type="languageDTVO" id="languageDTVOMap">
+		<result property="langDetSeqq" column="LANG_DET_SEQQ" />
+		<result property="langSeq" column="LANG_SEQ" />
+		<result property="langNo" column="LANG_NO" />
+		<result property="resumeNo" column="RESUME_NO" />
+		<result property="langDetailScore" column="LANG_DETAIL_SCORE" />
+		<result property="langDetailAcqDt" column="LANG_DETAIL_ACQ_DT" />
+		<result property="langDetailExpDt" column="LANG_DETAIL_EXP_DT" />
+		<result property="langDetailName" column="LANG_DETAIL_NAME" />
+	</resultMap>
+
+	<select id="getLogById" parameterType="hashMap"
+		resultMap="consultantLogMap">
+		SELECT
+		A.CNSLTNT_NO,
+		A.PAY_NO,
+		A.CON_MEM_ID,
+		A.CNSLTNT_TITLE,
+		A.CNSLTNT_CNTNT,
+		A.CNSLTNT_TIMES,
+		A.CNSLTNT_DT,
+		B.ITEM_COMPANY_NO,
+		B.PAY_AMOUNT,
+		B.PAY_METHOD,
+		B.PAY_DT,
+		B.PAY_USER_ID,
+		B.PAY_REMNDR_CNT,
+		B.PAY_STDT,
+		B.PAY_EDDT,
+		C.MEM_ID,
+		C.MEM_PASS,
+		C.MEM_NM,
+		C.MEM_POSTNO,
+		C.MEM_ADDR,
+		C.MEM_ADDR2,
+		C.MEM_TEL,
+		C.MEM_REG_DT,
+		C.MEM_OPEN_RESUME,
+		C.MEM_STATE_CD,
+		C.MEM_BIRTH,
+		C.MEM_GEN,
+		C.MEM_EMAIL,
+		C.MEM_CD,
+		C.MEM_YN,
+		C.MEM_INTRCN,
+		C.MEM_NCNM,
+		C.MEM_AF_ID,
+		C.MEM_WISH_JOB_CATE,
+		C.MEM_WISH_JOB,
+		C.ENABLED,
+		C.MEM_INT_WORD,
+		C.MEM_MG_POSITION,
+		D.COM_CD,
+		D.COM_CD_NM,
+		D.COM_CD_DESCRIPTIONS
+		FROM CONSULTANT_LOG A, PAYMENT B, MEMBER C, COM_CODE_INFO D
+		WHERE A.PAY_NO = B.PAY_NO
+		AND B.PAY_USER_ID = C.MEM_ID
+		AND D.COM_CD = C.MEM_WISH_JOB_CATE
+		AND A.CON_MEM_ID = #{memId}
+		<include refid="order"></include>
+	</select>
+
+	<resultMap type="memberVO" id="myMemberMap">
+		<result property="conNm" column="CON_NM" />
+		<result property="memAfId" column="MEM_AF_ID" />
+		<result property="memNm" column="MEM_NM" />
+		<result property="memId" column="MEM_ID" />
+		<result property="itemNo" column="ITEM_NO" />
+		<result property="payNo" column="PAY_NO" />
+		<result property="count" column="COUNT" />
+		<collection property="consultantLogVO" resultMap="myConsultantLogMap"></collection>
+	</resultMap>
+	<resultMap type="consultantLogVO" id="myConsultantLogMap">
+		<result property="memId" column="MEM_ID" />
+		<result property="cnsltntNo" column="CNSLTNT_NO" />
+		<result property="payNo" column="PAY_NO" />
+		<result property="conMemId" column="CON_MEM_ID" />
+		<result property="cnsltntTitle" column="CNSLTNT_TITLE" />
+		<result property="cnsltntCntnt" column="CNSLTNT_CNTNT" />
+		<result property="cnsltntTimes" column="CNSLTNT_TIMES" />
+		<result property="cnsltntDt" column="CNSLTNT_DT" />
+	</resultMap>
+
+	<!-- 마이페이지 상담기록 가져오기 -->
+	<select id="getMyConsultantLog" parameterType="String" resultMap="myMemberMap">
+		SELECT A.CNSLTNT_NO, A.PAY_NO, A.CON_MEM_ID,A.CNSLTNT_TITLE, A.CNSLTNT_CNTNT, A.CNSLTNT_TIMES, A.CNSLTNT_DT, A.MEM_ID
+			, (SELECT MAX(D.MEM_NM) FROM MEMBER D WHERE D.MEM_ID = A.MEM_ID) MEM_NM
+			, (SELECT MAX(B.MEM_AF_ID) FROM MEMBER B WHERE B.MEM_ID = A.CON_MEM_ID) MEM_AF_ID
+			, (SELECT MAX(C.MEM_NM) FROM MEMBER C WHERE C.MEM_ID = A.CON_MEM_ID) CON_NM
+			, (SELECT E.ITEM_COMPANY_NO FROM PAYMENT E WHERE E.PAY_NO = A.PAY_NO) ITEM_NO
+	        , (SELECT F.PAY_REMNDR_CNT FROM PAYMENT F WHERE F.PAY_NO = A.PAY_NO AND F.PAY_USER_ID = #{memId}) COUNT
+		FROM CONSULTANT_LOG A
+		WHERE A.MEM_ID = #{memId}
+	</select>
+
+	<!-- 마이페이지 가져온 상담 기록에서 기록 보기 눌렀을 때 상담사가 기록한 코멘트 보기 -->
+	<select id="ajaxgetOneReview" parameterType="String"
+		resultType="consultantLogVO">
+		SELECT A.CNSLTNT_NO, A.PAY_NO, A.CON_MEM_ID,
+		A.CNSLTNT_TITLE, A.CNSLTNT_CNTNT, A.CNSLTNT_TIMES, A.CNSLTNT_DT
+		, A.MEM_ID
+		, (SELECT MAX(D.MEM_NM) FROM MEMBER D WHERE D.MEM_ID = A.MEM_ID) MEM_NM
+		, (SELECT MAX(B.MEM_AF_ID) FROM MEMBER B WHERE B.MEM_ID =
+		A.CON_MEM_ID) MEM_AF_ID
+		, (SELECT MAX(C.MEM_NM) FROM MEMBER C WHERE C.MEM_ID = A.CON_MEM_ID)
+		CON_NM
+		FROM CONSULTANT_LOG A
+		WHERE A.CNSLTNT_NO = #{cnsltntNo}
+	</select>
+
+	<!-- 마이페이지 리뷰 작성 전 info 가져옴. -->
+	<select id="ajaxgetReviewInfo" parameterType="String" resultType="paymentVO">
+		SELECT A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT,A.PAY_METHOD, A.PAY_DT, A.PAY_USER_ID, A.PAY_REMNDR_CNT, A.PAY_STDT,
+		A.PAY_EDDT, A.PAY_CON_ID
+		, (SELECT MAX(D.MEM_NM) FROM MEMBER D WHERE D.MEM_ID = A.PAY_USER_ID) MEM_NM
+		, (SELECT MAX(C.MEM_NM) FROM MEMBER C WHERE C.MEM_ID = A.PAY_CON_ID) CON_NM
+        , (SELECT MIN(E.CNSLTNT_DT) FROM CONSULTANT_LOG E WHERE E.PAY_NO = A.PAY_NO) AS CON_START_DT
+        , (SELECT MAX(F.CNSLTNT_DT) FROM CONSULTANT_LOG F WHERE F.PAY_NO = A.PAY_NO) AS CON_END_DT
+		FROM PAYMENT A
+		WHERE PAY_NO = #{payNo}
+	</select>
+
+	<!-- 마이페이지 리뷰 등록 -->
+	<insert id="ajaxinsertReview" parameterType="consultantReviewVO">
+
+		<selectKey resultType="String" order="BEFORE"
+			keyProperty="reviewNo">
+			SELECT 'CONR' ||
+			NVL(TRIM(TO_CHAR(SUBSTR(MAX(REVIEW_NO),5) + 1,'0000')),'0001')
+			FROM
+			CONSULTANT_REVIEW
+		</selectKey>
+
+		INSERT INTO CONSULTANT_REVIEW
+		(
+		REVIEW_NO
+		, ITEM_NO
+		, REVIEW_MEM_ID
+		, REVIEW_CNSLTNT_ID
+		, REVIEW_RATE
+		, REVIEW_CNTNT
+		, REVIEW_REG_DT)
+		VALUES (
+		#{reviewNo}
+		, #{itemNo}
+		, #{reviewMemId}
+		, #{reviewCnsltntId}
+		, #{reviewRate}
+		, #{reviewCntnt}
+		, SYSDATE
+		)
+
+	</insert>
+
+	<select id="getTotalById" parameterType="hashMap"
+		resultType="int">
+		SELECT COUNT(*) FROM
+		(
+		SELECT
+		ROW_NUMBER() OVER(ORDER BY CNSLTNT_NO DESC) RNUM,
+		A.CNSLTNT_NO,
+		A.PAY_NO,
+		A.CON_MEM_ID,
+		A.CNSLTNT_TITLE,
+		A.CNSLTNT_CNTNT,
+		A.CNSLTNT_TIMES,
+		A.CNSLTNT_DT,
+		B.ITEM_COMPANY_NO,
+		B.PAY_AMOUNT,
+		B.PAY_METHOD,
+		B.PAY_DT,
+		B.PAY_USER_ID,
+		B.PAY_REMNDR_CNT,
+		B.PAY_STDT,
+		B.PAY_EDDT,
+		C.MEM_ID,
+		C.MEM_PASS,
+		C.MEM_NM,
+		C.MEM_POSTNO,
+		C.MEM_ADDR,
+		C.MEM_ADDR2,
+		C.MEM_TEL,
+		C.MEM_REG_DT,
+		C.MEM_OPEN_RESUME,
+		C.MEM_STATE_CD,
+		C.MEM_BIRTH,
+		C.MEM_GEN,
+		C.MEM_EMAIL,
+		C.MEM_CD,
+		C.MEM_YN,
+		C.MEM_INTRCN,
+		C.MEM_NCNM,
+		C.MEM_AF_ID,
+		C.MEM_WISH_JOB_CATE,
+		C.MEM_WISH_JOB,
+		C.ENABLED,
+		C.MEM_INT_WORD,
+		C.MEM_MG_POSITION
+		FROM CONSULTANT_LOG A, PAYMENT B, MEMBER C
+		WHERE A.PAY_NO = B.PAY_NO
+		AND B.PAY_USER_ID = C.MEM_ID
+		AND A.CON_MEM_ID= #{memId}
+
+		) T
+
+	</select>
+
+	<select id="getCnsltntRevByCnsltntId" parameterType="hashMap"
+		resultType="consultantReviewVO">
+		SELECT T.* FROM
+		(SELECT
+		ROW_NUMBER() OVER(
+		<include refid="order2"></include>
+		) RNUM,
+		REVIEW_NO,
+		ITEM_NO,
+		REVIEW_MEM_ID,
+		REVIEW_CNSLTNT_ID,
+		REVIEW_RATE,
+		REVIEW_CNTNT,
+		REVIEW_REG_DT
+		FROM CONSULTANT_REVIEW
+		WHERE REVIEW_CNSLTNT_ID=#{memId}
+		) T
+		WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * #{size} + 1) AND
+		((#{currentPage} * #{size}))
+	</select>
+
+	<select id="getRevTotalByCnsltntId" parameterType="hashMap"
+		resultType="int">
+		SELECT COUNT(*) FROM
+		(SELECT
+		ROW_NUMBER() OVER(
+		<include refid="order2"></include>
+		) RNUM,
+		REVIEW_NO,
+		ITEM_NO,
+		REVIEW_MEM_ID,
+		REVIEW_CNSLTNT_ID,
+		REVIEW_RATE,
+		REVIEW_CNTNT,
+		REVIEW_REG_DT
+		FROM CONSULTANT_REVIEW
+		WHERE REVIEW_CNSLTNT_ID=#{memId}
+		) T
+	</select>
+
+	<select id="consultantList" parameterType="hashMap"
+		resultMap="memberVOMap">
+		SELECT T.*
+		FROM (
+		SELECT ROW_NUMBER() OVER(ORDER BY MEM_NM) RNUM
+		, MEM_ID
+		, MEM_NM
+		, MEM_POSTNO
+		, MEM_ADDR
+		, MEM_ADDR2
+		, MEM_TEL
+		, MEM_REG_DT
+		, MEM_OPEN_RESUME
+		, MEM_STATE_CD
+		, MEM_BIRTH
+		, MEM_GEN
+		, MEM_EMAIL
+		, MEM_CD
+		, MEM_YN
+		, MEM_INTRCN
+		, MEM_NCNM
+		, MEM_AF_ID
+		, MEM_WISH_JOB_CATE
+		, MEM_WISH_JOB
+		, ENABLED
+		, MEM_INT_WORD
+		, MEM_MG_POSITION
+		FROM
+		MEMBER
+		WHERE MEM_CD = 'MCC01002'
+		<include refid="where"></include>
+		) T
+		WHERE
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+	</select>
+
+	<select id="getRepResumeNo" parameterType="String"
+		resultType="String">
+		SELECT
+		R.RESUME_NO
+		FROM
+		RESUME R, MEMBER MEM
+		WHERE MEM.MEM_ID = #{memId}
+		AND MEM.MEM_ID = R.MEM_ID
+		AND
+		R.RESUME_REP = 'RRY01002'
+	</select>
+
+	<select id="totalCounsel" parameterType="hashMap"
+		resultType="int">
+		SELECT
+		COUNT(*)
+		FROM
+		MEMBER
+		WHERE MEM_CD = 'MCC01002'
+		<include refid="where"></include>
+	</select>
+
+	<select id="getConsultBycnsltntNo" parameterType="String"
+		resultMap="consultantLogMap">
+		SELECT
+		A.CNSLTNT_NO,
+		A.PAY_NO,
+		A.CON_MEM_ID,
+		A.CNSLTNT_TITLE,
+		A.CNSLTNT_CNTNT,
+		A.CNSLTNT_TIMES,
+		A.CNSLTNT_DT,
+		B.ITEM_COMPANY_NO,
+		B.PAY_AMOUNT,
+		B.PAY_METHOD,
+		B.PAY_DT,
+		B.PAY_USER_ID,
+		B.PAY_REMNDR_CNT,
+		B.PAY_STDT,
+		B.PAY_EDDT,
+		C.MEM_ID,
+		C.MEM_PASS,
+		C.MEM_NM,
+		C.MEM_POSTNO,
+		C.MEM_ADDR,
+		C.MEM_ADDR2,
+		C.MEM_TEL,
+		C.MEM_REG_DT,
+		C.MEM_OPEN_RESUME,
+		C.MEM_STATE_CD,
+		C.MEM_BIRTH,
+		C.MEM_GEN,
+		C.MEM_EMAIL,
+		C.MEM_CD,
+		C.MEM_YN,
+		C.MEM_INTRCN,
+		C.MEM_NCNM,
+		C.MEM_AF_ID,
+		C.MEM_WISH_JOB_CATE,
+		C.MEM_WISH_JOB,
+		C.ENABLED,
+		C.MEM_INT_WORD,
+		C.MEM_MG_POSITION,
+		D.COM_CD,
+		D.COM_CD_NM,
+		D.COM_CD_DESCRIPTIONS
+		FROM CONSULTANT_LOG A, PAYMENT B, MEMBER C, COM_CODE_INFO D
+		WHERE A.PAY_NO = B.PAY_NO
+		AND B.PAY_USER_ID = C.MEM_ID
+		AND A.CNSLTNT_NO= #{cnsltntNo}
+		AND D.COM_CD = C.MEM_WISH_JOB_CATE
+		ORDER BY CNSLTNT_NO DESC
+	</select>
+
+
+	<!-- 상담기록 남기기위해 pay정보 가져오기. -->
+	<select id="getPayLog" parameterType="hashMap"
+		resultType="paymentVO">
+		SELECT A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT,
+		A.PAY_METHOD, A.PAY_DT, A.PAY_USER_ID,
+		CASE
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO001' AND A.PAY_REMNDR_CNT = 3 THEN 1
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO001' AND A.PAY_REMNDR_CNT = 2 THEN 2
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO001' AND A.PAY_REMNDR_CNT = 1 THEN 3
+
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO002' AND A.PAY_REMNDR_CNT = 5 THEN 1
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO002' AND A.PAY_REMNDR_CNT = 4 THEN 2
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO002' AND A.PAY_REMNDR_CNT = 3 THEN 3
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO002' AND A.PAY_REMNDR_CNT = 2 THEN 4
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO002' AND A.PAY_REMNDR_CNT = 1 THEN 5
+
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 10 THEN 1
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 9 THEN 2
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 8 THEN 3
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 7 THEN 4
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 6 THEN 5
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 5 THEN 6
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 4 THEN 7
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 3 THEN 8
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 2 THEN 9
+		WHEN A.ITEM_COMPANY_NO = 'PDCNO003' AND A.PAY_REMNDR_CNT = 1 THEN 10
+
+		ELSE A.PAY_REMNDR_CNT
+		END AS LOG_CNT,
+		A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID, A.PAY_ENT_NO,
+		(SELECT B.MEM_NM FROM MEMBER B WHERE B.MEM_ID = A.PAY_USER_ID) AS MEM_NM
+		FROM
+		PAYMENT A
+		WHERE A.PAY_CON_ID = #{conMemId}
+		AND A.PAY_USER_ID =
+		#{tagetMemId}
+	</select>
+
+	<!-- 상담기록 등록 -->
+	<insert id="insertConsultantLog" parameterType="consultantLogVO">
+		<selectKey resultType="String" order="BEFORE"
+			keyProperty="cnsltntNo">
+			SELECT 'CONL' ||
+			NVL(TRIM(TO_CHAR(SUBSTR(MAX(CNSLTNT_NO),5) + 1,'0000')),'0001')
+			FROM
+			CONSULTANT_LOG
+		</selectKey>
+
+		INSERT INTO CONSULTANT_LOG
+		(
+		CNSLTNT_NO
+		, PAY_NO
+		, CON_MEM_ID
+		, CNSLTNT_TITLE
+		, CNSLTNT_CNTNT
+		, CNSLTNT_TIMES
+		, CNSLTNT_DT
+		, MEM_ID
+		)
+
+		VALUES (
+		#{cnsltntNo}
+		,#{payNo}
+		,#{conMemId}
+		,#{cnsltntTitle}
+		,#{cnsltntCntnt}
+		,#{cnsltntTimes}
+		,SYSDATE
+		,#{memId}
+		)
+	</insert>
+
+	<resultMap type="consultantReviewVO" id="consultantReviewMap">
+		<result property="reviewNo" column="REVIEW_NO"/>
+		<result property="itemNo" column="ITEM_NO"/>
+		<result property="reviewMemId" column="REVIEW_MEM_ID"/>
+		<result property="reviewCnsltntId" column="REVIEW_CNSLTNT_ID"/>
+		<result property="reviewRate" column="REVIEW_RATE"/>
+		<result property="reviewCntnt" column="REVIEW_CNTNT"/>
+		<result property="reviewRegDt" column="REVIEW_REG_DT"/>
+		<association property="memberVO" resultMap="memberMap"></association>
+	</resultMap>
+	<resultMap type="memberVO" id="memberMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="memMgPosition" column="MEM_MG_POSITION"/>
+		<result property="enabled" column="ENABLED"/>
+	</resultMap>
+	
+	<select id="getConsultReview" parameterType="hashMap" resultMap="consultantReviewMap">
+		SELECT T.* FROM
+		(
+		SELECT 
+		    ROW_NUMBER() OVER(ORDER BY REVIEW_REG_DT DESC) RNUM,
+		    A.REVIEW_NO, 
+		    A.ITEM_NO, 
+		    A.REVIEW_MEM_ID, 
+		    A.REVIEW_CNSLTNT_ID, 
+		    A.REVIEW_RATE, 
+		    A.REVIEW_CNTNT, 
+		    A.REVIEW_REG_DT,
+		    B.MEM_ID, 
+		    B.MEM_PASS, 
+		    B.MEM_NM, 
+		    B.MEM_POSTNO, 
+		    B.MEM_ADDR, 
+		    B.MEM_ADDR2, 
+		    B.MEM_TEL, 
+		    B.MEM_REG_DT, 
+		    B.MEM_OPEN_RESUME, 
+		    B.MEM_STATE_CD, 
+		    B.MEM_BIRTH, 
+		    B.MEM_GEN, 
+		    B.MEM_EMAIL, 
+		    B.MEM_CD, 
+		    B.MEM_YN, 
+		    B.MEM_INTRCN,
+		    B.MEM_NCNM, 
+		    B.MEM_AF_ID, 
+		    B.MEM_WISH_JOB_CATE, 
+		    B.MEM_WISH_JOB, 
+		    B.ENABLED, 
+		    B.MEM_INT_WORD, 
+		    B.MEM_MG_POSITION
+		FROM CONSULTANT_REVIEW A, MEMBER B
+		WHERE A.REVIEW_CNSLTNT_ID = #{memId}
+        AND A.REVIEW_MEM_ID = B.MEM_ID
+		) T
+		WHERE
+		T.RNUM BETWEEN ((#{currentPage} - 1) * #{size} + 1) AND ((#{currentPage} * #{size}))
+	</select>
+	
+	<select id="getConsultRevByReviewNo" parameterType="String" resultType="consultantReviewVO">
+		SELECT * FROM CONSULTANT_REVIEW
+		WHERE REVIEW_NO = #{reviewNo}
+	</select>
+
+
+</mapper>

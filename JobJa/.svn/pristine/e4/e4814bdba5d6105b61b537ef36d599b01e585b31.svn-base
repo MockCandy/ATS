@@ -1,0 +1,12 @@
+package jobja.item.mapper;
+
+import java.util.List;
+
+import jobja.item.vo.ConsultantReviewVO;
+
+public interface ConsultReviewMapper {
+	
+	//마이페이지 내가 쓴 리뷰 목록 가져오기.
+	public List<ConsultantReviewVO> getMyconsultReview(String memId);
+
+}

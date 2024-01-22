@@ -1,0 +1,40 @@
+package jobJa.board.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.board.vo.BoardQNAVO;
+import jobJa.reply.vo.ReplyVO;
+
+public interface BoardQNAMapper {
+
+	String getBoardId();
+	
+	int createPost(BoardQNAVO boardQNAVO);
+
+	List<BoardQNAVO> list(Map<String, Object> map);
+
+	int getTotal(Map<String, Object> map);
+
+	BoardQNAVO detail(BoardQNAVO boardQNAVO);
+
+	int delete(BoardQNAVO boardQNAVO);
+
+	int update(BoardQNAVO boardQNAVO);
+
+	void countUp(String boardId);
+
+	int ajaxLikeUp(BoardQNAVO boardQNAVO);
+
+	int ajaxLikeCancel(BoardQNAVO boardQNAVO);
+
+	int getCount(BoardQNAVO boardQNAVO);
+	
+	//마이페이지 ->내가 쓴 취업QNA글 목록 가져오기.
+	public List<BoardQNAVO> myList(String memId);
+	
+	//마이페이지 ->내가 쓴 취업QNA댓글 목록 가져오기.
+	public List<ReplyVO> myReplyList(String memId);
+
+	
+}

@@ -1,0 +1,25 @@
+package jobJa.board.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.board.vo.BoardEmplConsultVO;
+import jobJa.board.vo.BoardEntReviewVO;
+import jobJa.member.vo.EnterpriseVO;
+
+public interface BoardEntReviewMapper {
+
+	int createPost(BoardEntReviewVO boardEntReviewVO);
+
+	List<BoardEntReviewVO> getByEntNo(Map<String, Object> map);
+
+	int ajaxLikeCancel(BoardEntReviewVO boardEntReviewVO);
+
+	int ajaxLikeUp(BoardEntReviewVO boardEntReviewVO);
+
+	int getTotalCount(String entNo);
+
+	EnterpriseVO ajaxGetEntInfo(EnterpriseVO enterpriseVO);
+
+	
+}

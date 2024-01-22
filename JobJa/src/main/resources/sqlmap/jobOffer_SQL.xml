@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.member.mapper.JobOfferMapper">
+	
+	<select id="getOffers" parameterType="memberVO" resultType="jobOfferVO">
+		SELECT ENT_NO,
+			 MEM_ID,
+			 OFFER_DT, 
+			 OFFER_TITLE, 
+			 OFFER_CNTNT, 
+			 OFFER_RESULT
+		FROM JOB_OFFER
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<resultMap type="jobOfferVO" id="jobOfferVOMap">
+		<result property="entNo" column="ENT_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="offerDt" column="OFFER_DT"/>
+		<result property="offerTitle" column="OFFER_TITLE"/>
+		<result property="offerCntnt" column="OFFER_CNTNT"/>
+		<result property="offerResult" column="OFFER_RESULT"/>
+		<result property="recruitNo" column="RECRUIT_NO"/>
+		<association property="enterpriseVO" resultMap="enterpriseVOMap"></association>
+	</resultMap>
+	
+	<resultMap type="enterpriseVO" id="enterpriseVOMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+	</resultMap>
+	
+	
+	<select id="myJobOffer" parameterType="hashMap" resultMap="jobOfferVOMap">
+		SELECT T.* FROM (
+		    SELECT
+		        ROW_NUMBER() OVER(ORDER BY A.ENT_NO DESC) RNUM,
+		        A.ENT_NO, A.MEM_ID, A.OFFER_DT, A.OFFER_TITLE, A.OFFER_CNTNT, A.OFFER_RESULT,
+				       		B.ENT_NM, B.ENT_APRV, B.ENT_INTRCN, B.ENT_URL, B.ENT_SALES, B.ENT_CEONM, B.ENT_POSTNO, B.ENT_ADDR, B.ENT_ADDR2, B.ENT_BDAY, B.ENT_FAX, B.ENT_EMPCNT,
+				      		C.RECRUIT_NO
+				FROM        JOB_OFFER A
+				JOIN        ENTERPRISE B ON A.ENT_NO = B.ENT_NO
+				LEFT JOIN (
+						    SELECT ENT_NO, MAX(RECRUIT_NO) AS RECRUIT_NO
+						    FROM RECRUIT
+						    GROUP BY ENT_NO
+						  ) C ON A.ENT_NO = C.ENT_NO
+				WHERE       A.MEM_ID = #{memId}
+				ORDER BY    A.OFFER_DT DESC
+		        ) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getMyJobOfferTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+		FROM 	 JOB_OFFER
+		WHERE    MEM_ID = #{memId}
+	
+	
+	</select>
+	
+	<resultMap type="enterpriseVO" id="enterpriseVOComMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+		<association property="comDetCodeInfoVOList" resultMap="comDetCodeMap" />
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	
+	<select id="ajaxgetJobOfferEnt" parameterType="String" resultMap="enterpriseVOComMap">
+		SELECT    ENT_NO, ENT_NM, ENT_INTRCN, ENT_URL, ENT_SALES
+		        , ENT_SECTOR, ENT_EMPCNT, ENT_BDAY, ENT_FAX, ENT_CEONM
+		        , ENT_LOGO, ENT_INT_WORD, ENT_POSTNO, ENT_ADDR, ENT_ADDR2
+		        , COM_DET_CD, COM_CD, COM_DET_CD_NM, COM_DET_DESCRIPTIONS
+		FROM ENTERPRISE A
+        LEFT OUTER JOIN COM_DET_CODE_INFO B
+		ON   A.ENT_SECTOR = B.COM_DET_CD
+		WHERE A.ENT_NO = #{entNo}
+	</select>
+	
+	<select id="getConAprvVO" parameterType="String" resultType="ConAprvVO">
+		SELECT A.MEM_ID
+		     , A.RESUME_NO
+		     , A.PTFL_NO
+		     , A.CON_APRV_DT
+		     , A.CON_APRV_UPDT
+		     , B.MEM_YN
+		     , B.MEM_CD
+		FROM MEMBER B, CON_APRV A
+		WHERE A.MEM_ID = B.MEM_ID
+		AND A.MEM_ID =#{memId}
+	</select>
+	
+	<select id="getReportVO" parameterType="String" resultType="reportVO">
+		SELECT A.REP_NO
+		  ,A.REP_SUB_ID
+		  ,A.REP_DT
+		  ,A.REP_REASON
+		  ,A.REP_TYPE_CD
+		  ,A.REPORTER_ID
+		  ,A.ADMIN_ID
+		  ,A.REP_RESULT_CD
+		  ,A.REP_RESULT_CNTNT
+		  ,A.REP_BOARD_ID
+		  ,B.MEM_CD
+		FROM MEMBER B,REPORT A
+		WHERE A.REPORTER_ID = B.MEM_ID
+		AND A.REPORTER_ID =#{memId}
+	</select>
+</mapper>

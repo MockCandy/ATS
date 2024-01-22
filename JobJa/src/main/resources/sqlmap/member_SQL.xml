@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.mypage.member.mapper.MemberMapper">
+	
+	<sql id="order">
+		<choose>
+			<when test = "sortBy=='recent'">
+				ORDER BY REMAINING_DATE DESC
+			</when>
+			<when test = "sortBy=='imminent'">
+				ORDER BY REMAINING_DATE ASC
+			</when>
+			<otherwise>
+				ORDER BY A.MEM_ID ASC
+			</otherwise>
+		</choose>
+	</sql>
+	
+	
+	<resultMap type="memberVO" id="memberMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="memMgPosition" column="MEM_MG_POSITION"/>
+		<collection property="memberAuthVOList" resultMap="memberAuthMap"></collection>
+		<collection property="resumeVOList" resultMap="resumeVOMap"></collection>
+		<collection property="academicCareerVOList" resultMap="academicCareerVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="memberAuthVO" id="memberAuthMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="role" column="ROLE"/>
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoVOMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	
+	<resultMap type="academicCareerVO" id="academicCareerVOMap">
+		<result property="acdmcrNo" column="ACDMCR_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="acdmcrNm" column="ACDMCR_NM"/>
+		<result property="acdmcrMajor" column="ACDMCR_MAJOR"/>
+		<result property="acdmcrDegree" column="ACDMCR_DEGREE"/>
+		<result property="acdmcrEntranceDt" column="ACDMCR_ENTRANCE_DT"/>
+		<result property="acdmcrGrdtnDt" column="ACDMCR_GRDTN_DT"/>
+		<result property="acdmcrAttnd" column="ACDMCR_ATTND"/>
+		<result property="acdmcrPoint" column="ACDMCR_POINT"/>
+		<result property="acdmcrYn" column="ACDMCR_YN"/>
+	</resultMap>
+	
+		<!-- 원래 이건데 List들 추가하려고 밑에꺼 새로 만듦.-->
+<!-- 	<resultMap type="resumeVO" id="resumeVOMap"> -->
+<!-- 		<result property="resumeSkill" column="RESUME_SKILL"/> -->
+<!-- 		<result property="resumeNo" column="RESUME_NO"/> -->
+<!-- 		<result property="memId" column="MEM_ID"/> -->
+<!-- 		<result property="resumeTitle" column="RESUME_TITLE"/> -->
+<!-- 		<result property="resumeTemp" column="RESUME_TEMP"/> -->
+<!-- 		<result property="resumeRep" column="RESUME_REP"/> -->
+<!-- 		<result property="resumeCd" column="RESUME_CD"/> -->
+<!-- 		<result property="resumeAfId" column="RESUME_AF_ID"/> -->
+<!-- 		<result property="resumeYn" column="RESUME_YN"/> -->
+<!-- 	</resultMap> -->
+	
+	<resultMap type="resumeVO" id="resumeVOMap">
+		<result property="resumeSkill" column="RESUME_SKILL"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="resumeTitle" column="RESUME_TITLE"/>
+		<result property="resumeTemp" column="RESUME_TEMP"/>
+		<result property="resumeRep" column="RESUME_REP"/>
+		<result property="resumeCd" column="RESUME_CD"/>
+		<result property="resumeAfId" column="RESUME_AF_ID"/>
+		<result property="resumeYn" column="RESUME_YN"/>
+		<result property="resumeOccp" column="RESUME_OCCP"/>
+		<result property="resumeJob" column="RESUME_JOB"/>
+		<collection property="careerVOList" resultMap="careerVOMap"></collection>
+		<collection property="resultVOList" resultMap="resultVOMap"></collection>
+		<collection property="languageVOList" resultMap="languageVOMap"></collection>
+		<collection property="awardsVOList" resultMap="awardsVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="careerVO" id="careerVOMap">
+		<result property="companyPosition" column="COMPANY_POSITION"/>
+		<result property="companyJob" column="COMPANY_JOB"/>
+		<result property="careerSeq" column="CAREER_SEQ"/>
+		<result property="careerNo" column="CAREER_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="companyNm" column="COMPANY_NM"/>
+		<result property="companyEntranceDt" column="COMPANY_ENTRANCE_DT"/>
+		<result property="companyLeaveDt" column="COMPANY_LEAVE_DT"/>
+		<result property="companyDept" column="COMPANY_DEPT"/>
+		<result property="companySalary" column="COMPANY_SALARY"/>
+		<result property="workPeriod" column="WORK_PERIOD"/>
+		<result property="companyDetCareer" column="COMPANY_DET_CAREER"/>
+	</resultMap>
+	
+	<resultMap type="resultVO" id="resultVOMap">
+		<result property="resultSeq" column="RESULT_SEQ"/>
+		<result property="resultNo" column="RESULT_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="resultTitle" column="RESULT_TITLE"/>
+		<result property="resultCntnt" column="RESULT_CNTNT"/>
+		<result property="resultStdt" column="RESULT_STDT"/>
+		<result property="resultEddt" column="RESULT_EDDT"/>
+	</resultMap>
+	
+	<resultMap type="awardsVO" id="awardsVOMap">
+		<result property="awdNo" column="AWD_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="awdNm" column="AWD_NM"/>
+		<result property="awdCntnt" column="AWD_CNTNT"/>
+		<result property="awdDt" column="AWD_DT"/>
+		<result property="awdOrg" column="AWD_ORG"/>
+		<result property="awdSeq" column="AWD_SEQ"/>
+	</resultMap>
+	
+	<resultMap type="languageVO" id="languageVOMap">
+		<result property="langNo" column="LANG_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="langKind" column="LANG_KIND"/>
+		<result property="langLevel" column="LANG_LEVEL"/>
+		<result property="langSeq" column="LANG_SEQ"/>
+		<collection property="languageDTVOList" resultMap="languageDTVOMap"></collection>
+	</resultMap>
+	
+	<resultMap type="languageDTVO" id="languageDTVOMap">
+		<result property="langDetSeqq" column="LANG_DET_SEQQ"/>
+		<result property="langSeq" column="LANG_SEQ"/>
+		<result property="langNo" column="LANG_NO"/>
+		<result property="resumeNo" column="RESUME_NO"/>
+		<result property="langDetailScore" column="LANG_DETAIL_SCORE"/>
+		<result property="langDetailAcqDt" column="LANG_DETAIL_ACQ_DT"/>
+		<result property="langDetailExpDt" column="LANG_DETAIL_EXP_DT"/>
+		<result property="langDetailName" column="LANG_DETAIL_NAME"/>
+	</resultMap>
+	
+	<!-- 시큐리티 login -->
+	<select id="detail" parameterType="String" resultMap="memberMap">
+		SELECT  a.MEM_ID, a.MEM_PASS, a.MEM_NM, a.MEM_POSTNO, 
+		        a.MEM_ADDR, a.MEM_ADDR2, a.MEM_TEL, a.MEM_REG_DT, 
+		        a.MEM_OPEN_RESUME, a.MEM_STATE_CD, a.MEM_BIRTH, a.MEM_GEN, 
+		        a.MEM_EMAIL, a.MEM_CD, a.MEM_YN, a.MEM_INTRCN, a.MEM_NCNM,
+		        a.MEM_AF_ID, a.MEM_WISH_JOB_CATE, a.MEM_WISH_JOB, a.ENABLED,
+		        a.MEM_INT_WORD, a.MEM_MG_POSITION,
+		        b.ROLE
+		FROM MEMBER a, AUTH b
+		WHERE A.MEM_ID = B.MEM_ID
+		AND A.ENABLED = '1'
+		AND A.MEM_ID = #{MEM_ID}
+	</select>
+	<!-- 일반회원 회원가입 -->
+	<insert id="createPost" parameterType="memberVO">
+		INSERT INTO MEMBER (
+		          MEM_ID, MEM_PASS, MEM_NM, MEM_POSTNO
+		        , MEM_ADDR, MEM_ADDR2, MEM_TEL, MEM_REG_DT
+		        , MEM_OPEN_RESUME, MEM_STATE_CD, MEM_BIRTH
+		        , MEM_GEN, MEM_EMAIL, MEM_CD, MEM_YN
+		        , MEM_INTRCN, MEM_NCNM, MEM_AF_ID, MEM_WISH_JOB_CATE
+		        , MEM_WISH_JOB, ENABLED, MEM_INT_WORD, MEM_MG_POSITION
+		      )
+		VALUES(
+				  #{memId},#{memPass},#{memNm},#{memPostno}
+				, #{memAddr},#{memAddr2},#{memTel},SYSDATE
+				, '1','MSC01001',#{memBirth}
+				, #{memGen},#{memEmail},'MCC01000',#{memYn}
+				, #{memIntrcn},#{memNcnm}, #{memAfId}, #{memWishJobCate}
+				, #{memWishJob},'1',#{memIntWord}, #{memMgPosition})
+	</insert>
+	
+	<!-- 기업회원회원가입 -->
+	<insert id="createPostEnt" parameterType="memberVO">
+		INSERT INTO MEMBER (
+		          MEM_ID, MEM_PASS, MEM_NM, MEM_POSTNO
+		        , MEM_ADDR, MEM_ADDR2, MEM_TEL, MEM_REG_DT
+		        , MEM_OPEN_RESUME, MEM_STATE_CD, MEM_BIRTH
+		        , MEM_GEN, MEM_EMAIL, MEM_CD, MEM_YN
+		        , MEM_INTRCN, MEM_NCNM, MEM_AF_ID, MEM_WISH_JOB_CATE
+		        , MEM_WISH_JOB, ENABLED, MEM_INT_WORD, MEM_MG_POSITION
+		      )
+		VALUES(
+				  #{memId},#{memPass},#{memNm},#{memPostno}
+				, #{memAddr},#{memAddr2},#{memTel},SYSDATE
+				, '1','MSC01001',#{memBirth}
+				, #{memGen},#{memEmail},'MCC01001','AYN01002'
+				, #{memIntrcn},#{memNcnm}, #{memAfId}, #{memWishJobCate}
+				, #{memWishJob},'1',#{memIntWord}, #{memMgPosition})
+	</insert>
+	
+	<select id="getComDetLangList" resultType="comDetCodeInfoVO">
+		SELECT
+    		  COM_DET_CD
+    		, COM_CD
+    		, COM_DET_CD_NM
+    		, COM_DET_DESCRIPTIONS
+		FROM
+    		COM_DET_CODE_INFO
+		WHERE COM_DET_CD LIKE 'LTP01%'
+	</select>
+	
+	<select id="getComCodeVOList" resultType="comCodeInfoVO">
+		SELECT 
+			  COM_CD
+			, COM_CD_NM
+			, COM_CD_DESCRIPTIONS
+		FROM 
+			COM_CODE_INFO
+		WHERE 
+			COM_CD LIKE 'MWJ010%'
+		ORDER BY 
+			COM_CD ASC
+	</select>
+	
+	<select id="getComDetCode" parameterType="String" resultMap="comDetCodeInfoVOMap">
+		SELECT 
+			COM_DET_CD
+			, COM_CD
+		    , COM_DET_CD_NM
+		    , COM_DET_DESCRIPTIONS
+		FROM 
+    		COM_DET_CODE_INFO
+		WHERE COM_DET_CD LIKE CONCAT(#{comCd}, '%')
+	</select>
+	
+	<select id="getMemAcademicCareerList" parameterType="String" resultMap="academicCareerVOMap">
+		SELECT
+		      ACDMCR_NO
+		    , MEM_ID
+		    , ACDMCR_NM
+		    , ACDMCR_MAJOR
+		    , ACDMCR_DEGREE
+		    , ACDMCR_ENTRANCE_DT
+		    , ACDMCR_GRDTN_DT
+		    , ACDMCR_ATTND
+		    , ACDMCR_POINT
+		    , ACDMCR_YN
+		FROM 
+		    ACADEMIC_CAREER
+		WHERE MEM_ID = #{memId}
+		ORDER BY ACDMCR_ENTRANCE_DT ASC
+	</select>
+	
+	<insert id="createResumePost" parameterType="resumeVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="resumeNo">
+			SELECT 
+    			'RSM' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(RESUME_NO, 4))), 0) + 1, 5, '0') AS NEXT_RESUME_NO
+			FROM  
+    			RESUME
+		</selectKey>
+	
+		INSERT INTO RESUME(
+		      RESUME_NO
+		    , MEM_ID
+		    , RESUME_TITLE
+		    , RESUME_TEMP
+		    , RESUME_REP
+		    , RESUME_CD
+		    , RESUME_YN
+		    , RESUME_SKILL
+		    , RESUME_OCCP
+		    , RESUME_JOB
+		)
+		VALUES (
+		      #{resumeNo}
+		    , #{memId}
+		    , #{resumeTitle}
+		    , #{resumeTemp}
+		    , #{resumeRep}
+		    , 'RRY01002'
+		    , 'N'
+		    , #{resumeSkill}
+		    , #{resumeOccp}
+		    , #{resumeJob}
+		)
+	</insert>
+	
+	<insert id="createCareerPost" parameterType="careerVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="careerNo">
+			SELECT 
+    			'CAR' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(CAREER_NO, 4))), 0) + 1, 5, '0') AS NEXT_CAREER_NO
+			FROM  
+    			CAREER
+		</selectKey>
+		
+		INSERT INTO CAREER(
+		      CAREER_NO
+		    , RESUME_NO
+		    , COMPANY_NM
+		    , COMPANY_ENTRANCE_DT
+		    , COMPANY_LEAVE_DT
+		    , COMPANY_DEPT
+		    , COMPANY_SALARY
+		    , COMPANY_DET_CAREER
+		    , COMPANY_POSITION
+		    , COMPANY_JOB
+		    , CAREER_SEQ
+		    , COMPANY_EMP_STATUS
+		)
+		VALUES(
+			  #{careerNo}
+			, #{resumeNo}
+			, #{companyNm}
+			, #{companyEntranceDt}
+			, #{companyLeaveDt}
+			, #{companyDept}
+			, #{companySalary}
+			, #{companyDetCareer}
+			, #{companyPosition}
+			, #{companyJob}
+			, #{careerSeq}
+			, #{companyEmpStatus}
+		)
+	</insert>
+	
+	
+	
+	<insert id="createResultPost" parameterType="resultVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="resultNo">
+			SELECT 
+    			'RST' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(RESULT_NO, 4))), 0) + 1, 5, '0') AS NEXT_RESULT_NO
+			FROM  
+    			RESULT
+		</selectKey>
+		
+		INSERT INTO RESULT(
+		      RESULT_NO
+		    , RESUME_NO
+		    , RESULT_TITLE
+		    , RESULT_CNTNT
+		    , RESULT_STDT
+		    , RESULT_EDDT
+		    , RESULT_SEQ
+		)
+		VALUES(
+			  #{resultNo}
+			, #{resumeNo}
+			, #{resultTitle}
+			, #{resultCntnt}
+			, #{resultStdt}
+			, #{resultEddt}
+			, #{resultSeq}
+		)
+	</insert>
+	
+	<insert id="createAwardsPost" parameterType="awardsVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="awdNo">
+			SELECT 
+    			'AWD' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(AWD_NO, 4))), 0) + 1, 5, '0') AS NEXT_AWD_NO
+			FROM  
+    			AWARDS
+		</selectKey>
+		
+		INSERT INTO AWARDS (
+		      AWD_NO
+		    , RESUME_NO
+		    , AWD_NM
+		    , AWD_CNTNT
+		    , AWD_DT
+		    , AWD_ORG
+		    , AWD_SEQ
+		)
+		VALUES (
+			  #{awdNo}
+			, #{resumeNo}
+			, #{awdNm}
+			, #{awdCntnt}
+			, #{awdDt}
+			, #{awdOrg}
+			, #{awdSeq}
+		)
+	</insert>
+	
+	
+	<insert id="createLangPost" parameterType="languageVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="langNo">
+			SELECT 
+    			'LAN' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(LANG_NO, 4))), 0) + 1, 5, '0') AS NEXT_LANG_NO
+			FROM  
+    			LANGUAGE
+		</selectKey>
+		
+		INSERT INTO LANGUAGE (
+		      LANG_NO
+		    , RESUME_NO
+		    , LANG_KIND
+		    , LANG_LEVEL
+		    , LANG_SEQ
+		)
+		VALUES (
+			  #{langNo}
+			, #{resumeNo}
+			, #{langKind}
+			, #{langLevel}
+			, #{langSeq}
+		)
+	</insert>
+	
+	<insert id="createLangDetPost" parameterType="languageDTVO">
+		INSERT INTO LANGUAGE_DT (
+		      LANG_DET_SEQQ
+		    , LANG_SEQ
+		    , LANG_NO
+		    , RESUME_NO
+		    , LANG_DETAIL_SCORE
+		    , LANG_DETAIL_ACQ_DT
+		    , LANG_DETAIL_EXP_DT
+		    , LANG_DETAIL_NAME
+		)
+		VALUES(
+			  #{langDetSeqq}
+			, #{langSeq}
+			, #{langNo}
+			, #{resumeNo}
+			, #{langDetailScore}
+			, #{langDetailAcqDt}
+			, #{langDetailExpDt}
+			, #{langDetailName}
+		)
+	</insert>
+	
+	<select id="resumeList" resultMap="resumeVOMap">
+		SELECT 
+			T.*
+		FROM (
+			SELECT
+				  ROW_NUMBER() OVER(ORDER BY R.RESUME_REP DESC) RNUM
+                , R.RESUME_NO
+                , R.MEM_ID
+                , R.RESUME_TITLE
+                , R.RESUME_TEMP
+                , R.RESUME_REP
+                , R.RESUME_CD
+                , R.RESUME_AF_ID
+                , R.RESUME_YN
+                , R.RESUME_SKILL
+                , R.RESUME_OCCP
+                , R.RESUME_JOB
+            FROM 
+            	RESUME R
+            INNER JOIN  
+            	MEMBER M ON R.MEM_ID = M.MEM_ID
+            where R.MEM_ID = #{memId}
+		) T
+		WHERE 
+			T.RNUM BETWEEN ((#{currentPage} - 1) * #{size} + 1) AND ((#{currentPage} * #{size}))
+	</select>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			RESUME
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<select id="resumeAcademicCareerDetail" parameterType="hashMap" resultType="academicCareerVO">
+	
+		SELECT 
+			  MEM.MEM_ID, MEM.MEM_PASS, MEM.MEM_NM, MEM.MEM_POSTNO
+			, MEM.MEM_ADDR, MEM.MEM_ADDR2, MEM.MEM_TEL, MEM.MEM_REG_DT
+			, MEM.MEM_OPEN_RESUME, MEM.MEM_STATE_CD, MEM.MEM_BIRTH
+			, MEM.MEM_GEN, MEM.MEM_EMAIL, MEM.MEM_CD, MEM.MEM_YN, MEM.MEM_INTRCN
+			, MEM.MEM_NCNM, MEM.MEM_AF_ID, MEM.MEM_WISH_JOB_CATE, MEM.MEM_WISH_JOB
+			, MEM.ENABLED, MEM.MEM_INT_WORD, MEM.MEM_MG_POSITION
+		    , ACA.ACDMCR_NO, ACA.MEM_ID, ACA.ACDMCR_NM, ACA.ACDMCR_MAJOR
+		    , ACA.ACDMCR_DEGREE, ACA.ACDMCR_ENTRANCE_DT, ACA.ACDMCR_GRDTN_DT
+		    , ACA.ACDMCR_ATTND, ACA.ACDMCR_POINT, ACA.ACDMCR_YN
+		FROM   
+			MEMBER MEM, ACADEMIC_CAREER ACA
+		WHERE  MEM.MEM_ID = ACA.MEM_ID(+)
+		AND    MEM.MEM_ID = (SELECT R.MEM_ID FROM RESUME R WHERE R.RESUME_NO = #{resumeNo})
+		ORDER BY ACA.ACDMCR_ENTRANCE_DT ASC
+	</select>
+	
+	<select id="resumeResumeDetail" parameterType="hashMap" resultType="resumeVO">
+			SELECT 
+				  RESUME_NO
+				, MEM_ID
+				, RESUME_TITLE
+				, RESUME_TEMP
+				, RESUME_REP
+				, RESUME_CD
+				, RESUME_AF_ID
+				, RESUME_YN
+				, RESUME_SKILL
+                , RESUME_OCCP
+                , RESUME_JOB
+			FROM   
+				RESUME 
+			WHERE  RESUME_NO = #{resumeNo}
+	</select>	
+	
+	<select id="resumeCareerDetail" parameterType="hashMap" resultType="careerVO">
+		SELECT 
+			  CAREER_NO
+			, RESUME_NO
+			, COMPANY_NM
+			, COMPANY_ENTRANCE_DT
+			, COMPANY_LEAVE_DT
+			, COMPANY_DEPT
+			, COMPANY_SALARY
+			, COMPANY_DET_CAREER
+			, COMPANY_POSITION
+			, COMPANY_JOB
+			, CAREER_SEQ
+			, COMPANY_EMP_STATUS
+		FROM   
+			CAREER 
+		WHERE  RESUME_NO = #{resumeNo}
+	</select>
+	
+	<select id="resumeResultDetail" parameterType="hashMap" resultType="resultVO">
+		SELECT 
+			  RESULT_NO
+			, RESUME_NO
+			, RESULT_TITLE
+			, RESULT_CNTNT
+			, RESULT_STDT
+			, RESULT_EDDT
+			, RESULT_SEQ
+		FROM   
+			RESULT
+		WHERE  RESUME_NO = #{resumeNo}
+	</select>
+	
+	<select id="resumeAwardsDetail" parameterType="hashMap" resultType="awardsVO">
+		SELECT 
+			  AWD_NO
+			, RESUME_NO
+			, AWD_NM
+			, AWD_CNTNT
+			, AWD_DT
+			, AWD_ORG
+			, AWD_SEQ
+		FROM   
+			AWARDS
+		WHERE  RESUME_NO = #{resumeNo}
+	</select>
+	
+	<select id="resumeLanguageDetail" parameterType="hashMap" resultMap="languageVOMap">
+		SELECT 
+			  LAN.LANG_NO, LAN.RESUME_NO, LAN.LANG_KIND, LAN.LANG_LEVEL, LAN.LANG_SEQ
+			, LAD.LANG_DET_SEQQ, LAD.LANG_SEQ, LAD.LANG_NO, LAD.RESUME_NO, LAD.LANG_DETAIL_SCORE
+			, LAD.LANG_DETAIL_ACQ_DT, LAD.LANG_DETAIL_EXP_DT, LAD.LANG_DETAIL_NAME
+		FROM   
+			LANGUAGE LAN, LANGUAGE_DT LAD
+		WHERE  LAN.RESUME_NO = LAD.RESUME_NO
+		AND    LAN.LANG_SEQ = LAD.LANG_SEQ
+		AND    LAN.LANG_NO = LAD.LANG_NO
+		AND    LAN.RESUME_NO = #{resumeNo}
+		ORDER BY LAN.LANG_NO ASC, LAD.LANG_DET_SEQQ ASC
+	</select>
+	
+	<!-- resumeNo=RSM00046 -->
+	<select id="resumeMemberDetail" parameterType="hashMap" resultType="memberVO">
+		SELECT
+		      MEM_ID
+		    , MEM_NM
+		    , MEM_POSTNO
+		    , MEM_ADDR
+		    , MEM_ADDR2
+		    , MEM_TEL
+		    , MEM_REG_DT
+		    , MEM_OPEN_RESUME
+		    , MEM_STATE_CD
+		    , MEM_BIRTH
+		    , MEM_GEN
+		    , MEM_EMAIL
+		    , MEM_CD
+		    , MEM_YN
+		    , MEM_INTRCN
+		    , MEM_NCNM
+		    , MEM_AF_ID
+		    , MEM_WISH_JOB_CATE
+		    , MEM_WISH_JOB
+		    , ENABLED
+		    , MEM_INT_WORD
+		    , MEM_MG_POSITION
+		FROM 
+			MEMBER
+		WHERE 1 = 1
+		<if test="memId!=null and memId!=''"> 
+		AND   MEM_ID = #{memId}
+		</if>
+		<if test="resumeNo!=null and resumeNo!=''"> 
+		AND   MEM_ID = (SELECT MEM_ID FROM RESUME WHERE RESUME_NO = #{resumeNo})
+		</if>
+	</select>
+	
+	<delete id="memberDeleteResumeLangDET" parameterType="hashMap">
+		DELETE
+		    LANGUAGE_DT
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeLang" parameterType="hashMap">
+		DELETE
+		    LANGUAGE
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeAWD" parameterType="hashMap">
+		DELETE
+		    AWARDS
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeRES" parameterType="hashMap">
+		DELETE
+		    RESULT
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeCAR" parameterType="hashMap">
+		DELETE
+		    CAREER
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeAprv" parameterType="hashMap">
+		DELETE
+		    CON_APRV
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeAPPL" parameterType="hashMap">
+		DELETE
+		    APPLICATION
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<delete id="memberDeleteResumeR" parameterType="hashMap">
+		DELETE
+		    RESUME
+		WHERE
+		    RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<select id="atchList" parameterType="hashMap" resultType="atchFileDetailVO">
+		SELECT
+		      AFD_SEQ
+		    , AF_ID
+		    , AFD_ORIGIN_NM
+		    , AFD_SAVE_NM
+		    , AFD_FILE_SIZE
+		    , AFD_SAVE_PATH
+		    , AFD_EXTSN
+		    , AFD_CNTNT
+		    , AFD_UPLOAD_DT
+		FROM
+		    ATCH_FILE_DETAIL
+		WHERE AF_ID = #{memId}
+		ORDER BY AFD_UPLOAD_DT ASC
+	</select>
+	
+	<update id="setResumeRepreComm" parameterType="hashMap">
+		UPDATE
+		    RESUME
+		SET
+		    RESUME_REP = 'RRY01001'
+		WHERE MEM_ID = #{memId}
+	</update>
+	
+	<update id="setResumeRepre" parameterType="hashMap">
+	
+		UPDATE
+		    RESUME
+		SET 
+		    RESUME_REP = 'RRY01002'
+		WHERE RESUME_NO = #{resumeNo}
+	</update>
+	
+	<select id="getRecommMemList" parameterType="hashMap" resultMap="memberMap">
+		SELECT T.*
+		FROM
+		(
+		    SELECT 
+		        DENSE_RANK() OVER(<include refid="order"></include>) RNUM  ,
+		        A.MEM_ID, 
+		        A.MEM_NM, 
+		        A.MEM_POSTNO, 
+		        A.MEM_ADDR, 
+		        A.MEM_ADDR2, 
+		        A.MEM_TEL, 
+		        A.MEM_REG_DT,
+		        A.MEM_OPEN_RESUME, 
+		        A.MEM_STATE_CD, 
+		        A.MEM_BIRTH, 
+		        A.MEM_GEN, 
+		        A.MEM_EMAIL, 
+		        A.MEM_CD, 
+		        A.MEM_YN, 
+		        A.MEM_INTRCN, 
+		        A.MEM_NCNM, 
+		        A.MEM_AF_ID, 
+		        A.MEM_WISH_JOB_CATE, 
+		        A.MEM_WISH_JOB,
+		        A.ENABLED, 
+		        A.MEM_INT_WORD, 
+		        A.MEM_MG_POSITION,
+		        B.RESUME_NO, 
+		        B.RESUME_TITLE, 
+		        B.RESUME_TEMP, 
+		        B.RESUME_REP, 
+		        B.RESUME_CD, 
+		        B.RESUME_AF_ID, 
+		        B.RESUME_YN, 
+		        B.RESUME_SKILL, 
+		        B.RESUME_OCCP, 
+		        B.RESUME_JOB,
+		        C.CAREER_NO, 
+		        C.COMPANY_NM, 
+		        C.COMPANY_ENTRANCE_DT, 
+		        C.COMPANY_LEAVE_DT, 
+        		TO_DATE(C.COMPANY_LEAVE_DT, 'YYYY-MM-DD') - TO_DATE( C.COMPANY_ENTRANCE_DT, 'YYYY-MM-DD') AS WORK_PERIOD,
+		        C.COMPANY_DEPT, 
+		        C.COMPANY_SALARY, 
+		        C.COMPANY_DET_CAREER, 
+		        C.COMPANY_POSITION, 
+		        C.COMPANY_JOB, 
+		        C.CAREER_SEQ,
+		        D.ACDMCR_NO, 
+		        D.ACDMCR_NM, 
+		        D.ACDMCR_MAJOR, 
+		        D.ACDMCR_DEGREE, 
+		        D.ACDMCR_ENTRANCE_DT, 
+		        D.ACDMCR_GRDTN_DT, 
+		        D.ACDMCR_ATTND, 
+		        D.ACDMCR_POINT, 
+		        D.ACDMCR_YN,
+        		E.ROLE
+		    FROM MEMBER A
+		    LEFT OUTER JOIN RESUME B
+		    ON A.MEM_ID = B.MEM_ID
+		    LEFT OUTER JOIN CAREER C
+		    ON B.RESUME_NO = C.RESUME_NO
+		    LEFT OUTER JOIN ACADEMIC_CAREER D
+		    ON A.MEM_ID = D.MEM_ID
+		    LEFT OUTER JOIN AUTH E
+		    ON A.MEM_ID = E.MEM_ID
+		    WHERE A.MEM_OPEN_RESUME = '1'
+		    AND B.RESUME_REP = 'RRY01002'
+    		AND E.ROLE = 'ROLE_MEMBER'
+    		
+			<if test="wishJobs != null and wishJobs.size() > 0">
+			    AND A.MEM_WISH_JOB IN 
+			    <foreach collection="wishJobs" item="job" open="(" separator="," close=")">
+			        #{job}
+			    </foreach>
+			</if>
+			
+			<if test="livingLocation != null and livingLocation.size() > 0">
+			    AND (
+			    <foreach collection="livingLocation" item="location" open="(" separator=" OR " close=")">
+			       A.MEM_ADDR LIKE '%' || #{location} || '%'
+			    </foreach>
+			    )
+			</if>
+			
+    		ORDER BY D.ACDMCR_GRDTN_DT DESC, C.COMPANY_LEAVE_DT DESC NULLS LAST
+		) T
+		WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * #{size}) + 1 AND (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getRecommMemCount" parameterType="hashMap" resultType="int">
+	
+		SELECT COUNT(*)
+		FROM
+		(
+		SELECT COUNT(*)
+				FROM
+				(
+				    SELECT 
+				        DENSE_RANK() OVER(<include refid="order"></include>) RNUM  ,
+				        A.MEM_ID, 
+				        A.MEM_NM, 
+				        A.MEM_POSTNO, 
+				        A.MEM_ADDR, 
+				        A.MEM_ADDR2, 
+				        A.MEM_TEL, 
+				        A.MEM_REG_DT,
+				        A.MEM_OPEN_RESUME, 
+				        A.MEM_STATE_CD, 
+				        A.MEM_BIRTH, 
+				        A.MEM_GEN, 
+				        A.MEM_EMAIL, 
+				        A.MEM_CD, 
+				        A.MEM_YN, 
+				        A.MEM_INTRCN, 
+				        A.MEM_NCNM, 
+				        A.MEM_AF_ID, 
+				        A.MEM_WISH_JOB_CATE, 
+				        A.MEM_WISH_JOB,
+				        A.ENABLED, 
+				        A.MEM_INT_WORD, 
+				        A.MEM_MG_POSITION,
+				        B.RESUME_NO, 
+				        B.RESUME_TITLE, 
+				        B.RESUME_TEMP, 
+				        B.RESUME_REP, 
+				        B.RESUME_CD, 
+				        B.RESUME_AF_ID, 
+				        B.RESUME_YN, 
+				        B.RESUME_SKILL, 
+				        B.RESUME_OCCP, 
+				        B.RESUME_JOB,
+				        C.CAREER_NO, 
+				        C.COMPANY_NM, 
+				        C.COMPANY_ENTRANCE_DT, 
+				        C.COMPANY_LEAVE_DT, 
+		        		TO_DATE(C.COMPANY_LEAVE_DT, 'YYYY-MM-DD') - TO_DATE( C.COMPANY_ENTRANCE_DT, 'YYYY-MM-DD') AS WORK_PERIOD,
+				        C.COMPANY_DEPT, 
+				        C.COMPANY_SALARY, 
+				        C.COMPANY_DET_CAREER, 
+				        C.COMPANY_POSITION, 
+				        C.COMPANY_JOB, 
+				        C.CAREER_SEQ,
+				        D.ACDMCR_NO, 
+				        D.ACDMCR_NM, 
+				        D.ACDMCR_MAJOR, 
+				        D.ACDMCR_DEGREE, 
+				        D.ACDMCR_ENTRANCE_DT, 
+				        D.ACDMCR_GRDTN_DT, 
+				        D.ACDMCR_ATTND, 
+				        D.ACDMCR_POINT, 
+				        D.ACDMCR_YN,
+		        		E.ROLE
+				    FROM MEMBER A
+				    LEFT OUTER JOIN RESUME B
+				    ON A.MEM_ID = B.MEM_ID
+				    LEFT OUTER JOIN CAREER C
+				    ON B.RESUME_NO = C.RESUME_NO
+				    LEFT OUTER JOIN ACADEMIC_CAREER D
+				    ON A.MEM_ID = D.MEM_ID
+				    LEFT OUTER JOIN AUTH E
+				    ON A.MEM_ID = E.MEM_ID
+				    WHERE A.MEM_OPEN_RESUME = '1'
+				    AND B.RESUME_REP = 'RRY01002'
+		    		AND E.ROLE = 'ROLE_MEMBER'
+		    		
+					<if test="wishJobs != null and wishJobs.size() > 0">
+					    AND A.MEM_WISH_JOB IN 
+					    <foreach collection="wishJobs" item="job" open="(" separator="," close=")">
+					        #{job}
+					    </foreach>
+					</if>
+					
+					<if test="livingLocation != null and livingLocation.size() > 0">
+					    AND (
+					    <foreach collection="livingLocation" item="location" open="(" separator=" OR " close=")">
+					       A.MEM_ADDR LIKE '%' || #{location} || '%'
+					    </foreach>
+					    )
+					</if>
+					
+		    		ORDER BY D.ACDMCR_GRDTN_DT DESC, C.COMPANY_LEAVE_DT DESC NULLS LAST
+				) T
+        		GROUP BY MEM_ID
+			)
+	</select>
+	
+	<!-- 기업 파일첨부함 목록 -->
+	<select id="atchDtList" parameterType="String" resultType="atchFileDetailVO">
+	/* ATCH DETAIL LIST */
+	
+		SELECT	AFD_SEQ,
+		     	AF_ID,
+		     	AFD_ORIGIN_NM,
+		     	AFD_SAVE_NM,
+		     	AFD_FILE_SIZE,
+		     	AFD_SAVE_PATH,
+		     	AFD_EXTSN,
+		     	AFD_CNTNT,
+		     	AFD_UPLOAD_DT
+		     	
+		FROM 	ATCH_FILE_DETAIL
+		
+		WHERE AF_ID = #{memId}
+		
+	</select>
+	
+	<select id="atchFileDtVO" parameterType="String" resultType="atchFileDetailVO">
+	
+		SELECT	AFD_SEQ,
+		     	AF_ID,
+		     	AFD_ORIGIN_NM,
+		     	AFD_SAVE_NM,
+		     	AFD_FILE_SIZE,
+		     	AFD_SAVE_PATH,
+		     	AFD_EXTSN,
+		     	AFD_CNTNT,
+		     	AFD_UPLOAD_DT
+		     	
+		FROM 	ATCH_FILE_DETAIL
+		
+		WHERE 	AF_ID = #{memId}
+	
+	</select>
+	
+	<select id="selectConAprvVO" parameterType="hashMap" resultType="ConAprvVO">
+		SELECT 
+		      MEM_ID
+		    , RESUME_NO
+		    , PTFL_NO
+		    , CON_APRV_DT
+		    , CON_APRV_UPDT
+		FROM CON_APRV
+		WHERE MEM_ID = #{memId}
+		AND   RESUME_NO = #{resumeNo}
+	</select>
+	
+	<delete id="memberDeleteConAprv" parameterType="hashMap">
+		DELETE FROM 
+			CON_APRV
+		WHERE MEM_ID = #{memId}
+		AND	  RESUME_NO = #{resumeNo}
+	</delete>
+	
+	<insert id="insertConAprv" parameterType="hashMap">
+		INSERT INTO
+    		CON_APRV(
+    			MEM_ID, RESUME_NO, PTFL_NO, CON_APRV_DT, CON_APRV_UPDT
+    			)
+		VALUES(
+			#{tempMemId}, #{tempResumeNo}, #{tempPtflNo}, #{tempConAprvDt}, #{tempConAprvUpdt}
+			)
+	</insert>
+
+	<select id="getMemberById" parameterType="String" resultType="memberVO">
+		SELECT * FROM MEMBER
+		WHERE MEM_ID=#{memId}
+	</select>
+	
+	
+</mapper>

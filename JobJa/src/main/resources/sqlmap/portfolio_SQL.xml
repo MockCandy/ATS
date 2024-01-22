@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.member.mapper.PortfolioMapper">
+
+	<sql id="where">
+		<if test="keyword != null and keyword != '' and keyword != 'null'">
+			AND  (PTFL_TITLE LIKE '%' || #{keyword} || '%')
+	    </if>  
+	</sql>
+	
+	<sql id="currentPage">
+		<if test="currentPage!=null and currentPage!=''">
+			AND T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size}-1) AND (#{currentPage} * #{size})
+	    </if>  
+	</sql>
+
+	<resultMap type="portfolioVO" id="portfolioMap">
+		<id property= "ptflNo"  column= "PTFL_NO" />
+		<id property= "memId"  column= "MEM_ID" />
+		<result property= "ptflTitle"  column= "PTFL_TITLE" />
+		<result property= "ptflWritingDt"  column= "PTFL_WRITING_DT" />
+		<result property= "ptflUpdtDt"  column= "PTFL_UPDT_DT" />
+		<result property= "gubun"  column= "GUBUN" />
+		<result property="rnum" column="RNUM"/>
+		<association property="portfolioBasicVO" resultMap="portBasicMap"></association>
+		<collection property="portfolioFreeVOList" resultMap="portFreeMap"></collection>
+	</resultMap>
+	
+	<resultMap type="portBasicVO" id="portBasicMap">
+		<result property= "ptflNo"  column= "PTFL_NO" />
+		<result property= "memId"  column= "MEM_ID" />
+		<result property= "ptflGrowth"  column= "PTFL_GROWTH" />
+		<result property= "ptflMotive"  column= "PTFL_MOTIVE" />
+		<result property= "ptflPersonality"  column= "PTFL_PERSONALITY" />
+		<result property= "ptflJobExp"  column= "PTFL_JOB_EXP" />
+		<result property= "ptflProjExp"  column= "PTFL_PROJ_EXP" />
+		<result property= "ptflAspirations"  column= "PTFL_ASPIRATIONS" />
+		<result property= "ptflTitle"  column= "PTFL_TITLE" />
+	</resultMap>
+	
+	<resultMap type="portFreeVO" id="portFreeMap">
+		<result property= "ptflNo"  column= "PTFL_NO" />
+		<result property= "memId"  column= "MEM_ID" />
+		<result property= "ptflFreeq"  column= "PTFL_FREEQ" />
+		<result property= "ptflFreea"  column= "PTFL_FREEA" />
+		<result property= "ptflTitle"  column= "PTFL_TITLE" />
+	</resultMap>
+
+	<!-- 자기소개서 목록 -->
+	<select id="list" parameterType="hashMap" resultMap="portfolioMap">
+	/* portfolio list */
+	
+		SELECT T.*
+		FROM
+		(
+		    SELECT DENSE_RANK() OVER(ORDER BY U.PTFL_UPDT_DT DESC) RNUM, U.*
+		    FROM
+		    (
+		        SELECT  DENSE_RANK() OVER(ORDER BY A.PTFL_UPDT_DT DESC) RNUM1,
+		                A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT, 'BASIC' GUBUN
+		        FROM 	PORTFOLIO A, PORTFOLIO_BASIC B
+		        WHERE 	A.PTFL_NO = B.PTFL_NO
+		        AND     A.MEM_ID = #{memId}
+		        
+		        UNION ALL
+		        
+		        SELECT 	DENSE_RANK() OVER(ORDER BY A.PTFL_UPDT_DT DESC) RNUM2,
+		                A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT, 'FREE' GUBUN
+		        FROM 	PORTFOLIO A, PORTFOLIO_FREE B
+		        WHERE   A.PTFL_NO = B.PTFL_NO
+		        AND     A.MEM_ID = #{memId}
+		        
+		    	<include refid="where"></include>
+		    	
+		    ) U
+		) T	
+		
+		WHERE 1=1
+		<include refid="currentPage"></include>
+		
+
+	</select>
+	
+	<!-- 전체행의 수(검색 포함) -->
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+
+		SELECT COUNT(*) 
+		FROM (
+			SELECT COUNT(*)
+			FROM
+			(
+			    SELECT DENSE_RANK() OVER(ORDER BY U.PTFL_UPDT_DT DESC) RNUM, U.*
+			    FROM
+			    (
+			        SELECT  DENSE_RANK() OVER(ORDER BY A.PTFL_UPDT_DT DESC) RNUM1,
+			                A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT, 'BASIC' GUBUN
+			        FROM 	PORTFOLIO A, PORTFOLIO_BASIC B
+			        WHERE 	A.PTFL_NO = B.PTFL_NO
+			        AND     A.MEM_ID = #{memId}
+	
+			        UNION ALL
+	
+			        SELECT 	DENSE_RANK() OVER(ORDER BY A.PTFL_UPDT_DT DESC) RNUM2,
+			                A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT, 'FREE' GUBUN
+			        FROM 	PORTFOLIO A, PORTFOLIO_FREE B
+			        WHERE   A.PTFL_NO = B.PTFL_NO
+			        AND     A.MEM_ID = #{memId}
+	
+	                
+			    ) U
+			) T	
+	
+			WHERE 1=1
+	        GROUP BY RNUM
+		)
+		
+	</select>
+	
+	<!-- 다음 기본키 값 가져오기 -->
+	<select id="getPtflNo" resultType="String">
+
+		 SELECT 'PTF' || TO_CHAR(COALESCE(MAX(TO_NUMBER(SUBSTR(PTFL_NO, 4))),0) + 1, 'FM00000')
+		 FROM PORTFOLIO
+
+	</select>
+	
+	<!-- 자기소개서 등록 -->
+	
+	<!-- portfolioVO 추가
+	PortfolioVO(ptflNo=null, memId=a111, ptflTitle=자기소개서 제목, ptflWritingDt=null, ptflUpdtDt=null, rnum=null, uploadFile=null, portfolioBasicVO=null, portfolioFreeVOList=[
+		PortfolioFreeVO(ptflNo=null, memId=null, ptflFreeq=질문1, ptflFreea=답변2), 
+		PortfolioFreeVO(ptflNo=null, memId=null, ptflFreeq=질문2, ptflFreea=답변2)])
+	 -->
+	<insert id="createForm" parameterType="portfolioVO">
+	/* PortfolioCreate */
+		<!-- ptflNo : PTF00010 -->
+		<selectKey resultType="String" order="BEFORE" keyProperty="ptflNo">
+			SELECT 'PTF' || TO_CHAR(COALESCE(MAX(TO_NUMBER(SUBSTR(PTFL_NO, 4))),0) + 1, 'FM00000')
+			FROM PORTFOLIO
+		</selectKey>
+		
+	    INSERT INTO PORTFOLIO (
+	    			PTFL_NO, MEM_ID, PTFL_TITLE,
+	    			PTFL_WRITING_DT, PTFL_UPDT_DT)
+	    VALUES 		(#{ptflNo}, #{memId}, #{ptflTitle}, SYSDATE, SYSDATE)
+	    
+	</insert>
+	
+	<!-- PortfolioBasicVO 추가 -->
+	<insert id="portBasicCreate" parameterType="portfolioVO">
+	/* PortBasicCreate */
+	
+	    INSERT INTO PORTFOLIO_BASIC (
+		    		PTFL_NO, MEM_ID, PTFL_GROWTH, PTFL_MOTIVE,
+		    		PTFL_PERSONALITY, PTFL_JOB_EXP, PTFL_PROJ_EXP, PTFL_ASPIRATIONS)
+	    VALUES 		(#{ptflNo}, #{memId}, #{ptflGrowth}, #{ptflMotive}, #{ptflPersonality},
+	    			#{ptflJobExp}, #{ptflProjExp}, #{ptflAspirations})
+	    			
+	</insert>
+	
+	<!-- PortfolioFreeVO 추가
+	PortfolioFreeVO(ptflNo=PTF00010, memId=a111, ptflFreeq=질문1, ptflFreea=답변2),
+	 -->
+	<insert id="portFreeCreate" parameterType="portfolioVO">
+	/* PortFreeCreate */
+	
+	    INSERT INTO PORTFOLIO_FREE (PTFL_NO, MEM_ID, PTFL_FREEQ, PTFL_FREEA)
+	    VALUES (#{ptflNo}, #{memId}, #{ptflFreeq}, #{ptflFreea})
+	    
+	</insert>
+	
+	<!-- PortfolioFree 테이블 데이터 삭제 -->
+	<delete id="portFreeDelete" parameterType="portfolioVO">
+		DELETE FROM PORTFOLIO_FREE
+		WHERE 	PTFL_NO 	 = #{ptflNo}
+	</delete>
+	
+	
+	<!-- 자기소개서 상세보기 -->
+	<select id="detail" parameterType="String" resultMap="portfolioMap">
+		/* portfolio detail */
+		
+		SELECT  A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT,
+		        B.PTFL_GROWTH, B.PTFL_MOTIVE, B.PTFL_PERSONALITY,
+		        B.PTFL_JOB_EXP, B.PTFL_PROJ_EXP, B.PTFL_ASPIRATIONS
+		FROM    PORTFOLIO A, PORTFOLIO_BASIC B
+		WHERE   A.PTFL_NO = B.PTFL_NO
+		AND     A.PTFL_NO = #{ptflNo}	
+
+	</select>
+	
+	<!-- 자기소개서 자유양식 상세보기 -->
+	<select id="freeDetail" parameterType="String" resultMap="portfolioMap">
+		/* portfolio freeDetail */
+		
+		SELECT  A.PTFL_NO, A.MEM_ID, A.PTFL_TITLE, A.PTFL_WRITING_DT, A.PTFL_UPDT_DT,
+		        B.PTFL_FREEQ, B.PTFL_FREEA
+		FROM    PORTFOLIO A, PORTFOLIO_FREE B
+		WHERE   A.PTFL_NO = B.PTFL_NO
+		AND     A.PTFL_NO = #{ptflNo}	
+
+	</select>
+	
+	
+	<!-- 자기소개서 공통 수정 
+	ptflNo=PTF00020, memId=b111, ptflTitle=11122,
+	-->
+	<update id="update" parameterType="portfolioVO">
+	/* portfolio updatePost */
+	
+	
+		UPDATE 	PORTFOLIO
+		SET		PTFL_TITLE	 = #{ptflTitle},
+				PTFL_UPDT_DT = SYSDATE
+		WHERE 	PTFL_NO 	 = #{ptflNo}	
+	
+	</update>
+	
+	<!-- 자기소개서 기본양식 수정 -->
+	<update id="portBasicUpdate" parameterType="portfolioVO">
+	/* PORTFOLIO_BASIC UPDATEPOST */
+	
+		UPDATE 	PORTFOLIO_BASIC
+		SET		PTFL_GROWTH				= #{ptflGrowth},
+				PTFL_MOTIVE				= #{ptflMotive},
+				PTFL_PERSONALITY		= #{ptflPersonality},
+				PTFL_JOB_EXP			= #{ptflJobExp},
+				PTFL_PROJ_EXP			= #{ptflProjExp},
+				PTFL_ASPIRATIONS		= #{ptflAspirations}
+		WHERE 	PTFL_NO 				= #{ptflNo}	
+	
+	</update>
+
+	<!-- 자기소개서 자유양식 수정 
+	//PortfolioFreeVO(ptflNo=PTF00020, memId=b111, ptflFreeq=1, ptflFreea=11),
+	-->
+	<update id="portFreeUpdate" parameterType="portFreeVO" >
+	/* PORTFOLIO_FREE UPDATEPOST */
+
+		UPDATE  PORTFOLIO_FREE
+		
+		SET		PTFL_FREEQ	 = #{ptflFreeq},
+				PTFL_FREEA	 = #{ptflFreea}
+		WHERE 	PTFL_NO 	 = #{ptflNo}	
+	
+	</update>
+	
+	<!-- 자기소개서 삭제 -->	
+	<delete id="deletePost" parameterType="portfolioVO">
+	
+		DELETE FROM PORTFOLIO
+		WHERE PTFL_NO = #{ptflNo}
+		
+	</delete>
+	
+	<!-- 마이페이지 상담사신청 : 자기소개서 가져오기. -->
+	<select id="myPortfolio" parameterType="String" resultType="portfolioVO">
+		SELECT
+		        PTFL_NO
+		      , MEM_ID
+		      , PTFL_TITLE
+		      , PTFL_WRITING_DT
+		      , PTFL_UPDT_DT
+		FROM    PORTFOLIO
+		WHERE   MEM_ID = #{memId}
+	</select>
+	
+	<!-- 마이페이지 상담사신청 : 내가 선택한 자기소개서 가져오기. -->
+	<select id="getCheckPortfolio" parameterType="String" resultType="portfolioVO">
+		SELECT
+				PTFL_NO
+		      , PTFL_TITLE
+		      , PTFL_WRITING_DT
+		      , PTFL_UPDT_DT
+		FROM PORTFOLIO
+		WHERE PTFL_NO = #{ptflNo}
+	</select>
+	
+	<!-- 자기소개서(베이직) 모달 -->
+	<select id="appPortfolioBasic" parameterType="portBasicVO" resultType="portBasicVO">
+	
+		SELECT A.PTFL_NO, A.MEM_ID, A.PTFL_GROWTH, A.PTFL_MOTIVE, A.PTFL_PERSONALITY, A.PTFL_JOB_EXP, A.PTFL_PROJ_EXP, A.PTFL_ASPIRATIONS,
+        (SELECT B.PTFL_TITLE FROM PORTFOLIO B WHERE B.PTFL_NO = A.PTFL_NO) AS PTFL_TITLE
+		FROM   PORTFOLIO_BASIC A
+		WHERE  PTFL_NO = #{ptflNo}
+		
+	</select> 
+	
+	<!-- 자기소개서(프리) 모달 -->
+	<select id="appPortfolioFree" parameterType="portFreeVO" resultType="portFreeVO">
+	
+		SELECT 	A.PTFL_NO, A.MEM_ID, A.PTFL_FREEQ, A.PTFL_FREEA,
+        		(SELECT B.PTFL_TITLE FROM PORTFOLIO B WHERE B.PTFL_NO = A.PTFL_NO) AS PTFL_TITLE
+		FROM   	PORTFOLIO_FREE A
+		WHERE  	PTFL_NO = #{ptflNo}
+		
+	</select> 
+	
+</mapper>

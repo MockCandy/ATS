@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.mypage.member.mapper.MemFullCalendarMapper">
+
+   <select id="getEvents" parameterType="String" resultMap="memFullCalendarMap">
+    SELECT 
+	            SCHERDULE_ID
+	          , MEM_ID
+	          , SCHEDULE_TITLE
+	          , TO_CHAR(SCHEDULE_STDT, 'YYYY-MM-DD HH24:MI') AS SCHEDULE_STDT
+	          , TO_CHAR(SCHEDULE_EDDT, 'YYYY-MM-DD HH24:MI') AS SCHEDULE_EDDT
+<!-- 			  , SCHEDULE_STDT -->
+<!-- 			  , SCHEDULE_EDDT -->
+	          , SCHDULE_ALLDAY
+	          , SCHEDULE_TYPE
+   FROM         SCHEDULE
+   WHERE      MEM_ID = #{memId}
+   </select>
+   
+   <!-- 일정 체크 
+     시작이 종료보다 작고 종료는 시작보다 큰 경우
+   -->
+   <select id="addEventCheck" parameterType="memFullCalendarVO" resultType="int">
+   	<![CDATA[
+   	SELECT  COUNT(*)
+	FROM    SCHEDULE
+	WHERE   MEM_ID = #{memId}
+	AND     SCHEDULE_STDT < #{scheduleEddt} AND SCHEDULE_EDDT > #{scheduleStdt}
+	]]>
+   </select>
+   
+   <insert id="addEvent" parameterType="memFullCalendarVO">
+	   	<selectKey resultType="String" order="BEFORE" keyProperty="scherduleId">
+	   	SELECT 'MSC' || LPAD(NVL(TO_CHAR(TO_NUMBER(SUBSTR(MAX(SCHERDULE_ID), 4)) + 1), '001'), 3, '0')
+		FROM SCHEDULE
+	   	</selectKey>
+		INSERT INTO  SCHEDULE(
+					 SCHERDULE_ID
+				   , MEM_ID
+				   , SCHEDULE_TITLE
+				   , SCHEDULE_STDT
+				   , SCHEDULE_EDDT
+				   , SCHDULE_ALLDAY
+				   , SCHEDULE_TYPE)
+		VALUES(
+				     #{scherduleId}
+				   , #{memId}
+				   , #{scheduleTitle}
+				   , #{scheduleStdt}
+				   , #{scheduleEddt}
+				   , #{schduleAllday}
+				   , #{scheduleType}
+		)
+   	
+   </insert>
+   
+   <update id="updateEvent" parameterType="memFullCalendarVO">
+   		UPDATE   SCHEDULE
+   		   SET   
+   				 SCHEDULE_STDT  =   #{scheduleStdt},
+   				 SCHEDULE_EDDT  =   #{scheduleEddt}
+   		WHERE    SCHERDULE_ID   =   #{scherduleId}
+   </update>
+   
+   <delete id="deleteEvent" parameterType="String">
+   		DELETE FROM SCHEDULE
+   		WHERE  SCHERDULE_ID = #{scherduleId}
+   </delete>
+   
+   <resultMap type="Map" id="memFullCalendarMap">
+      <result property="scherduleId" column="SCHERDULE_ID"/>
+      <result property="memId" column="MEM_ID"/>
+      <result property="scheduleTitle" column="SCHEDULE_TITLE"/>
+      <result property="scheduleStdt" column="SCHEDULE_STDT"/>
+      <result property="scheduleEddt" column="SCHEDULE_EDDT"/>
+      <result property="schduleAllday" column="SCHDULE_ALLDAY"/>
+      <result property="scheduleType" column="SCHEDULE_TYPE"/>
+   </resultMap>
+   
+</mapper>

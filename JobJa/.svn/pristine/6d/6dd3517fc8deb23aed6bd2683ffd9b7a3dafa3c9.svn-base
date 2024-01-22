@@ -1,0 +1,551 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+
+<link rel="stylesheet" href="/resources/css/resume.css">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+<script src="/resources/js/jspdf.min.js"></script>
+<script src="/resources/js/html2canvas.js"></script>
+
+
+<style>
+.mypage-body-con {
+	background-color: #fff;
+	border-radius: 30px;
+	padding: 24px;
+	height: 800px;
+}
+
+.body-sub-title {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.title-hr {
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+}
+</style>
+
+<form action="/mypageMem/memberUpdateResume" method="get" id="frm">
+	<input type="hidden" name="memId" value="${memberVO.memId}" /> <input
+		type="hidden" name="resumeNo" value="${resumeVOList[0].resumeNo}" />
+	<div class="mypage-body-con">
+		<div class="body-sub-con">
+
+			<div class="page-main-box">
+				<p class="main-h1">이력서 상세</p>
+				<!-- 처음 회원정보 불러오는  시작 div -->
+				<div class="inner-box">
+					<div class="rsm_hgroup rsm-vertical-center">
+						<h3 class="rsm_ttl">
+							<span class="rsm_ttl__valid">*</span>기본 정보
+						</h3>
+					</div>
+					<hr />
+
+					<div class="rsm_section">
+						<div class="photo_use_row">
+							<div class="input_resume_basic photo_use_basic">
+								<div class="set1">
+									<input type="text" class="input_resume_name_kr"
+										placeholder="이름" maxlength="15" value="${memberVO.memNm}">
+								</div>
+								<div class="set2">
+									<div class="with_icon">
+										<i class="fa-regular fa-envelope"></i> <input type="text"
+											class="input_resume_email" placeholder="이메일" maxlength="50"
+											value="${memberVO.memEmail}">
+									</div>
+								</div>
+								<div class="set2">
+									<div class="with_icon">
+										<i class="fa-solid fa-mobile-screen"></i> <input type="text"
+											class="input_resume_phone" placeholder="전화번호" minlength="10"
+											maxlength="11" value="${memberVO.memTel}">
+									</div>
+								</div>
+
+								<div class="set2">
+									<div class="with_icon">
+										<i class="fa-solid fa-person-half-dress"></i>
+										<c:if test="${memberVO.memGen == '1'}">
+											<input type="text" class="input_resume_gender" value="남자"
+												readonly>
+										</c:if>
+										<c:if test="${memberVO.memGen == '0'}">
+											<input type="text" class="input_resume_gender" value="여자"
+												readonly>
+										</c:if>
+
+										<i class="fa-regular fa-calendar-days"></i>
+										<div style="width: 300px;">
+											<fmt:formatDate pattern="yyyy년  MM월 dd일"
+												value="${memberVO.memBirth}" />
+										</div>
+									</div>
+								</div>
+								<div class="resume_addphoto" for="resume_addphoto_id">
+									<div class="resume_addphoto__no-image">
+										<i class="jp-image">사진불러올거임</i>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="rsm_default_cont">
+						<div class="rsm_cont_bd">
+							<div class="rsm_section">
+								<div class="rsm_hgroup">
+									<div class="rsm-vertical-center">
+										<h3 class="rsm_ttl">
+											<span class="rsm_ttl__valid">*</span>주소
+										</h3>
+									</div>
+								</div>
+								<hr />
+								<div class="rsm_body">
+									<div class="rsm_half_cell" style="margin: 10px;">
+										<label class="cssel_ty1"><a class="btn_sel false">${memberVO.memAddr},
+												${memberVO.memAddr2}</a> </label>
+									</div>
+								</div>
+							</div>
+							<div class="rsm_section">
+								<div class="rsm_hgroup">
+									<div class="rsm-vertical-center">
+										<h3 class="rsm_ttl">
+											<span class="rsm_ttl__valid">*</span>소개글
+										</h3>
+									</div>
+								</div>
+								<hr />
+								<div class="rsm_body">
+									<div class="rsm_half_cell" style="margin: 10px;">
+										<label class="cssel_ty1"><a class="btn_sel false">${memberVO.memIntrcn}</a>
+										</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 처음 회원정보 불러오는  끝 div -->
+
+				<div class="inner-box">
+					<div>
+						<input type="text" name="${resumeVOList[0].resumeTitle}"
+							value="${resumeVOList[0].resumeTitle}">
+					</div>
+					<div style="margin-bottom: 40px;">
+						<div class="rsm_hgroup">
+							<div class="rsm-vertical-center">
+								<h3 class="rsm_ttl">내 업무 및 스킬</h3>
+							</div>
+						</div>
+						<hr />
+						<div class="rsm_body" style="margin-top: 20px;">
+							<div class="tagging_wrap">
+								<div class="input_group frow_ty1 rtag_auto_list">
+									<c:set var="skills" value="${resumeVOList[0].resumeSkill}" />
+									<c:forEach var="skill" items="${fn:split(skills , ',')}">
+										<p>내 스킬 : ${skill}</p>
+									</c:forEach>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="rsm_hgroup">
+						<div class="rsm-vertical-center"">
+							<h3 class="rsm_ttl">경력(인턴 포함)</h3>
+						</div>
+					</div>
+					<hr />
+					<!-- 경력 시작 -->
+					<c:forEach var="careerVOList" items="${careerVOList}"
+						varStatus="stat">
+						<div class="career-div-career" id="career-div-career"
+							style="margin-top: 20px;">
+							<div class="flex">
+								<div class="career-left-div">
+									<div class="group-date">
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${careerVOList.companyLeaveDt}" />
+										<span>~</span>
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${careerVOList.companyLeaveDt}" />
+									</div>
+									<div class="group_check__box">
+										<label class="btn_check"> <input name="check_new"
+											class="cscheck" type="checkbox"> <span
+											class="check_txt">재직중</span>
+										</label>
+									</div>
+								</div>
+								<div class="career-right-div" id="career-right-divv">
+									<div class="enterprise-name">
+										<input class="input_resume_text1" placeholder="기업명"
+											type="text" value="${careerVOList.companyNm}">
+									</div>
+									<div class="enterprise-dept-position">
+										<div class="enterprise-dept">
+											<input class="input_ent_dept" placeholder="부서" type="text"
+												value="${careerVOList.companyDept}">
+										</div>
+										<div class="enterprise-position">
+											<input class="input_ent_position" placeholder="직책"
+												type="text" value="${careerVOList.companyPosition}">
+										</div>
+									</div>
+									<div class="enterprise-job-sal">
+										<div>
+											<input class="input_ent_job" placeholder="직무" type="text"
+												value="${careerVOList.companyJob}">
+										</div>
+										<div>
+											<input class="input_ent_salary" placeholder="연봉(선택사항)"
+												type="text" value="${careerVOList.companySalary}">
+										</div>
+									</div>
+									<div class="flexible_textarea">
+										<textarea class="medit"><c:out
+												value="${fn:trim(careerVOList.companyDetCareer)}" /></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+
+					<div class="rsm_hgroup" style="margin-top: 80px;">
+						<div class="rsm-vertical-center">
+							<h3 class="rsm_ttl">학력</h3>
+						</div>
+					</div>
+					<hr style="margin-bottom: 30px;" />
+					<!-- 학력 -->
+					<c:forEach var="academicCareerVOList"
+						items="${academicCareerVOList}">
+						<div class="acd-career-div">
+							<div class="flex">
+								<div class="acd-career-left-div">
+									<div class="group-date">
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${academicCareerVOList.acdmcrEntranceDt}" />
+										<span>~</span>
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${academicCareerVOList.acdmcrGrdtnDt}" />
+									</div>
+								</div>
+								<div class="acd-career-right-div">
+									<div class="enterprise-name">
+										<input class="input_resume_text1" placeholder="학교명"
+											type="text" value="${academicCareerVOList.acdmcrNm}">
+									</div>
+									<div class="enterprise-dept-position">
+										<div class="enterprise-dept">
+											<input class="input_ent_dept" placeholder="전공" type="text"
+												value="${academicCareerVOList.acdmcrMajor}">
+										</div>
+										<div class="enterprise-position">
+											<input class="input_ent_position" placeholder="학위"
+												type="text" value="${academicCareerVOList.acdmcrDegree}">
+										</div>
+									</div>
+									<div class="enterprise-job-sal">
+										<div>
+											<input class="input_acd-score" placeholder="학점" type="text"
+												value="${academicCareerVOList.acdmcrPoint}"
+												style="text-align: center;">점
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+
+					<!-- 성과 -->
+					<div class="rsm_hgroup" style="margin-top: 80px;">
+						<div class="rsm-vertical-center">
+							<h3 class="rsm_ttl">성과</h3>
+						</div>
+					</div>
+					<hr style="margin-bottom: 30px;" />
+
+					<c:forEach var="resultVOList" items="${resultVOList}">
+						<div class="certi-career-div" id="certi-career-div">
+							<div class="flex">
+								<div class="certi-career-left-div">
+									<div class="group-date">
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${resultVOList.resultStdt}" />
+										<span>~</span>
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${resultVOList.resultEddt}" />
+									</div>
+								</div>
+								<div class="certi-career-right-div">
+									<div class="enterprise-name">
+										<input type="text" class="input_resume_text1"
+											value="${resultVOList.resultTitle}">
+									</div>
+									<div class="flexible_textarea">
+										<textarea class="medit"><c:out
+												value="${fn:trim(resultVOList.resultCntnt)}" /></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+
+					<!-- 활동 및 수상 -->
+					<div class="rsm_hgroup" style="margin-top: 80px;">
+						<div class="rsm-vertical-center">
+							<h3 class="rsm_ttl">활동 및 수상</h3>
+						</div>
+					</div>
+					<hr style="margin-bottom: 30px;" />
+					<c:forEach var="awardsVOList" items="${awardsVOList}">
+						<div class="awards-career-div" id="awards-career-div">
+							<div class="flex">
+								<div class="awards-career-left-div">
+									<div class="group-date">
+										<fmt:formatDate pattern="yyyy년  MM월 dd일"
+											value="${awardsVOList.awdDt}" />
+									</div>
+								</div>
+								<div class="awards-career-right-div">
+									<div class="enterprise-name">
+										<input class="input_resume_text1"
+											value="${awardsVOList.awdNm}">
+									</div>
+									<div class="flexible_textarea">
+										<textarea class="medit"><c:out
+												value="${fn:trim(awardsVOList.awdCntnt)}" /></textarea>
+									</div>
+									<div class="enterprise-name">
+										<input type="text" class="input_resume_text1"
+											value="${awardsVOList.awdOrg}">
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+
+					<div class="rsm_hgroup" style="margin-top: 80px;">
+						<div class="rsm-vertical-center">
+							<h3 class="rsm_ttl">어학 및 어학 상세정보</h3>
+						</div>
+					</div>
+					<hr style="margin-bottom: 30px;" />
+					<c:forEach var="languageVOList" items="${languageVOList}"
+						varStatus="stat">
+						<div class="lang-career-div">
+							<div class="flex">
+								<div class="lang-career-left-div">
+									<div class="lang-select-div">
+										<c:set var="langKind" value="${languageVOList.langKind}"></c:set>
+										<select class="lang-select"
+											name="languageVOList[${stat.index}].langKind">
+											<option value="">언어 종류를 선택해라</option>
+											<option value="한국어"
+												<c:if test="${langKind eq '한국어'}">selected</c:if>>한국어</option>
+											<option value="영어"
+												<c:if test="${langKind eq '영어'}">selected</c:if>>영어</option>
+											<option value="일본어"
+												<c:if test="${langKind eq '일본어'}">selected</c:if>>일본어</option>
+											<option value="중국어"
+												<c:if test="${langKind eq '중국어'}">selected</c:if>>중국어</option>
+											<option value="프랑스어"
+												<c:if test="${langKind eq '프랑스어'}">selected</c:if>>프랑스어</option>
+											<option value="스페인어"
+												<c:if test="${langKind eq '스페인어'}">selected</c:if>>스페인어</option>
+											<option value="아랍어"
+												<c:if test="${langKind eq '아랍어'}">selected</c:if>>아랍어</option>
+											<option value="러시아어"
+												<c:if test="${langKind eq '러시아어'}">selected</c:if>>러시아어</option>
+											<option value="기타"
+												<c:if test="${langKind eq '기타'}">selected</c:if>>기타</option>
+										</select>
+										<c:set var="langLevel" value="${languageVOList.langLevel}"></c:set>
+										<select class="lang-select"
+											name="languageVOList[${stat.index}].langLevel">
+											<option value="상"
+												<c:if test="${langLevel eq '상'}">selected</c:if>>상</option>
+											<option value="중"
+												<c:if test="${langLevel eq '중'}">selected</c:if>>중</option>
+											<option value="하"
+												<c:if test="${langLevel eq '하'}">selected</c:if>>하</option>
+										</select>
+									</div>
+								</div>
+								<div class="lang-career-right-div">
+									<c:forEach var="languageDTVOList"
+										items="${languageVOList.languageDTVOList}" varStatus="statt">
+										<div class="flex">
+											<div class="lang-det-left-div">
+												<div class="group-date">
+													<label>취득일자</label> <label>~</label> <label>만료일자</label>
+												</div>
+												<div class="group-date">
+													<fmt:formatDate pattern="yyyy년  MM월 dd일"
+														value="${languageDTVOList.langDetailAcqDt}" />
+													<span>~</span>
+													<fmt:formatDate pattern="yyyy년  MM월 dd일"
+														value="${languageDTVOList.langDetailExpDt}" />
+												</div>
+											</div>
+											<div class="lang-det-right-div">
+												<div class="enterprise-name">
+													<input type="text" class="input_resume_text1"
+														value="${languageDTVOList.langDetailScore}">
+												</div>
+												<div class="flexible_textarea">
+													<textarea class="medit"><c:out
+															value="${fn:trim(languageDTVOList.langDetailName)}" /></textarea>
+												</div>
+											</div>
+										</div>
+									</c:forEach>
+								</div>
+							</div>
+						</div>
+					</c:forEach>
+				</div>
+			</div>
+			<div class="containerd">
+				<a href="/mypageMem/memberListResume">목록가기</a>
+				<button type="button" id="btnPDFSave">PDF저장</button>
+				<button type="button" id="btnResumeRepre">대표이력서 등록</button>
+				<button type="submit" id="edit"
+					class="btn btn-primary btn-user btn-block">수정</button>
+				<button type="button" id="delete"
+					class="btn btn-primary btn-user btn-block">삭제</button>
+			</div>
+		</div>
+	</div>
+	<sec:csrfInput />
+</form>
+
+
+<script type="text/javascript">
+	$(function() {
+
+		$("#delete").on("click", function() {
+
+			$("#frm").attr("method", "POST");
+			$("#frm").attr("action", "/mypageMem/memberDeleteResume");
+
+			let result = confirm("삭제하시겠습니까?");
+
+			if (result > 0) {
+
+				$("#frm").submit();
+
+			} else {
+
+				alert("삭제가 취소되었습니다");
+
+			}
+		});
+	});
+
+	$(document).on("click", "#btnPDFSave", function() {
+		
+		const element = document.querySelector(".page-main-box");
+		
+		window.scrollTo(0,0);
+		
+		html2canvas(element).then(function(canvas) {
+            // 캔버스를 이미지로 변환
+			var imgData = canvas.toDataURL('image/png');
+            
+	        let margin = 20; // 출력 페이지 여백설정
+	        let imgWidth = 210 - (10 * 2); // 이미지 가로 길이(mm) A4 기준
+	        let pageHeight = imgWidth * 1.414;  // 출력 페이지 세로 길이 계산 A4 기준
+	        let imgHeight = canvas.height * imgWidth / canvas.width;
+	        
+	        let heightLeft = imgHeight;
+			
+			// jsPDF 객체 생성
+			var doc = new jsPDF('p', 'mm', 'a4');
+			let position = margin;
+			
+			// 이미지를 PDF에 추가
+			doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+			heightLeft -= pageHeight;
+			
+	        while (heightLeft >= 20) {
+	        	
+	            position = heightLeft - imgHeight;
+	            doc.addPage();
+	            doc.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+	            heightLeft -= pageHeight;
+	        }
+			
+	        doc.save('MyResume.pdf');
+			
+// 			var blob = pdf.output('blob');
+// 			var uploadFile = new FormData();
+// 			uploadFile.append('uploadFile', blob);
+			
+			
+// 			// 서버로 전송
+// 			$.ajax({
+// 			    type: 'POST',
+// 			    url: '/mypageMem/uploadFile',
+// 			    data: uploadFile,
+// 			    processData: false,
+// 			    contentType: false,
+// 			    enctype: 'multipart/form-data',
+// 			    beforeSend: function(xhr) {
+// 			        xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+// 			    },
+// 			    success: function(rst) {
+			    	
+// 					console.log(rst);
+// 			    },
+// 			    error: function(error) {
+// 			        console.error('오류 발생:', error);
+// 			    }
+// 			});
+		});
+		window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+	});
+	
+	$(document).on("click", '#btnResumeRepre', function() {
+		
+		let resumeNo = '${resumeVOList[0].resumeNo}';
+		let memId = '${memberVO.memId}';
+		
+		let data = {
+				"resumeNo":resumeNo,
+				"memId":memId
+		};
+		
+		console.log("data : aaaweer :" ,data)
+		
+		$.ajax({
+		    url:'/mypageMem/resumeRepreAjax',
+		    type:'POST',
+		    contentType: "application/json;charset=utf-8",
+		    data: JSON.stringify(data),
+		    beforeSend: function(xhr) {
+		        xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		    },
+		    success: function(rst) {
+		    	
+	    		alert("대표이력서 수정이 완료 됐다");
+		    }
+		});
+		
+		
+		
+	});
+</script>

@@ -1,0 +1,59 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<link rel="stylesheet" href="/resources/css/inquiry.css">
+<style>
+
+.sub-title {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+</style>
+
+<div class="cen" style="margin: 50px auto;">
+	<p class="main-h1">일대일 문의게시판</p>
+	
+		<div class="sub-title">
+			<h2 class="middle-tit"><a href="/noticeBoard/list"> 공지사항 </a></h2>
+			<h2 class="middle-tit"><a href="/boardInquiry/list"> 1:1 문의사항</a></h2>
+		</div>
+	
+	<div class="search-Box"  style="text-align: right;">
+		<div>
+			<a href="/boardInquiry/create"><button type="button" class="btn-keyword-write">글 쓰기</button></a>
+		</div>
+	
+		<form action="#" name="frm" method="get">
+			<input type="text" class="keyword" name="keyword" placeholder="검색어를 입력해주세요."/>
+			<button  type="submit" class="btn-keyword">검색</button>
+		</form>
+	</div>
+	
+	<div class="inner-box">
+		<table class="inquiry-tbl">
+			<thead>
+			<tr>
+				<th style="width:500px">제목</th>
+				<th style="width:150px">작성자</th>
+				<th style="width:350px">등록일</th>
+			</tr>
+			</thead>
+			<tbody>
+			<c:forEach var="boardInquiryVO" items="${data}">
+				<tr>
+					<td ><a href="/boardInquiry/detail?boardId=${boardInquiryVO.boardId}">${boardInquiryVO.boardTitle}</a></td>
+					<td style="text-align:center;">${boardInquiryVO.memId}</td>
+					<td style="text-align:center;"><fmt:formatDate pattern="yyyy년  MM월 dd일" value="${boardInquiryVO.wirtDt}" /></td>
+				</tr>
+			</c:forEach>
+			</tbody>
+		</table>
+		<div class="pagez">
+			${info.getPagingArea()}
+		</div>
+	</div>
+</div>

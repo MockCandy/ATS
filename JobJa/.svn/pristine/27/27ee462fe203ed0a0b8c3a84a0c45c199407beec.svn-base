@@ -1,0 +1,52 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+
+
+<form id="frm" name="frm" action="/boardInquiry/createPost" method="post" enctype="multipart/form-data">
+<input type="hidden" name="memId" value="${getCurrentLoginVO.memId}" />
+<input type="hidden" name="emplTipAfId" />
+<input type="hidden" name="boardId" value="${boardInquiryVO.boardId}" />
+<div class="cen" style="margin: auto;">
+    <div class="board">
+	    <p class="main-h1 mb-0">일대일 문의 작성</p>
+        <div class="h-div-line"></div>
+        <input id="title" name="boardTitle" type="text" class="input01 ph-tit w-100 inp-transparent" placeholder="제목을 입력해 주세요.">
+        <textarea name="boardCntnt" class="input01 w-100 ph-cont resize-none inp-transparent" style="height: 500px;" placeholder="내용을 입력해 주세요."></textarea>
+        <label for="file">
+            <div class="btn-upload">첨부파일 업로드</div>
+        </label>
+        <input type="file" name="uploadFile" id="file" onchange="previewFile()">
+        <div id="file-preview" class="mt-2"></div>
+        <div class="flex">
+            <button type="submit" class="btn btn-write ml-auto">등록하기</button>
+        </div>
+    </div>
+</div>
+<sec:csrfInput />
+</form>
+<script>
+    function previewFile() {
+        const preview = document.getElementById('file-preview');
+        const file = document.querySelector('input[type=file]').files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            const img = document.createElement('img');
+            img.src = reader.result;
+            img.style.maxWidth = '300px';
+            img.style.maxHeight = '300px';
+            img.style.width = 'auto';
+            img.style.height = 'auto';
+            preview.innerHTML = '';
+            preview.appendChild(img);
+        }
+
+        if (file) {
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '미리보기 없음';
+        }
+    }
+</script>

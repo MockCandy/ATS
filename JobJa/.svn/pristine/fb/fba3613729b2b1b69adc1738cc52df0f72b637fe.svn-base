@@ -1,0 +1,337 @@
+''
+/* 직군 선택 */
+label {
+	display: block;
+	margin: 20px 0 10px;
+	font-size: 16px;
+	color: #333;
+}
+
+.lecture_sub-tit {
+	color: #333;
+	font-size: 20px;
+	font-weight: bold;
+	display: inline-block;
+	margin: 20px;
+}
+
+.jobCategory {
+	text-align: center;
+}
+
+select {
+	/* 	text-align:left; */
+	width: 200px;
+	padding: 15px;
+	font-size: 15px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	outline: none;
+	cursor: pointer;
+}
+
+select:hover, select:focus {
+	border-color: #000000;
+}
+
+.label-select-container {
+	/*     display: flex; */
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+/* 상품  */
+.outer-container {
+	padding: 5px; /* 바깥쪽 여백 설정 */
+}
+
+.content-lecture-box {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	column-gap: 30px;
+	row-gap:50px;
+}
+
+.content-lecture-img {
+	width: 100%;
+	height: 150px;
+	border-radius: 15px 15px 0 0;
+}
+
+.content-lecture-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 10px;
+}
+
+.content-lecture-tit {
+    height: 60px;
+	color: #444;
+	font-size: 14px;
+	font-weight: bold;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.content-lecture-nmdt {
+	color: black;
+	font-size: 13px;
+}
+
+.content-lecture-nmdt img {
+	width: 20px;
+	height: 20px;
+}
+
+.content-lecture-cont p {
+	margin: 6px 0;
+}
+
+.content-lecture-item {
+	border-radius: 10px;
+	padding: 10px;
+	border: 1px solid #dbdbdb;
+	cursor: pointer;
+	position: relative;
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+.content-lecture-item:hover {
+	border-color: #5b72ec;
+}
+
+.content-lecture-skills {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	word-break: break-all;
+}
+
+/* 상품 하나하나 적용  */
+
+
+/* 이미지의 상단 둥근 테두리 적용 */
+.content-lecture-img img {
+	border-radius: 15px 15px 0 0;
+}
+
+.content-lecture-cont {
+	padding: 10px 5px;
+}
+
+/* 등록 부분 */
+.lectureCen {
+	text-align: center;
+}
+
+.lectureBoard {
+	width: 1000px;
+	margin: 60px auto;
+	background-color: #fff;
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+	margin: 60px auto;
+}
+
+.lecture-main-tit {
+	color: #288C28;
+	font-size: 28px;
+	padding:20px;
+}
+
+.lec-h-div-line {
+	height: 2px;
+	background-color: #288C28;
+}
+
+input[type="text"], input[type="file"] {
+	width: 100% !important;
+/* 	width: calc(100% - 20px); */
+	padding: 8px 15px;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	font-size: 15px;
+}
+
+.lectureCen input[type="text"],.lectureCen  input[type="file"] ,.lectureCen  textarea ,.lectureCen #cke_editor{
+	
+	margin-bottom:20px;
+}
+
+button {
+/* 	padding: 15px 30px; */
+	border: none;
+/* 	border-radius: 6px; */
+	cursor: pointer;
+	font-size: 18px;
+}
+
+button.btnInsert {
+	font-size:14px;
+	background-color: white;
+	border: 1px solid rgb(212, 212, 212);
+	border-radius: 15px;
+	cursor: pointer;
+	padding: 0 13px;
+	height: 48px;
+}
+
+button.btnReset {
+	background-color: white;
+	/* 	background-color: #0080ff; */
+	border: 1px solid rgb(212, 212, 212);
+	border-radius: 5px;
+	cursor: pointer;
+	padding: 0 13px;
+	height: 48px;
+}
+
+button.btnInsert:hover {
+	opacity: 0.8; 
+	background-color: #60BD89;
+	color: white;
+}
+
+#img-preview {
+	margin-top: 20px;
+}
+
+/* 목록 */
+
+/* 강의 등록 */
+.custom-link-style {
+	boder: 1px soild green;
+	text-decoration: none;
+	padding: 5px 7px;
+	margin: 3px;
+	background-color: #f0f0f0;
+	border-radius: 5px;
+	line-height: 1;
+}
+
+/* 수정, 삭제버튼 위치 조정 */
+.update_delete_btn {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.update-button, .delete-button {
+	background-color: white;
+	display: inline-block;
+	padding: 5px 10px;
+	border-radius: 5px;
+	text-decoration: none;
+}
+
+.update-button:hover {
+	opacity: 0.8;
+	background-color: #28A0FF;
+	color: white;
+}
+
+.delete-button:hover {
+	opacity: 0.8;
+	background-color: #60BD89;
+	color: white;
+}
+
+/* 강의 목록 메인 - -  */
+.lecture-link-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.lecture-list-item {
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.lecture-link {
+	text-decoration: none;
+	color: #333;
+	font-weight: 500;
+}
+
+.lecture-link:hover {
+	color: #41A541;
+}
+
+.lecture-icon {
+	color: #41A541;
+	margin-left: 5px;
+}
+
+.lecture-highlight {
+	color: #41A541;
+	font-weight: bold;
+}
+
+
+.jobList {
+	background-color: white;
+	cursor: pointer;
+	display: inline-block;
+	font-size:16px;
+	padding:10px 0;
+}
+
+.list-btn {
+	font-size: 14px;
+	background-color: white;
+	border-radius: 15px;
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 6px;
+}
+
+.list-btn:hover {
+	font-weight:bold;
+}
+
+.jobList:hover {
+	text-decoration: underline;
+	font-weight:bold;
+	background-color:#efefef;
+}
+
+.list-job-btn:hover {
+	background-color: rgba(143, 188, 143, 1);
+	color: white;
+}
+
+.lecture-head {
+	font-size: 30px;
+	align ="center";
+}
+
+.lecture-mid-tit {
+	margin-top: 40px;
+	text-align: center;
+}
+
+.lecture-menu {
+	width:100%;
+	display:grid;
+	grid-template-columns: repeat(4, auto);
+    background-color: white;
+    border: 1px solid #eaeaea;
+    border-top: 1px solid #444;
+}
+
+.selectJob {
+	height: 58px;
+    width: 100%;
+}
+
+.cls-tit {
+	text-align: left;
+	margin: 10px;
+}

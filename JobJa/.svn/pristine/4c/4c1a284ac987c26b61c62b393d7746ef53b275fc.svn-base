@@ -1,0 +1,10 @@
+package jobJa.myPage.member.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import jobJa.myPage.member.service.MemFullCalendarService;
+
+@Service
+public class MemFullCalendarServiceImpl implements MemFullCalendarService {
+
+}

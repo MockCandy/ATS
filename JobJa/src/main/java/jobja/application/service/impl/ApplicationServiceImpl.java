@@ -1,0 +1,83 @@
+package jobja.application.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobja.application.mapper.ApplicationMapper;
+import jobja.application.service.ApplicationService;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.member.vo.ApplicationVO;
+
+@Service
+public class ApplicationServiceImpl implements ApplicationService {
+
+	@Autowired
+	ApplicationMapper applicationMapper;
+	
+	@Override
+	public int insert(ApplicationVO applicationVO) {
+		return applicationMapper.insert(applicationVO) ;
+	}
+
+	@Override
+	public int isApplicated(Map<String, Object> appMap) {
+		return applicationMapper.isApplicated(appMap);
+	}
+	//마이페이지 내가 입사지원한 공고 목록 가져오기
+	@Override
+	public List<ApplicationVO> myApplication(Map<String, Object> map) {
+		return applicationMapper.myApplication(map);
+	}
+	
+	//마이페이지 내가 입사지원한 공고 총 갯수
+	@Override
+	public int getMyTotal(Map<String, Object> map) {
+		return applicationMapper.getMyTotal(map);
+	}
+	
+	// 지원자 상태 공통코드
+	@Override
+	public List<ComDetCodeInfoVO> comDetCdState() {
+		return applicationMapper.comDetCdState();
+	}
+
+	// 지원자 목록에 담길 채용 목록
+	@Override
+	public List<ApplicationVO> applicationVOList() {
+		return applicationMapper.applicationVOList();
+	}
+	
+	// 지원자 상태 수정
+	@Override
+	public int updatePost(ApplicationVO applicationVO) {
+		return applicationMapper.updatePost(applicationVO);
+	}
+
+	// 지원자 목록
+	@Override
+	public List<ApplicationVO> applicationList(Map<String, Object> map) {
+		return applicationMapper.applicationList(map);
+	}
+	
+	// 총 페이지 수
+	@Override
+	public int getTotal(Map<String, Object> map) {
+		return applicationMapper.getTotal(map);
+	}
+
+	// 지원자수
+	@Override
+	public int appTotal(Map<String, Object> map) {
+		return applicationMapper.appTotal(map);
+	}
+	
+	//공고당 입사지원 목록 가져오기.
+	@Override
+	public List<ApplicationVO> getOneEntapplicationList(String recruitNo) {
+		return applicationMapper.getOneEntapplicationList(recruitNo);
+	}
+	
+}

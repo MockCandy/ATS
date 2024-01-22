@@ -1,0 +1,16 @@
+package jobja.member.mapper;
+
+import jobja.member.vo.MemberAuthVO;
+
+public interface MemberAuthMapper {
+	
+	//일반회원 등록
+	public int createPost(MemberAuthVO memberAuthVO);
+	
+	//일반회원 권한주기.
+	public int createPostAuth(String memId);
+
+	//기업회원 권한주기.
+	public int createPostEntAuth(String memId);
+
+}

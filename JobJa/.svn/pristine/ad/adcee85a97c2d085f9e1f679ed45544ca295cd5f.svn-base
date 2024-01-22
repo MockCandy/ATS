@@ -1,0 +1,49 @@
+package jobja.chatting.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jobja.chatting.util.Room;
+import jobja.chatting.util.RoomService;
+
+@Controller
+@RequestMapping("/chat")
+public class VideoChatController {
+	
+	@Autowired
+    RoomService roomService;
+
+    
+    public VideoChatController(RoomService roomService) {
+        this.roomService = roomService;
+    }
+
+    @GetMapping("/create-room")
+    public String createRoom(Model model) {
+    	
+        String roomId = "room_" + System.currentTimeMillis(); // 실제로는 더 복잡한 ID 생성 방식을 사용해야 함
+        Room room = roomService.createRoom(roomId);
+        
+        model.addAttribute("roomId", room.getRoomId());
+        
+        return "chat/video-chat";
+    }
+
+    @GetMapping("/join-room/{roomId}")
+    public String joinRoom(@PathVariable String roomId, Model model) {
+        Room room = roomService.getRoom(roomId);
+
+        if (room == null) {
+            // 방이 존재하지 않을 경우 예외 처리
+            return "redirect:/error";
+        }
+
+        model.addAttribute("roomId", room.getRoomId());
+        return "chat/video-chat";
+    }
+
+}

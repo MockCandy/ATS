@@ -1,0 +1,614 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
+<link rel="stylesheet" href="/resources/css/admin.css">
+<!-- Favicons -->
+<link href="/resources/assets/img/favicon.png" rel="icon">
+<link href="/resources/assets/img/apple-touch-icon.png"
+	rel="apple-touch-icon">
+
+<!-- Google Fonts -->
+<!-- <link href="https://fonts.gstatic.com" rel="preconnect"> -->
+<!-- <link -->
+<!-- 	href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" -->
+<!-- 	rel="stylesheet"> -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Vendor CSS Files -->
+<link href="/resources/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/bootstrap-icons/bootstrap-icons.css"
+	rel="stylesheet">
+<link href="/resources/vendor/boxicons/css/boxicons.min.css"
+	rel="stylesheet">
+<link href="/resources/vendor/quill/quill.snow.css" rel="stylesheet">
+<link href="/resources/vendor/quill/quill.bubble.css" rel="stylesheet">
+<link href="/resources/vendor/remixicon/remixicon.css" rel="stylesheet">
+<link href="/resources/vendor/simple-datatables/style.css"
+	rel="stylesheet">
+
+<!-- Template Main CSS File -->
+<link href="/resources/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<style>
+.mypage-aside-con{font-family: 'Noto Sans KR', sans-serif;}
+.aside-name{padding-top:34px;}\
+.mem-ul{display:flex; align-items:center;}
+table .modaltable {
+	border-collapse: collapse;
+}
+
+.thth ,.tdtd {
+	border: 1px solid black;
+	padding: 8px;
+	text-align: left;
+}
+
+.thth{
+	background-color: #f2f2f2;
+	
+}
+
+.naesajin {
+  max-width: 150px;
+  max-height: 150px;
+  display: block;
+  margin: 0 auto; /* 수평 가운데 정렬을 위해 추가 */
+}
+
+.modal-content {
+	padding: 20px;
+	
+}
+
+.infomation {
+    font-weight: bold; /* 진하게 */
+    font-size: 20px; /* 크기 조절 */
+}
+/* 원 모양 프로필 사진 스타일 */
+.rounded-circle {
+    border-radius: 50% !important;
+}
+
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-primary {
+   --bs-border-opacity: 1; 
+    border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;
+}
+
+.modaltable {
+    margin-top: 20px; /* .modaltable 위쪽 여백 추가 */
+}
+
+#closeModal{
+	margin-top: 7px;
+}
+.modal-body{
+	text-align: center;
+}
+.warning-icon {
+    text-align: center;
+    display: flex; /* Flexbox를 사용하여 수직, 수평 가운데 정렬 */
+    align-items: center; /* 수직 가운데 정렬 */
+    justify-content: center; /* 수평 가운데 정렬 */
+    background-color: mistyrose;
+    border-radius: 50%;
+    width: 40px; /* 원의 지름으로 크기 조정 */
+    height: 40px; /* 원의 지름으로 크기 조정 */
+    margin-left: 45%;
+}
+
+.warning-icon i {
+    color: red;
+    font-size: 20px;
+    margin-top: -3px; /* 아이콘 위치 조정 */
+}
+
+.card-tools{
+	width: 100%;
+	font-size: 20px;
+}
+
+.serchbox {
+    display: flex;
+    align-items: center;
+}
+
+.serch-input {
+    margin-right: 10px; /* 원하는 간격으로 조절 */
+}
+
+.serch button {
+    margin-left: auto; /* 나머지 공간을 모두 차지하여 오른쪽에 정렬 */
+    height: 35px;
+    border-radius: 15px; /* 버튼을 더 둥글게 만들기 */
+}
+
+ .sub-title-area {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+    margin: 20px 50px -16px 50px;
+  }
+
+  .body-sub-title {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    padding-inline-start: 32px;
+    gap: 16px;
+  }
+
+  .card-title {
+    font-size: 24px;
+   }
+   
+.modal-dialog-scrollable{
+	width:800px;
+	max-width:800px;
+	margin: 50px auto;
+}
+</style>
+
+<div class="mypage-body-con">
+
+	<div class="body-sub-con">
+		<h1 class="admin-h1">상담회원</h1>
+		<form:form modelAttribute="memberVO" action="/admin/adminCounselorMyPage" method="post">
+			
+			<div class="card-tools mb-7" style="display: flex; align-items:flex-end; ">
+			
+				<h2>상담사회원
+				</h2>
+				<p class="listCount ml-12">
+					<strong>(${totalCounsel})</strong>
+				</p>
+				<div class="serchbox ml-auto">
+	                <input class="serch-input" placeholder="이름을 검색해주세요." type="text" name="memNm" id="" value="" style="margin-left: auto;"><button type="submit" class="btn btn-sm btn-secondary serch">검색</button>
+	            </div>
+			</div>
+		</form:form>
+		<div class="card-body table-responsive p-0">
+			<table class="table table-valign-middle table1">
+				<thead>
+					<tr>
+						<th>프로필</th>
+						<th>이름</th>
+						<th>아이디</th>
+						<th>회사명</th>
+						<th>전화번호</th>
+						<th>성별</th>
+						<th>가입일</th>
+						<th>이메일</th>
+						<th>비고</th>
+					</tr>
+				</thead>
+				<tbody>
+
+					<c:forEach var="memberVO" items="${memberVOList}" varStatus="stat">
+						<tr>
+							<c:choose>
+								<c:when
+									test="${memberVO.memAfId ne null && memberVO.memAfId  != ''}">
+									<td><img alt="" src="/resources/upload/${memberVO.memAfId}"></td>
+								</c:when>
+								<c:otherwise>
+									<td><img src="/resources/images/default_profile.png"
+										class="img-circle img-size-32 mr-2"></td>
+								</c:otherwise>
+							</c:choose>
+							<td><span>${memberVO.memNm}</span></td>
+							<td><span>${memberVO.memId}</span></td>
+							<td><span>${memberVO.memNcnm}</span></td>
+							<td><span>${memberVO.memTel}</span></td>
+							<c:choose>
+								<c:when test="${memberVO.memGen==1}">
+									<td><span>남성</span></td>
+								</c:when>
+								<c:when test="${memberVO.memGen==0}">
+									<td><span>여성</span></td>
+								</c:when>
+							</c:choose>
+							<td><fmt:formatDate pattern="yyyy-MM-dd"
+									value="${memberVO.memRegDt}" /></td>
+
+							<td><span>${memberVO.memEmail}</span></td>
+							<td>
+							
+							<input type="hidden" class="memberId" value="${memberVO.memId}" />
+							<input type="hidden" class="ComCodeInfoVO" value="${memberVO.memWishJobCate}">
+							<input type="hidden" class="ComDetInfoVO" value="${memberVO.memWishJob}">
+							<input type="hidden" class="ComDetInfoVO2" value="${memberVO.memIntWord}">
+							
+							<button type="button" class="detailGo btn-sm btn btn-success" data-bs-toggle="modal" data-bs-target="#modalDialogScrollable">상세보기</button>
+							<button type="button" class="deleteGO btn-sm btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDelete">삭제</button></td>
+
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+			<div class="pagez">${info.getPagingArea()}</div>
+		</div>
+	</div>
+	</div>
+	<div class="card">
+
+		<!-- 모달시작 -->
+		<div class="modal fade" id="modalDialogScrollable" tabindex="-1"
+			aria-hidden="true" style="display: none;">
+			<div class="modal-dialog modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="infomation">
+					
+					</div>
+					<img class="naesajin rounded-circle border-2 border-primary" id="naesajin" alt="회원 사진">
+					<table class="modaltable">
+						<tr>
+							<td rowspan="14"></td>
+							<th class="thth">회원 ID</th>
+							<td class="tdtd" id="memId"></td>
+						</tr>
+						<tr>
+							<th class="thth">회원 이름</th>
+							<td class="tdtd" id="memName"></td>
+						</tr>
+						<tr>
+							<th class="thth">주소</th>
+							<td class="tdtd" id="memAddr"></td>
+						</tr>
+						<tr>
+							<th class="thth">전화번호</th>
+							<td class="tdtd" id="memTel"></td>
+						</tr>
+						<tr>
+							<th class="thth">가입일</th>
+							<td class="tdtd" id="memRegDt"></td>
+						</tr>
+						<tr>
+							<th class="thth">회원분류</th>
+							<td class="tdtd" id="memStateCd"></td>
+						</tr>
+						<tr>
+							<th class="thth">생년월일</th>
+							<td class="tdtd" id="memBirth"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+						<tr>
+							<th class="thth">성별</th>
+							<td class="tdtd" id="memGen"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+						<tr>
+							<th class="thth">이메일</th>
+							<td class="tdtd" id="memEmail"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+						<tr>
+							<th class="thth">닉네임</th>
+							<td class="tdtd" id="memNcnm"></td>
+						</tr>
+						<tr>
+							<th class="thth">소개글</th>
+							<td class="tdtd" id="memIntrcn"></td>
+						</tr>
+						<tr>
+							<th class="thth">희망직군</th>
+							<td class="tdtd" id="memWishJobCate"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+						<tr>
+							<th class="thth">희망직업</th>
+							<td class="tdtd" id="memWishJob"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+						<tr>
+							<th class="thth">관심키워드</th>
+							<td class="tdtd" id="memIntWord"></td>
+						</tr>
+						<!-- 나머지 항목도 같은 형식으로 추가 -->
+					</table>
+					
+					<button id="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	
+		<div class="card">
+	    <!-- 모달 시작 -->
+	    <div class="modal fade" id="modalDelete" tabindex="-1" aria-hidden="true" style="display: none;">
+	        <div class="modal-dialog modal-dialog-scrollable">
+	            <div class="modal-content">
+	             <div class="modal-header">
+                      <h5 class="modal-title"><strong>회원 정보 삭제</strong></h5>
+                     
+                    </div>
+	               <div class="modal-body">
+					    <div class="warning-icon">
+					        <i class="fa-solid fa-exclamation" style= "color:red;"></i>
+					    </div>
+					    <span>회원 정보를 삭제하시면 다시 복구할수 없습니다.</span><br>
+					    <span>그래도 삭제하시겠습니까?</span>
+					</div>
+	                <div class="modal-footer">
+	                    <button id="confirmDelete" type="button" class="btn btn-danger dd"  data-bs-dismiss="modal">
+	                        삭제
+	                    </button>
+	                    <button id="closeModal" type="button" class="btn btn-secondary aa" data-bs-dismiss="modal">
+	                        닫기
+	                    </button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	<sec:csrfInput />
+
+	<!-- Vendor JS Files -->
+	<script src="/resources/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="/resources/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="/resources/vendor/chart.js/chart.umd.js"></script>
+	<script src="/resources/vendor/echarts/echarts.min.js"></script>
+	<script src="/resources/vendor/quill/quill.min.js"></script>
+	<script src="/resources/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="/resources/vendor/tinymce/tinymce.min.js"></script>
+	<script src="/resources/vendor/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="/resources/js/main.js"></script>
+
+	<script src="/resources/js/admin.js"></script>
+	<script>
+	
+	document.addEventListener("DOMContentLoaded", function() {
+		
+		
+	    const deleteGOButtons = document.querySelectorAll('.deleteGO');
+
+	    deleteGOButtons.forEach(button => {
+	        button.addEventListener('click', function() {
+	            // 삭제 버튼을 클릭했을 때 실행되는 코드
+	            const memberIdInput = button.parentElement.querySelector('.memberId');
+
+	            if (memberIdInput) {
+	                
+	            	const memberIdValue = memberIdInput.value; // memberId 클래스를 가진 숨겨진 입력 요소의 값
+	                
+	            	const deleteModal = document.querySelectorAll('.dd');
+	                
+	                deleteModal.forEach(deleteButton => {
+	                    
+	                	deleteButton.addEventListener('click', function(event) {
+	                        
+	                    	var data = {
+	                    			"memId" : memberIdValue
+	                    	}
+	                    	$.ajax({
+	        	                url: "/admin/deleteAjax",
+	        	                contentType: "application/json;charset=utf-8",
+	        	                data: JSON.stringify(data), 
+	        	                type: "post",
+	        	                dataType: "json",
+	        	                beforeSend: function(xhr) {
+	        	                    xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	        	                },
+	        	                success: function(result) {
+	        	                	
+	        	                	console.log(result);
+	        	                	 var redirectURL = "/admin/adminCounselorMyPage";
+	        	                	    // 현재 창을 리다이렉트할 URL로 이동
+	        	                	    window.location.href = redirectURL;
+	        	                }
+	                    });
+	                });
+	            });  
+				
+	            
+	        }  
+			
+	    });  
+	   });               
+	    const detailButtons = document.querySelectorAll('.detailGo');
+
+	    detailButtons.forEach(button => {
+	        button.addEventListener("click", function() {
+	            // 상세 정보를 가져와야 할 경우
+	            
+	           const hiddenInput = button.previousElementSibling; // 이전 형제 요소(hidden input) 가져오기
+	           if (hiddenInput) {
+	        	    const cate = hiddenInput.previousElementSibling;
+
+	        	   
+	        	        const memIntWordValue = hiddenInput.value; // 첫 번째 숨겨진 입력 요소의 값
+	        	        const memWishJobValue = cate.value; // 두 번째 숨겨진 입력 요소의 값
+						
+	        	        const thirdHiddenInput = cate.previousElementSibling;
+	        	        
+	        	        if(thirdHiddenInput){
+	        	        	const memWishJobCateValue = thirdHiddenInput.value;
+	        	        	
+	        	        	 const fourthHiddenInput = thirdHiddenInput.previousElementSibling;
+	        	        	
+	        	        	 if (fourthHiddenInput) {
+	        	        		 const memberIdValue = fourthHiddenInput.value;
+	        	                    
+	        	                    var data = {
+	        	                        "memId": memberIdValue,
+	        	                        "memWishJobCate": memWishJobCateValue,
+	        	                        "memWishJob": memWishJobValue,
+	        	                        "memIntWord" : memIntWordValue
+	        	                    }
+	        	        
+	        	       
+	        	        // memWishJobCateValue에는 ComCodeInfoVO 클래스의 값이, memberIdValue에는 memberId 클래스의 값이 저장됩니다.
+	        	        console.log("1",memWishJobCateValue);
+	        	        console.log("2",memberIdValue);
+	        	        console.log("3",memWishJobValue);
+	        	        console.log("4",memIntWordValue);
+	        	                   
+	        	        	 }
+	        	        }
+	        	        
+	           };
+
+	            $.ajax({
+	                url: "/admin/selectAjax3",
+	                contentType: "application/json;charset=utf-8",
+	                data: JSON.stringify(data), // JSON.stringify 오타 수정
+	                type: "post",
+	                dataType: "json",
+	                beforeSend: function(xhr) {
+	                    xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	                },
+	                success: function(result) {
+	                	
+	                	console.log(result);
+	                	
+	                    // 받아온 정보를 이용하여 모달에 동적으로 표시하는 작업
+	                    // 예시: 모달 내 특정 요소에 받아온 데이터 추가
+	                    const memId = document.getElementById("memId");
+	                    
+	                    const infomation = document.querySelector(".infomation"); // 해당 div를 가져옵니다.
+
+		                 // result.memId를 해당 div 안에 삽입합니다.
+		                 infomation.innerHTML = '<strong>'+ result.memId +'님의 상세정보 </strong>';
+	                	
+	                	memId.innerHTML = result.memId; // 예시로 받아온 데이터의 일부를 모달에 표시
+	                	
+	                	const sajin = $("#naesajin"); 
+	                	if(result.memAfId != null){
+	                	sajin.attr("src", "/resources/upload/"+result.memAfId);
+	                	}else{
+	                		sajin.attr("src","/resources/images/default_profile.png")
+	                	}
+	                    const memName = document.getElementById("memName");
+	                    
+	                	memName.innerHTML = result.memNm;
+	                    
+	                	const memAddr = document.getElementById("memAddr");
+	                    
+	                	memAddr.innerHTML = result.memAddr + result.memAddr2;
+	                	
+	                	const memTel = document.getElementById("memTel");
+	                    
+	                	memTel.innerHTML = result.memTel;
+	                	
+	                	const memRegDt = document.getElementById("memRegDt");
+	                    
+	                	memRegDt.innerHTML = result.memRegDt;
+	                	
+	                	const memStateCd = document.getElementById("memStateCd");
+	                    
+	                	if(result.memStateCd=='MSC01000'){
+	                		memStateCd.innerHTML = '탈퇴 회원';
+	                	}else if(result.memStateCd == 'MSC01001'){
+	                		memStateCd.innerHTML = '정상 회원';
+	                	}else{
+	                		memStateCd.innerHTML = '블랙리스트 회원';
+	                	}
+	                	
+	                	const memBirth = document.getElementById("memBirth");
+	                	
+	                	memBirth.innerHTML = result.memBirth;
+	                	
+	                	const memGen = document.getElementById("memGen");
+	                	
+	                	if(result.memGen == 1){
+	                		memGen.innerHTML = '남성';
+	                	}else{
+	                		memGen.innerHTML = '여성';
+	                	}
+	                	
+						const memEmail = document.getElementById("memEmail");
+	                    
+						memEmail.innerHTML = result.memEmail;
+						
+						const memNcnm = document.getElementById("memNcnm");
+	                    
+						memNcnm.innerHTML = result.memNcnm;
+						
+						const memIntrcn = document.getElementById("memIntrcn");
+	                    
+						memIntrcn.innerHTML = result.memIntrcn;
+						
+						const memWishJobCate = document.getElementById("memWishJobCate");
+	                    
+						memWishJobCate.innerHTML = result.comCodeInfoVO.comCdNm;
+						
+						const memWishJob = document.getElementById("memWishJob");
+	                    
+						memWishJob.innerHTML = result.comCodeInfoVO.comDetCodeInfoVO2.comDetCdNm;
+						
+						const memIntWord = document.getElementById("memIntWord");
+						
+						if(result.memIntWord == 'IKW01001'){
+							
+							memIntWord.innerHTML = '높은연봉';
+						
+						}else if(result.memIntWord =='IKW01002'){
+							
+							memIntWord.innerHTML = '자기계발지원'
+						
+						}else if(result.memIntWord =='IKW01003'){
+							
+							memIntWord.innerHTML = '워라벨';
+
+						}else if(result.memIntWord == 'IKW01004'){
+							
+							memIntWord.innerHTML = '사내문화';
+						
+						}else if(result.memIntWord == 'IKW01005'){
+							
+							memIntWord.innerHTML = '좋은동료';
+						
+						}else if(result.memIntWord == 'IKW01006'){
+							
+							memIntWord.innerHTML = '30';
+						
+						}else if(result.memIntWord == 'IKW01007'){
+							
+							memIntWord.innerHTML = '넉넉한 상여금';
+						
+						}else if(result.memIntWord == 'IKW01008'){
+							
+							memIntWord.innerHTML = '주 4.5일 근무';
+						
+						}else if(result.memIntWord == 'IKW01009'){
+							
+							memIntWord.innerHTML = '수평적인 문화';
+						
+						}else if(result.memIntWord == 'IKW01010'){
+							
+							memIntWord.innerHTML = '탄탄한 회사';
+						
+						}else if(result.memIntWord == 'IKW01011'){
+							
+							memIntWord.innerHTML = '자율 출퇴근';
+						
+						}else{
+							
+							memIntWord.innerHTML = '관심키워드없음';
+						}
+						
+						
+	                }
+	            });
+			
+	            const modal = document.getElementById("closeModal");
+	            modal.style.display = "block";
+	            document.body.style.overflow = "hidden";
+	        });
+	    });
+	});
+	
+	
+</script>

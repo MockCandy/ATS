@@ -1,0 +1,49 @@
+package jobja.board.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.board.vo.BoardClassVO;
+import jobja.common.vo.ComCodeInfoVO;
+
+
+public interface BoardClassMapper {
+
+	// 강의클래스 목록
+	public List<BoardClassVO> list(Map<String, Object> map);
+
+	// 총 페이지 수
+	public int getTotal(Map<String, Object> map);
+
+	// 강의클래스 등록
+	public int createForm(BoardClassVO brdClsVO);
+	
+	// 기본키 +1
+	public String getBoardId();
+
+	// 강의클래스 수정
+	public int updatePost(BoardClassVO boardClassVO);
+	
+	// 강의클래스 삭제
+	public int delete(BoardClassVO boardClassVO);
+	
+	// 첨부파일 삭제
+	public int delAtch(String boardId);
+
+	// 첨부파일 상세 삭제
+//	public int delAtchdt(String boardId);
+	
+	// 직군코드 불러오기
+	public List<ComCodeInfoVO> comJob();
+	
+	// 아이디 값 꺼내오기
+	public BoardClassVO selectOne(String boardId);
+
+	// 수정시 목록 가져오기
+	public BoardClassVO updatelist(String boardId);
+	
+	// 직군과 연결된 리스트들 출력 
+	public List<BoardClassVO> listAjax(String cateCd);
+
+
+}

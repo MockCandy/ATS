@@ -1,0 +1,426 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/enterprise.css">
+
+
+
+<div class="mypage-div">
+	<div class="mypage-left">
+		<div class="mypage-left-tit">채용공고</div>
+		<ul>
+			<li class="active"><a href="/entRecruit/recruitList">채용공고 목록</a></li>
+			<li><a href="/entRecruit/recruitCreate">채용공고 등록</a></li>
+		</ul>
+	</div>
+	
+	
+
+	<div class="mypage-body-con">	
+		<div class="sub-title-area">
+			<div class="body-sub-title">채용공고 목록</div>
+		</div>
+		<div class="body-sub-con">
+			<div class="recruit-sector">
+				
+				<div class="recruit-filter">
+					<div class="ml-auto flex align-center">
+						<input class="chkbox-sig" type="checkbox" 
+							<c:if test="${param.magam == 'true' }">
+								checked
+							</c:if>
+						 name="" id="includeClosed">
+						<label for="includeClosed"></label>
+						<span class="chkbox-txt p-15">마감된 공고 보기</span>
+					</div>
+					
+					<form name="filter" action="/entRecruit/recruitList" method="get">
+						<input type="hidden" name="scrollY" value="">
+						<input type="hidden" name="magam" value="${param.magam }">
+						<select name="sort" class="input01 input-sm ml-15">
+							<option <c:if test="${param.sort=='recent' }">selected</c:if> value="recent">최근 등록 순</option>
+							<option <c:if test="${param.sort=='imminent' }">selected</c:if> value="imminent">마감 임박 순</option>
+						</select>
+					</form>
+				</div>
+				
+				<div class="bold p-14 mb-16">
+					채용 공고
+					<span class="txt-sig ml-5">${fn:length(recruitVOList) }</span>
+				</div>
+				
+				<c:if test="${fn:length(recruitVOList) == 0 }">
+					<div class="bg-white mt-20">
+						<p class="empty-tit">해당 기업의 채용 진행중인 공고가 없습니다.</p>
+					</div>
+				</c:if>
+				<div class="recruit-list">
+					
+					<c:forEach var="recruitVO" items="${recruitVOList}">
+					
+						<div class="recruit-item" onclick="window.location.href='/recruit/${recruitVO.recruitNo}/detail'">
+							
+							<div class="recruit-item-top">
+								<c:choose>
+									<c:when test="${recruitVO.remainingDate == null}">
+										<div class="txt-sig p-13 bold">상시채용</div>
+									</c:when>
+									<c:when test="${recruitVO.remainingDate > 0 }">
+										<div class="txt-orange p-13 bold">D-${recruitVO.remainingDate }</div>							
+									</c:when>
+									<c:otherwise>							
+										<div class="txt-darkgray p-13 bold">마감</div>							
+									</c:otherwise>
+								</c:choose>
+								<input type="hidden" name="recruitNo" value="${recruitVO.recruitNo }">
+								
+							</div>
+							
+							<div class="recruit-item-mid">
+								<p class="rec-part">${recruitVO.recruitPart }</p>
+								<p class="rec-info">
+									${recruitVO.recruitCareer } · ${fn:replace(recruitVO.recruitSkill, '|', ' | ') }
+								</p>
+							</div>
+							
+							<div class="recruit-item-footer">
+								<div class="tags">
+									<div class="workType">
+										<c:if test="${recruitVO.recruitWorkType == 'IWS01001' }">
+											비정규직
+										</c:if>
+										<c:if test="${recruitVO.recruitWorkType == 'IWS01002' }">
+											정규직
+										</c:if>
+									</div>
+									<div class="loc">${fn:split(fn:split(recruitVO.recruitLocation,' ')[0], ',')[1]}</div>
+								</div>
+							</div>
+							
+						</div>
+					
+					</c:forEach>
+				</div>
+				
+				<div id="endList"></div>
+				<!-- Modal structure -->
+				<div id="modal-alert"> <!-- data-iziModal-fullscreen="true"  data-iziModal-title="Welcome"  data-iziModal-subtitle="Subtitle"  data-iziModal-icon="icon-home" -->
+				    <section>
+						<p class="alert bold"></p>
+			        </section>
+				</div>
+					
+			</div>
+		</div>
+			
+	</div>
+
+		
+		
+	
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<script type="text/javascript">
+	let interestEntBtn = document.querySelector("#interest-ent");
+	let entNo = "${enterpriseVO.entNo }";
+	let memId = "${getCurrentLoginVO.memId}";
+	console.log(interestEntBtn);
+	console.log(entNo);
+	console.log(memId);
+	
+	console.log("${interestRecruitVOList}");
+	
+
+	// 체크박스 관련 js
+	let chkboxSig = document.querySelector(".chkbox-sig");
+	let chkboxTxt = document.querySelector(".chkbox-txt");
+
+	chkboxSig.addEventListener("change", function (e) {
+	    console.dir(e.target.checked);
+	})
+
+	
+	////////////////////// 관심공고 기능
+	$(document).on("click",".interest-recruit",function(e) {
+
+		if(${getCurrentLoginVO == null}){
+			alert("로그인 한 회원만 관심공고를 등록할 수 있습니다.");
+			return;
+		};
+		
+		console.dir(e.target);
+		let recruitNo = e.target.previousElementSibling.value;
+		console.log("recruitNo : " + recruitNo);
+		e.target.classList.toggle("active");
+
+		data = {
+			"recruitNo" : recruitNo,
+			"memId" : "${getCurrentLoginVO.memId}"
+		}
+		console.log(data);
+
+		$.ajax({
+			url : "/recruit/ajaxInterestRecruit",
+			data : JSON.stringify(data),
+			type : "post",
+    		contentType : "application/json;charset=utf-8",
+    		dataType:"json",
+			beforeSend : function(xhr) {
+				xhr.setRequestHeader(header, token);
+			},
+			success : function(res) {
+				console.log("res", res);
+				
+			}
+
+		})
+	})
+
+	let chkMagam = document.querySelector("#includeClosed");
+	
+	console.log(chkMagam);
+	
+	chkMagam.addEventListener("change", function(){
+		if(chkMagam.checked == true){
+			location.href="/entRecruit/recruitList?magam=true&sort=${param.sort}&scrollY=${param.scrollY}";
+		}else{
+			location.href="/entRecruit/recruitList?magam=false&sort=${param.sort}&scrollY=${param.scrollY}";
+		}
+	})
+	
+
+	
+	let selects = document.querySelector("select[name=sort]");
+	console.log(selects);
+	
+	selects.addEventListener("change", function(e){
+		let scrollY = document.querySelector("input[name=scrollY]");
+		scrollY.value = window.pageYOffset -10;
+// 		console.log(scrollY)
+		console.log(e.target.value);
+		console.log(document.forms["filter"]);
+		document.forms["filter"].submit();
+	})
+	
+	/////////////////// 무한스크롤 이게 맞나? /////////////////////
+	// javascript
+	const listEnd = document.querySelector("#endList"); // 관찰할 대상(요소)
+	const option = {
+	    root: null,						// 뷰포트 기준으로 타겟의 가시성 검사
+	    rootMargin: "0px 0px 0px 0px",	// 확장 또는 축소 x
+	    thredhold: 0,					// 타켓의 가시성이 0%일 때 옵저버 실행
+	}
+
+	// 현재 페이지
+	let currentPage = 1;
+	
+	// ajax로 보낼 데이터 목록
+	let data = {                                                                                                                                                                                                                                                
+			"currentPage" : currentPage,                                                                                                                                                                                                                        
+			"sortBy" : "${param.sort}",                                                                                                                                                                                                                         
+			"entNo" : "${enterpriseVO.entNo}"                                                                                                                                                                                                                   
+	}                                                                                                                                                                                                                                                           
+	const onIntersect = (entries, observer) => {                                                                                                                                                                                                                
+	    // entries는 IntersectionObserverEntry 객체의 리스트로 배열 형식을 반환합니다.                                                                                                                                                                          
+	    entries.forEach(entry => {                                                                                                                                                                                                                              
+	        if(entry.isIntersecting){     
+	        	// ajax로 응답받을 페이지++ (1페이지일때 밑으로 내리면 2페이지를 받기 위함)
+	        	// 기본적으로 페이지네이션이랑 동일하되, 페이지네이션을 보여주지 않고 응답받은 결과를 밑에 생성
+				currentPage++;                                                                                                                                                                                                                                    
+				data = {                                                                                                                                                                                                                                        
+						"currentPage" : currentPage,                                                                                                                                                                                                            
+						"sortBy" : "${param.sort}",                                                                                                                                                                                                             
+						"entNo" : "${enterpriseVO.entNo}"                                                                                                                                                                                                       
+				}    
+				console.log(data);
+	        	$.ajax({                                                                                                                                                                                                                                        
+	    			url : "/enterprise/${enterpriseVO.entNo}/ajaxReview",                                                                                                                                                                                       
+	    			contentType : "application/json; charset=UTF-8",                                                                                                                                                                                            
+	    			data : JSON.stringify(data),                                                                                                                                                                                                                
+	    			dataType : "json",                                                                                                                                                                                                                          
+	    			type : "post",                                                                                                                                                                                                                              
+	    			beforeSend : function(xhr) {                                                                                                                                                                                                                
+	    				xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");                                                                                                                                                                          
+	    			},                                                                                                                                                                                                                                          
+	    			success : function(res) {                                                                                                                                                                                                                   
+	    				console.log(res);                                                                                                                                                                                                                       
+                                      
+	    				// ajax로 가져온 결과가 없으면 무한스크롤 종료
+	    				if(res.length < 1){                                                                                                                                                                                                                     
+	    					observer.unobserve(listEnd);                                                                                                                                                                                                        
+	    					return;                                                                                                                                                                                                                             
+	    				}                                                                                                                                                                                                                                       
+			            const reviewList = document.querySelector(".review-list");                                                                                                                                                                              
+			                   
+			            // 날짜가 7월이면 07 이런식으로 표현하기 위함
+			            function CF_leftPad(value){
+			            	if (Number(value) >= 10) {
+			            		return value;
+			            	}
+			            	return "0" + value;
+			            }
+			            for(let i = 0; i < res.length; i++){    
+			            	let str = "";
+			    			str +=	'<div class="review-item">  ';
+			    			str += ''+res[i].entRevNo+'';
+							str +=	'	<div class="review-top"> ';
+							str +=	'		<div class="review-profile">';
+							str +=	'			<img alt="" src="/resources/images/review-profile.png">';
+							str +=	'		</div>';
+							str +=	'		<div class="flex align-center ml-15">';
+							str +=	'			<p class="reviewer-info">'+res[i].comCodeVO.comCdNm+'</p>';
+							str +=	'			<div class="v-div-line"></div>';
+							str +=	'			<p class="reviewer-info">';
+							if(res[i].entRevWorkYn == 'Y'){
+								str +=	'현직원';								
+							}else{
+								str +=	'전직원';								
+							}
+							str +=	'			</p>';
+							str +=	'			<div class="v-div-line"></div>';
+							str +=	'			<p class="reviewer-info">';
+							str +=	'				'+res[i].entRevWorkLoc+'';
+							str +=	'			</p>';
+							str +=	'			<div class="v-div-line"></div>';
+							str +=	'			<p class="reviewer-info">';
+							let date = new Date(res[i].regDate);
+							let year = date.getFullYear();
+							let month = CF_leftPad(date.getMonth() + 1);
+							str += year+'.'+month;
+							str +=	'			</p>';
+							str +=	'		</div>';
+							str +=	'	</div>';
+							str +=	'	<div class="review-cont">';
+							str +=	'		<div class="review-cont-left">';
+							str +=	'			<div class="mt-20">';
+							str +=	'				<input type="hidden" class="rev-avg-rate" value="'+(parseInt(res[i].entRevBalance)+parseInt(res[i].entRevChances)+parseInt(res[i].entRevCulture)+parseInt(res[i].entRevWelfare)+parseInt(res[i].entRevManager))/5+'">';
+							str +=	'				<span class="star star-ssm review-star"> ★★★★★                                                                                                                                                         ';
+							str +=	'					<span style="width: 20%;">★★★★★</span>';
+							str +=	'				</span>';
+							str +=	'			</div>';
+							str +=	'			<div class="mt-20">';
+							str +=	'				<div class="welfare">';
+							str +=	'					<p class="sep-tit">복지 및 급여</p>';
+							str +=	'					<div class="sep-rate-sec">';
+							str +=	'						<div class="bar-rate">';
+							str +=	'							<span class="bar-rate-val"></span>';
+							str +=	'						</div>';
+							str +=	'						<span class="sep-rate-point">'+res[i].entRevWelfare +'</span>';
+							str +=	'					</div>';
+							str +=	'				</div>';
+							str +=	'				<div class="welfare">';
+							str +=	'					<p class="sep-tit">업무와 삶의 균형</p>';
+							str +=	'					<div class="sep-rate-sec">';
+							str +=	'						<div class="bar-rate">';
+							str +=	'							<span class="bar-rate-val"></span>';
+							str +=	'						</div>';
+							str +=	'						<span class="sep-rate-point">'+res[i].entRevBalance+'</span>';
+							str +=	'					</div>';
+							str +=	'				</div>';
+							str +=	'				<div class="welfare">';
+							str +=	'					<p class="sep-tit">사내문화</p>';
+							str +=	'					<div class="sep-rate-sec">';
+							str +=	'						<div class="bar-rate">                                                                                                                                                                              ';
+							str +=	'							<span class="bar-rate-val"></span>                                                                                                                                                              ';
+							str +=	'						</div>                                                                                                                                                                                              ';
+							str +=	'						<span class="sep-rate-point">'+res[i].entRevCulture+'</span>                                                                                                                                   ';
+							str +=	'					</div>                                                                                                                                                                                                  ';
+							str +=	'				</div>                                                                                                                                                                                                      ';
+							str +=	'				<div class="welfare">                                                                                                                                                                                       ';
+							str +=	'					<p class="sep-tit">승진 기회 및 가능성</p>                                                                                                                                                              ';
+							str +=	'					<div class="sep-rate-sec">                                                                                                                                                                              ';
+							str +=	'						<div class="bar-rate">                                                                                                                                                                              ';
+							str +=	'							<span class="bar-rate-val"></span>                                                                                                                                                              ';
+							str +=	'						</div>                                                                                                                                                                                              ';
+							str +=	'						<span class="sep-rate-point">'+res[i].entRevChances +'</span>                                                                                                                                   ';
+							str +=	'					</div>                                                                                                                                                                                                  ';
+							str +=	'				</div>                                                                                                                                                                                                      ';
+							str +=	'				<div class="welfare">                                                                                                                                                                                       ';
+							str +=	'					<p class="sep-tit">경영진</p>                                                                                                                                                                           ';
+							str +=	'					<div class="sep-rate-sec">                                                                                                                                                                              ';
+							str +=	'						<div class="bar-rate">                                                                                                                                                                              ';
+							str +=	'							<span class="bar-rate-val"></span>                                                                                                                                                              ';
+							str +=	'						</div>                                                                                                                                                                                              ';
+							str +=	'						<span class="sep-rate-point">'+res[i].entRevManager +'</span>                                                                                                                                   ';
+							str +=	'					</div>                                                                                                                                                                                                  ';
+							str +=	'				</div>                                                                                                                                                                                                      ';
+							str +=	'			</div>                                                                                                                                                                                                          ';
+							str +=	'		</div>';
+							str +=	'		<div class="review-cont-right">';
+							str +=	'			<p class="short-review">"'+res[i].entRevShortReview +'"</p>';
+							str +=	'		';
+							str +=	'			<p class="txt-sig p-15 bold mt-20">장점</p>';
+							str +=	'			<p class="rev-cont">';
+							str +=	'				'+res[i].entRevPros +'';
+							str +=	'			</p>';
+							str +=	'';
+							str +=	'			<p class="txt-red p-15 bold mt-20">단점</p>';
+							str +=	'			<p class="rev-cont">';
+							str +=	'				'+res[i].entRevCons +'';
+							str +=	'			</p>';
+							str +=	'';
+							str +=	'			<p class="bold p-15 mt-20">경영진에게 바라는 점</p>';
+							str +=	'			<p class="rev-cont">';
+							str +=	'				'+res[i].entRevWishes +'';
+							str +=	'			</p>';
+							str +=	'			<p class="p-13 mt-20 rev-cont">';
+							str +=	'				이 기업은 1년 후 ';
+							str +=	'				<span class="bold">';
+							if(res[i].entRevPotential == '2'){
+								str += '성장할';
+							}else if(res[i].entRevPotential == '1'){
+								str += '그대로일';
+							}else{
+								str += '하락할';
+							}
+							str +=	'				</span>';
+							str +=	'				것이다.';
+							str +=	'			</p>';
+							str +=	'			<p class="p-13 mt-5 rev-cont">';
+							str +=	'				이 기업을 ';
+							if(res[i].entRevRecomendYn == '1'){
+								str += '추천합니다.';
+							}else{
+								str += '추천하지 않습니다.';
+							}
+							str +=	'			</p>';
+							str +=	'		</div>';
+							str +=	'	</div>';
+							str +=	'	<div class="rev-btn-area">';
+							str +=	'		<button type="button" class="btn btn-sm btn-thumbs-up ml-auto ';
+							res[i].likeVOList.forEach((cur, idx, array) => {
+								if(cur.memId == "${getCurrentLoginVO.memId}"){
+									str += ' active';									
+								}
+							})
+							str +=	'			">도움이 돼요';
+							str +=	'			<span class="bold ml-5">';
+							str +=	'				'+res[i].likeVOList.length+'';
+							str +=	'			</span>';
+							str +=	'		</button>';
+							str +=	'		<button type="button" class="btn btn-sm btn-report ml-7">신고하기</button>';
+							str +=	'		<input type="hidden" name="entRevNo" value="'+res[i].entRevNo+'">';
+							str +=	'		<input type="hidden" name="repSubId" value="'+res[i].memId+'">';
+							str +=	'	</div>';
+							str +=	'</div>';
+// 							reviewList.insertAdjacentHTML("beforeend", str);
+			            }
+			            
+	    			}
+
+	    		})
+
+	        }
+	    });
+	};
+
+	const observer = new IntersectionObserver(onIntersect, option); // 관찰자 초기화
+	observer.observe(listEnd);	// 관찰할 대상(요소) 등록
+</script>
+<script type="text/javascript" src="/resources/js/enterprise.js"></script>

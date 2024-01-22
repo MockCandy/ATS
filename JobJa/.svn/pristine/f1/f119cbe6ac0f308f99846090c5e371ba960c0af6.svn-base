@@ -1,0 +1,54 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<div class="cen" style="margin: 50px auto;">
+    <p class="main-h1">취업 Q&A</p>
+
+    <div class="board">
+    
+        <p class="main-tit">글 작성</p>
+
+        <div class="h-div-line"></div>
+		
+		<form action="/boardQNA/createForm?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+		
+	        <input id="title" name="boardTitle" type="text" class="input01 ph-tit w-100 inp-transparent" placeholder="제목을 입력해 주세요">
+	
+	        <textarea name="boardCntnt" class="input01 w-100 ph-cont resize-none inp-transparent" style="height: 500px;" placeholder="내용을 입력해 주세요"></textarea>
+	        
+	        <div class="flex align-center">
+	            <div class="filebox bs3-primary preview-image flex" >
+	                <input class="upload-name" value="파일선택" disabled="disabled" style="width: 200px;">
+	
+	                <label for="uploadFile" class="ml-7" style="margin-bottom:0;">업로드</label> 
+	                <input type="file" id="uploadFile" name="uploadFile" class="upload-hidden"> 
+	            </div>
+	            
+	            <button type="button" class="btn btn-write ml-auto" id = "QnA-complete">자동 완성</button>
+	            <button type="submit" class="btn btn-write ml-auto">게시글 작성</button>
+	        </div>
+	        
+	        <div id="img-preview" class="mt-12"></div>
+	        
+	        
+	        
+	        <input type="hidden" name="memId" value="${getCurrentLoginVO.memId }" />
+	        
+			<sec:csrfInput />
+			
+		</form>
+
+    </div>
+
+</div>
+<script src="/resources/js/boardQNACreate.js"></script>
+
+<script type="text/javascript">
+
+	$(document).on("click", "#QnA-complete", function() {
+		
+		console.log("dddddddd");
+		
+	});
+
+</script>

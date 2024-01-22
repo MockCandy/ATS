@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.reply.mapper.ReplyMapper">
+
+	<select id="getReply" parameterType="String" resultType="replyVO">
+		SELECT REPLY_NO, PARENT_REPLY_NO, REPLY_CNTNT
+		    , REPLY_WRITING_DT, MEM_ID, BOARD_ID, LEVEL
+		FROM (
+		    SELECT * FROM REPLY
+		    WHERE BOARD_ID =#{boardId}
+		)
+		START WITH PARENT_REPLY_NO = 0
+		CONNECT BY PRIOR REPLY_NO = PARENT_REPLY_NO
+	</select>
+
+	<insert id="writeReply" parameterType="replyVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="replyNo" >
+			SELECT 
+				'RPY' || 
+					NVL(TRIM(TO_CHAR(SUBSTR(MAX(REPLY_NO),4) + 1,'00000')),'00001')
+			FROM   REPLY
+		</selectKey>
+	
+		INSERT INTO REPLY (REPLY_NO, PARENT_REPLY_NO, BOARD_ID, MEM_ID, REPLY_CNTNT)
+		VALUES (#{replyNo}, #{parentReplyNo}, #{boardId}, #{memId}, #{replyCntnt})
+	</insert>
+
+</mapper>

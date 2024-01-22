@@ -1,0 +1,591 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<script type="text/javascript" src="/resources/js/func.js"></script>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<link href="/resources/css/myPageaside.css" rel="stylesheet">
+
+<style>
+.page-ct {
+	background-color: white;
+	border-radius: 30px;
+}
+
+ul , {
+margin:0;
+
+padding:0;
+}
+
+.page-ct ul li a {
+	display: block;
+	padding: 10px 0px;
+}
+
+.search-Box {
+	padding-bottom: 10px;
+	display:flex;
+}
+
+.btn-keyword {
+	background-color: white;
+	border: 1px solid rgb(212, 212, 212);
+	border-radius: 5px;
+	cursor: pointer;
+	padding: 6px 13px;
+	height: 28px;
+}
+
+.page-main-box {
+	border-radius: 30px;
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 20px;
+	margin-bottom: 30px;
+}
+
+.inner-box {
+	background-color: white;
+	padding: 15px 22px;
+	width:350px;
+	border:1px solid #ddd;
+}
+
+.job {
+	display: flex;
+	align-items: center;
+	margin-left:0;
+	font-size:14px;
+}
+
+.sub-title {
+	display: flex;
+	align-items: center;
+	margin-left:0;
+	font-size:18px;
+}
+.sub-cntnt {
+	margin-top:12px;
+	font-size:14px;
+}
+.job span {
+	color: #5b72ec !important;
+}
+
+.box-info {
+	display: flex;
+	justify-content: space-between;
+}
+
+.interView-img img {
+	width: 98px;
+	height: 98px;
+	border-radius: 30px;
+	object-fit: cover;
+}
+
+.title-hr {
+	margin: 8px 0px;
+	width: 20px;
+}
+
+.title-bold {
+	font-weight: 800;
+	font-size: 15px;
+	margin-bottom: 15px;
+	overflow: hidden; 
+	max-height:42px;
+    text-overflow: ellipsis;
+}
+
+.list-text-small {
+	color: #888;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.list-text-small-name {
+	color: #888;
+	font-size: 13px;
+	margin: 2px 0px;
+}
+
+.keyword {
+	width: 230px;
+	display: inline-block;
+	padding-left: 10px;
+	box-sizing: border-box;
+	color: #888;
+	letter-spacing: -1px;
+	border: 1px solid #ddd;
+	border-right: 0 none;
+	padding: 0 11px 1px 11px;
+	height: 32px;
+	font-size: 13px;
+	line-height: 28px;
+	vertical-align: middle;
+	background: #fff;
+}
+.cen {
+	padding-bottom:0;
+}
+.btn-keyword {
+	padding-bottom: 4px;
+	height: 32px;
+	border: 0;
+	cursor: pointer;
+	box-sizing: border-box;
+	background-color: #6d82f3;
+	color: #fff;
+	font-size: 13px;
+	font-weight: bold;
+	vertical-align: top;
+	width: 52px;
+	border-radius: 0px;
+	margin-left: -4px;
+}
+
+.btn-keyword-write {
+	background-color: white;
+	border: 1px solid rgb(212, 212, 212);
+	border-bottom: 30px;
+	border-radius: 5px;
+	cursor: pointer;
+	padding: 6px 13px;
+	cursor: pointer;
+	box-sizing: border-box;
+	background-color: #6d82f3;
+	color: #fff;
+	font-size: 13px;
+	font-weight: bold;
+	vertical-align: top;
+	width: 80px;
+	border-radius: 0px;
+}
+
+
+.inner-box2 {
+	position: relative;
+	background-color: white;
+	padding:15px 22px;
+	border:1px solid #ddd;
+}
+.inner-box2 a{
+	display:block; 
+}
+
+
+
+.sub-title .interView-img {
+	margin-left: auto;
+}
+
+/* 페이지네이션 가로 정렬 */
+.pagination {
+	display: flex;
+	list-style: none;
+}
+
+.pagez  li.is_active {
+	font-weight: bold;
+	border-bottom: 3px solid #2ecc71;
+}
+
+.pagez .pagination a {
+	display: inline-block;
+	color: #222;
+}
+
+.pagez .pagination ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: flex;
+	justify-content: center;
+}
+
+.pagez.pagination {
+	padding: 30px 0;
+}
+
+.pagez .paginate_button {
+	margin: 0 15px;
+}
+
+.pagez  .disabled {
+	pointer-events: none;
+	cursor: default;
+}
+
+.pagez  .disabled a {
+	color: #ccc;
+}
+
+#modal-preview {
+	display:none;
+	height:325px!important;
+}
+.review {
+	cursor:pointer;
+}
+.goPayment {
+}
+
+body{
+	background-color:#fff;
+}
+
+.consultNm {
+	margin-top:7px;
+	margin-bottom:12px;
+	font-weight:bold;
+	font-size:18px;
+}
+
+.profile {
+	margin-top:7px;
+	margin-bottom:12px;
+	cursor:pointer;
+	font-weight:bold;
+}
+.profile:hover {
+}
+.text-detail {
+	font-size:14px;
+	letter-spacing:-0.04em;
+	max-height:40px;
+}
+
+.detail-one-line input {
+	border:none;
+	outline:none!important;
+	background-color:transparent!important;
+}
+#modal-preview::after {
+	background:#fff;
+}
+</style>
+
+<div class="cen" style="margin:auto;">
+	<p class="main-h1">취업 상담</p>
+
+	<div class="search-Box">
+
+		<div class="mr-auto">
+			<sec:authorize access="hasRole('ROLE_CONSULTANT')">
+				<a href="/boardConsulting/create"><button type="button" class="btn-keyword-write">글 쓰기</button></a>
+			</sec:authorize>
+		</div>
+		<form:form modelAttribute="boardEmplConsultVO" action="/boardConsulting/list" method="post">
+			<input type="text" class="keyword" name="boardTitle" placeholder="검색어를 입력해주세요." />
+			<button type="submit" class="btn-keyword">검색</button>
+		</form:form>
+	</div>
+
+	<c:forEach var="boardEmplConsultVO" items="${data}" varStatus="stat">
+		<div class="page-main-box">
+			<c:if test="${boardEmplConsultVO.memberVO.resumeVOList[stat.index].resumeRep == RRY01002}">
+				<div class="inner-box">
+					<div>
+						<div class="job flex" >
+							<span>${boardEmplConsultVO.jobCategoryCd}</span> 
+							<p class="ml-auto bold txt-orange p-14 review" onclick="window.location.href='/consultReview/list?memId=${boardEmplConsultVO.memberVO.memId}'">리뷰 보기</p>
+						</div> <!-- 					<hr class="title-hr"/> -->
+						<div class="flex align-center" style="justify-content:space-between">
+							<div class="consultNm">${boardEmplConsultVO.memberVO.memNm}</div>
+							<div class="profile txt-sig p-14" onclick="showProfile()">프로필 보기</div>
+							
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memId}">
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memNm}">
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memTel}">
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memBirth}">
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memGen}">
+							<input type="hidden" value="${boardEmplConsultVO.memberVO.memEmail}">
+						</div>
+						<div class="title-bold two-line-ellipsis">${boardEmplConsultVO.memberVO.memIntrcn}</div>
+						<div class="box-info">
+							<div class="text-detail two-line-ellipsis">
+								<c:forEach var="careerVO" items="${boardEmplConsultVO.memberVO.resumeVOList[0].careerVOList}" varStatus="status">
+									<span>${careerVO.companyNm}</span>
+									<c:if test="${status.count < fn:length(boardEmplConsultVO.memberVO.resumeVOList[0].careerVOList)}">,</c:if> 
+								</c:forEach>에서 이전 경력이 있어요.
+							</div> 
+							
+						</div>
+					</div>
+				</div>
+			</c:if>
+
+			<div class="inner-box2">
+				<a href="/boardConsulting/detail?boardId=${boardEmplConsultVO.boardId}">
+					<div class="sub-title">${boardEmplConsultVO.boardTitle}</div>
+					<pre class="sub-cntnt three-line-ellipsis">${boardEmplConsultVO.boardCntnt}</pre> <!-- 			<img alt="담당자사진" src="/resources/images/images.jpeg"> -->
+				</a>
+				<div class="goPayment flex">
+					<form:form modelAttribute="itemVO" action="/consult/items" method="post" class="form-class ml-auto mt-7 ">
+						<sec:authorize access="hasRole('ROLE_MEMBER')">
+							<button type="submit" class="go-Payment btn bg-blue txt-white btn-sm">결제하기</button>
+						</sec:authorize>
+						<input type="hidden" name="conMemId" value="${boardEmplConsultVO.memberVO.memId}">
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</c:forEach>
+	<div class="pagez">${info.getPagingArea()}</div>
+</div>
+
+<div id="modal-preview">
+	
+   	<section>	
+        <button data-izimodal-close="" class="icon-close"></button>
+        <div class="flex">
+	        <p class="bold p-20 mb-25">회원 정보</p>
+	        
+			<div class="ml-auto mr-40">
+			    <button type="button" class="btn btn-sm bg-sig txt-white btnChat" id="btnChat" data-memid="">채팅하기</button>
+			    ${boardEmplConsultVO.memberVO.memId}
+<%-- 			    <input type="hidden" value="${boardEmplConsultVO.memberVO.memId}"> --%>
+			</div>
+        </div>
+
+		<div class="mb-12 p-15 detail-one-line">
+			아이디 <input type="text" id="memId" class="bold" value="" readonly>	 
+			<p class="memId"></p>
+		</div>
+		
+		<div class="mb-12 p-15 detail-one-line">
+			이름 <input type="text" id="memNm" class="bold" value="" readonly>
+			<p class="memNm"></p>
+		</div>
+		
+		<div class="mb-12 p-15 detail-one-line">
+			전화번호 <input type="text" id="memTel" class="bold" value="" readonly>
+			<p class="memTel"></p>
+		</div>
+		
+		<div class="mb-12 p-15 detail-one-line">
+			생년월일 <input type="text" id="memBirth" class="bold" value="" readonly>
+			<p class="memBirth"></p>
+		</div>
+		
+		<div class="mb-12 p-15 detail-one-line">
+			성별 <input type="text" id="memGen" class="bold" value="" readonly>
+			<p class="memGen"></p>
+		</div>
+		
+		<div class="mb-12 p-15 detail-one-line">
+			이메일 <input type="text" id="memEmail" class="bold" value="" readonly>  
+			<p class="memEmail"></p>
+		</div>
+	 
+    </section>
+</div>
+
+<script type="text/javascript">
+
+	function showProfile() {
+		
+   		$("#modal-preview").iziModal({
+   			title : '',
+   			subtitle : '',
+   			headerColor : '#88A0B9',
+   			background : null,
+   			theme : '', // light
+   			icon : null,
+   			iconText : null,
+   			iconColor : '',
+   			rtl : false,
+   			width : 700,
+   			height : 1000,
+   			top : null,
+   			bottom : null,
+   			borderBottom : true,
+   			padding : 0,
+   			radius : 3,
+   			zindex : 999,
+   			iframe : false,
+   			iframeHeight : 400,
+   			iframeURL : null,
+   			focusInput : true,
+   			group : '',
+   			loop : false,
+   			arrowKeys : true,
+   			navigateCaption : true,
+   			navigateArrows : true, // Boolean, 'closeToModal', 'closeScreenEdge'
+   			history : false,
+   			restoreDefaultContent : false,
+   			autoOpen : 0, // Boolean, Number
+   			bodyOverflow : true,
+   			fullscreen : false,
+   			openFullscreen : false,
+   			closeOnEscape : true,
+   			closeButton : true,
+   			appendTo : 'body', // or false
+   			appendToOverlay : 'body', // or false
+   			overlay : true,
+   			overlayClose : true,
+   			overlayColor : 'rgba(0, 0, 0, 0.4)',
+   			timeout : false,
+   			timeoutProgressbar : false,
+   			pauseOnHover : false,
+   			timeoutProgressbarColor : 'rgba(255,255,255,0.5)',
+   			transitionIn : 'comingIn',
+   			transitionOut : 'comingOut',
+   			transitionInOverlay : 'fadeIn',
+   			transitionOutOverlay : 'fadeOut',
+   			onFullscreen : function() {
+   			},
+   			onResize : function() {
+   			},
+   			onOpening : function() {
+   			},
+   			onOpened : function() {
+   			},
+   			onClosing : function() {
+   			},
+   			onClosed : function() {
+   			},
+   			afterRender : function() {
+   			}
+   		});
+   		
+		let el = event.target;
+		let siblings = $(el).nextAll();
+		
+		let memId = siblings[0].value;
+		let memNm = siblings[1].value;
+		let memTel = siblings[2].value;
+		let memBirth = siblings[3].value;
+		let memGen = siblings[4].value;
+		let memEmail = siblings[5].value;
+		
+		document.getElementById("btnChat").setAttribute("data-memid", memId);
+		
+		if(memGen == 1) {
+			$('#memGen').val('남자');
+		} else {
+			$('#memGen').val('여자');
+		}
+		
+		let lists = memBirth.split(' ');
+		let year = lists[5];
+		let month = lists[1];
+		let day = lists[2];
+		
+		if(month == "Jan"){
+			month = '1';
+		} else if (month == 'Feb'){
+			month = '2';
+		} else if (month == 'Mar'){
+			month = '3';
+		} else if (month == 'Apr'){
+			month = '4';
+		} else if (month == 'May'){
+			month = '5';
+		} else if (month == 'Jun'){
+			month = '6';
+		} else if (month == 'Jul'){
+			month = '7';
+		} else if (month == 'Aug'){
+			month = '8';
+		} else if (month == 'Sep'){
+			month = '9';
+		} else if (month == 'Oct'){
+			month = '10';
+		} else if (month == 'Nov'){
+			month = '11';
+		} else if (month == 'Dec'){
+			month = '12';
+		}
+		
+		memBirth = year+"-"+month+"-"+day;
+		
+   		$('#memId').val(memId);
+   		$('#memNm').val(memNm);
+   		$('#memTel').val(memTel);
+   		$('#memBirth').val(memBirth);
+   		$('#memEmail').val(memEmail);
+   		
+   		$("#modal-preview").iziModal('open');
+	}
+	
+	$(document).on("click", ".btnChat", function(e) {
+		
+		// 상담사 프로필에서 가져온 ID
+// 		let memId = $('.go-Payment').next().val();
+		let memId = $(this).data("memid");
+		
+		console.log("memId : ",memId);
+		
+		let data = {
+				
+			"memId":memId
+		}
+		
+		$.ajax({
+            url: "/boardInquiry/chatConsultant",
+            contentType: "application/json;charset=utf-8",
+            data: JSON.stringify(data), 
+            type: "post",
+            dataType: "json",
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+            },
+            success: function(rst) {
+            	console.log("되냐 안 되냐1111");
+            	
+            	if(rst != null) {
+            		
+	            	if(rst.payRemndrCnt > 0) {
+	            		
+	            		$.ajax({
+	                        url: "/chatting/createRoom",
+	                        contentType: "application/json;charset=utf-8",
+	                        data: JSON.stringify(data), 
+	                        type: "post",
+	                        dataType: "json",
+	                        beforeSend: function(xhr) {
+	                            xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	                        },
+	                        success: function(rst2) {
+	                        	console.log("되냐 안 되냐2222");
+	                        	
+	                        	let roomId = rst2.chatRoomId;
+	                        	
+			            		window.location.href = "/chatting/chatRoom?bang_id=" + roomId;
+	                        }
+	                	});
+	            		
+	            	} else {
+	            		
+	            		alert("결제 후 사용 가능합니다.");
+	            	}
+            	} else {
+            		
+	            		alert("결제 후 사용 가능합니다.");
+            	}
+            	
+            	
+            },
+            error : function() {
+            	
+            	alert("결제 후 사용 가능합니다.");
+            	
+            	window.location.href = "/boardConsulting/list";
+            	
+            }
+    	});
+		
+		
+// 		window.location.href = "/chat/create-room";		// 화상채팅
+		
+	});
+	
+	
+</script>

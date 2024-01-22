@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.common.mapper.ComCodeMapper">
+
+	<resultMap type="comCodeInfoVO" id="comCodeMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+      <collection property="comDetCodeInfoVO" resultMap="comDetCodeMap"></collection>
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+
+	<select id="getComCodeInfo" parameterType="String" resultMap="comCodeMap">
+		SELECT A.COM_CD
+		    , A.COM_CD_NM
+		    , A.COM_CD_DESCRIPTIONS
+		    , B.COM_DET_CD
+		    , B.COM_DET_CD_NM
+		    , B.COM_DET_DESCRIPTIONS
+		FROM COM_CODE_INFO A, COM_DET_CODE_INFO B
+		WHERE A.COM_CD = B.COM_CD
+		AND A.COM_CD = #{comCode}
+	</select>
+	
+	<select id="getComDetCodeInfo" parameterType="String" resultMap="comCodeMap">
+		SELECT A.COM_CD
+		    , A.COM_CD_NM
+		    , A.COM_CD_DESCRIPTIONS
+		    , B.COM_DET_CD
+		    , B.COM_DET_CD_NM
+		    , B.COM_DET_DESCRIPTIONS
+		FROM COM_CODE_INFO A, COM_DET_CODE_INFO B
+		WHERE A.COM_CD = B.COM_CD
+		AND B.COM_DET_CD = #{comCode}
+	</select>
+	
+	<select id="getComDetCodeInfo2" parameterType="String" resultMap="comCodeMap">
+	
+		SELECT 	A.COM_CD
+			    , A.COM_CD_NM
+			    , A.COM_CD_DESCRIPTIONS
+			    , B.COM_DET_CD
+			    , B.COM_DET_CD_NM
+			    , B.COM_DET_DESCRIPTIONS
+			    
+		FROM COM_CODE_INFO A, COM_DET_CODE_INFO B
+		
+		WHERE A.COM_CD = B.COM_CD
+		AND B.COM_DET_CD = #{comCode}
+		
+	</select>
+	
+</mapper>

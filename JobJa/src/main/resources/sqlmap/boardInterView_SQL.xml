@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardInterViewMapper">
+	<!-- comDetCode : MWJ01000 -->
+	<!-- {comDetCode=MWJ01000, keyword=, currentPage=2} 
+	{interJobCd=MWJ01000, currentPage=1}
+	-->
+	<sql id="where">
+		<if test="comDetCode!=null and comDetCode!=''">
+			AND INTER_JOB_CD = #{comDetCode}
+		</if>
+		<if test="interJobCd!=null and interJobCd!=''">
+			AND INTER_JOB_CD = #{interJobCd}
+		</if>
+		<if test="keyword!=null and keyword!=''">
+		AND ( BOARD_TITLE   LIKE  '%' || #{keyword} || '%'
+            OR    BOARD_CNTNT   LIKE  '%' || #{keyword} || '%'
+            OR    INTER_NM      LIKE  '%' || #{keyword} || '%'
+            OR    INTER_ENT_NM  LIKE  '%' || #{keyword} || '%'
+            OR    INTER_JOB_CD  LIKE  '%' || #{keyword} || '%'
+            OR    INTER_DEPT_NM LIKE  '%' || #{keyword} || '%')
+		</if>
+	</sql>
+	
+	<resultMap type="boardInterViewVO" id="boardInterVIewVOmap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="interJobCd" column="INTER_JOB_CD"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="interNm" column="INTER_NM"/>
+		<result property="interEntNm" column="INTER_ENT_NM"/>
+		<result property="interDeptNm" column="INTER_DEPT_NM"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="intvAfId" column="INTV_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="boardSeTitle" column="BOARD_SE_TITLE"/>
+		<result property="intvProfile" column="INTV_PROFILE"/>
+		<collection property="boardInterViewQNAVOList" resultMap="boardInterViewQNAVOmap"></collection>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="boardInterViewQNAVO" id="boardInterViewQNAVOmap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="quCode" column="QU_CODE"/>
+		<result property="quQuestion" column="QU_QUESTION"/>
+		<result property="quQuestionNm" column="QU_QUESTION_NM"/>
+		<result property="quAnswer" column="QU_ANSWER"/>
+		<result property="quAfId" column="QU_AF_ID"/>
+		<result property="boardSeTitle" column="BOARD_SE_TITLE"/>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<resultMap type="boardInterViewQNACodeVO" id="boardInterViewQNACodeVOmap">
+		<result property="quCode" column="QU_CODE"/>
+		<result property="quQuestion" column="QU_QUESTION"/>
+		<result property="quQuestionNm" column="QU_QUESTION_NM"/>
+	</resultMap>
+	
+	
+	<select id="detail" parameterType="boardInterViewVO" resultMap="boardInterVIewVOmap">
+		SELECT  C.MEM_ID, C.INTER_JOB_CD, C.BOARD_TITLE, 
+		         C.BOARD_CNTNT, C.INTER_NM, C.INTER_ENT_NM, C.INTER_DEPT_NM, 
+		         C.BOARD_WRITING_DT, C.BOARD_UPDT_DT, C.INTV_AF_ID, C.BOARD_CNT, C.BOARD_SE_TITLE,
+		         
+		         A.BOARD_ID, A.QU_CODE, A.QU_ANSWER, A.QU_AF_ID,
+		        
+		         (SELECT B.QU_QUESTION FROM BOARD_INCUM_INTER_QNA_CODE B WHERE B.QU_CODE = A.QU_CODE) QU_QUESTION, 
+		         (SELECT E.QU_QUESTION_NM FROM BOARD_INCUM_INTER_QNA_CODE E WHERE E.QU_CODE = A.QU_CODE) QU_QUESTION_NM, 
+		        
+		         D.AFD_SEQ, D.AF_ID, D.AFD_ORIGIN_NM, D.AFD_SAVE_NM,
+		         D.AFD_FILE_SIZE, D.AFD_SAVE_PATH, D.AFD_EXTSN, D.AFD_CNTNT, D.AFD_UPLOAD_DT
+		
+		FROM     BOARD_INCUMBENT_INTER C
+		       , BOARD_INCUM_INTER_QNA A    
+		       , ATCH_FILE_DETAIL D
+		      
+		WHERE    A.BOARD_ID = C.BOARD_ID
+		  AND    A.BOARD_ID = #{boardId}
+		  AND    A.BOARD_ID = D.AF_ID(+)
+		ORDER BY A.QU_CODE
+	</select>
+	
+	
+	<select id="codeList" parameterType="hashMap" resultType="boardInterViewVO">
+	SELECT T.*
+		FROM
+		(
+		    SELECT ROW_NUMBER()OVER(ORDER BY BOARD_ID DESC) RNUM, 
+              BOARD_ID
+            , MEM_ID
+            , INTER_JOB_CD
+            , BOARD_TITLE
+            , BOARD_CNTNT
+            , INTER_NM
+            , INTER_ENT_NM
+            , INTER_DEPT_NM
+            , BOARD_WRITING_DT
+            , BOARD_UPDT_DT
+            , INTV_AF_ID
+            , INTV_PROFILE
+            , BOARD_SE_TITLE
+            , BOARD_CNT
+        FROM BOARD_INCUMBENT_INTER
+        WHERE 1 = 1
+            AND INTER_JOB_CD = #{interJobCd}
+        )T
+        WHERE T.RNUM BETWEEN (#{currentPage}*9)-(9-1) AND (#{currentPage}*9)
+	
+	</select>
+	
+	<resultMap type="boardInterViewVO" id="boardInterViewVOListAll">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="interJobCd" column="INTER_JOB_CD"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="interNm" column="INTER_NM"/>
+		<result property="interEntNm" column="INTER_ENT_NM"/>
+		<result property="interDeptNm" column="INTER_DEPT_NM"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="intvAfId" column="INTV_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="boardSeTitle" column="BOARD_SE_TITLE"/>
+		<result property="intvProfile" column="INTV_PROFILE"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMapListAll"></collection>
+	</resultMap>
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMapListAll">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	
+	<!-- {comDetCode=MWJ01000, keyword=, currentPage=1} -->
+	<select id="listAll" parameterType="hashMap" resultMap="boardInterViewVOListAll">
+			SELECT T.*
+			FROM
+			(
+			    SELECT DENSE_RANK() OVER(ORDER BY BOARD_ID DESC) RNUM, 
+			              A.BOARD_ID
+			            , A.MEM_ID
+			            , A.INTER_JOB_CD
+			            , A.BOARD_TITLE
+			            , A.BOARD_CNTNT
+			            , A.INTER_NM
+			            , A.INTER_ENT_NM
+			            , A.INTER_DEPT_NM
+			            , A.BOARD_WRITING_DT
+			            , A.BOARD_UPDT_DT
+			            , A.INTV_AF_ID
+			            , A.BOARD_CNT
+			            , A.BOARD_SE_TITLE
+			            , A.INTV_PROFILE
+                        , B.AFD_SEQ
+                        , B.AF_ID
+                        , B.AFD_ORIGIN_NM
+                        , B.AFD_SAVE_NM
+                        , B.AFD_FILE_SIZE
+                        , B.AFD_SAVE_PATH
+                        , B.AFD_EXTSN
+                        , B.AFD_CNTNT
+                        , B.AFD_UPLOAD_DT
+			        FROM BOARD_INCUMBENT_INTER A, ATCH_FILE_DETAIL B
+			        WHERE 1 = 1
+                        AND A.BOARD_ID = B.AF_ID(+)
+			            <include refid="where"></include>
+			        )T
+			WHERE T.RNUM BETWEEN (#{currentPage} * 9) - ( 9 - 1 ) AND (#{currentPage}*9)
+	</select>
+	
+	
+	<!-- 직군코드 가져오기. -->
+	<select id="comJob" resultType="comCodeInfoVO">
+		SELECT 
+			    A.COM_CD, 
+			    A.COM_CD_NM,
+				COALESCE((
+				        SELECT COUNT(*) 
+				        FROM BOARD_INCUMBENT_INTER B 
+				        WHERE B.INTER_JOB_CD LIKE CONCAT(A.COM_CD, '%') AND B.INTER_JOB_CD >= A.COM_CD
+				        GROUP BY B.INTER_JOB_CD
+			    ), 0) AS JOB_COUNT
+		FROM COM_CODE_INFO A
+		WHERE A.COM_CD LIKE 'MWJ01%' AND A.COM_CD >= 'MWJ010%' group by A.COM_CD, A.COM_CD_NM
+	</select>
+	
+	
+	<select id="QNACodeList" resultType="boardInterViewQNACodeVO">
+		SELECT 
+		      QU_CODE
+		    , QU_QUESTION
+		    , QU_QUESTION_NM
+		FROM BOARD_INCUM_INTER_QNA_CODE
+	</select>
+
+	<!-- comDetCode : MWJ01000 
+	listCode->map : {interJobCd=MWJ01000, currentPage=1}
+	-->
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM BOARD_INCUMBENT_INTER
+		WHERE 1 = 1
+		<include refid="where"></include>
+	</select>
+	
+	<select id="getBoardId" resultType="String">
+		SELECT 'INQNA' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(BOARD_ID),6) + 1,'0000')),'0001')
+		FROM   BOARD_INCUMBENT_INTER
+	</select>
+	
+	<!-- 
+	/*
+		 BoardInterViewVO(boardId=, memId=null, interJobCd=MWJ01015, boardTitle=제목, boardCntnt=서브제목, interNm=이름, interEntNm=소속 회사, interDeptNm=소속 부서
+		 , boardWritingDt=null, boardUpdtDt=null, intvAfId=null, boardCnt=0, boardSeTitle=좌우명, boardInterViewQNAVOList=[
+		 		...
+	 -->
+	<insert id="createForm" parameterType="boardInterViewVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="boardId">
+			SELECT 'INQNA' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(BOARD_ID),6) + 1,'0000')),'0001')
+			FROM   BOARD_INCUMBENT_INTER
+		</selectKey>
+		INSERT INTO BOARD_INCUMBENT_INTER(
+		       BOARD_ID
+		     , MEM_ID
+		     , INTER_JOB_CD
+		     , BOARD_TITLE
+		     , BOARD_CNTNT
+		     , INTER_NM
+		     , INTER_ENT_NM
+		     , INTER_DEPT_NM
+		     , BOARD_WRITING_DT
+		     , BOARD_UPDT_DT
+		     , INTV_AF_ID
+		     , BOARD_CNT
+		     , BOARD_SE_TITLE)
+		VALUES(#{boardId},#{memId},#{interJobCd},#{boardTitle},#{boardCntnt},
+			  #{interNm},#{interEntNm},#{interDeptNm},SYSDATE,SYSDATE,#{intvAfId},#{boardCnt},#{boardSeTitle})
+	</insert>
+	
+
+	<update id="createFormQNA" parameterType="java.util.List">
+		<foreach collection="list" item="qnaCodeItem" index="index"  open="INSERT ALL" separator=" " close="SELECT * FROM DUAL">
+			INTO BOARD_INCUM_INTER_QNA (BOARD_ID,QU_CODE,QU_ANSWER)
+			VALUES
+			(#{qnaCodeItem.boardId},#{qnaCodeItem.quCode},#{qnaCodeItem.quAnswer})
+		</foreach>
+	</update>
+	
+	<!-- 
+	인터뷰 상세 가져오기.
+	public BoardInterViewVO selectUp(String boardId); 
+	-->
+	<select id="selectUpdate" parameterType="boardInterViewVO" resultMap="boardInterVIewVOmap">
+		SELECT  C.MEM_ID, C.INTER_JOB_CD, C.BOARD_TITLE, 
+		         C.BOARD_CNTNT, C.INTER_NM, C.INTER_ENT_NM, C.INTER_DEPT_NM, 
+		         C.BOARD_WRITING_DT, C.BOARD_UPDT_DT, C.INTV_AF_ID, C.BOARD_CNT, C.BOARD_SE_TITLE,
+		         
+		         A.BOARD_ID, A.QU_CODE, A.QU_ANSWER, A.QU_AF_ID,
+		        
+		         (SELECT B.QU_QUESTION FROM BOARD_INCUM_INTER_QNA_CODE B WHERE B.QU_CODE = A.QU_CODE) QU_QUESTION, 
+		         (SELECT E.QU_QUESTION_NM FROM BOARD_INCUM_INTER_QNA_CODE E WHERE E.QU_CODE = A.QU_CODE) QU_QUESTION_NM, 
+		        
+		         D.AFD_SEQ, D.AF_ID, D.AFD_ORIGIN_NM, D.AFD_SAVE_NM,
+		         D.AFD_FILE_SIZE, D.AFD_SAVE_PATH, D.AFD_EXTSN, D.AFD_CNTNT, D.AFD_UPLOAD_DT
+		
+		FROM     BOARD_INCUMBENT_INTER C
+		       , BOARD_INCUM_INTER_QNA A    
+		       , ATCH_FILE_DETAIL D
+		      
+		WHERE    A.BOARD_ID = C.BOARD_ID
+		  AND    A.BOARD_ID = #{boardId}
+		  AND    A.BOARD_ID = D.AF_ID(+)
+		ORDER BY A.QU_CODE
+	</select>
+	
+	<!-- 수정시 첨부파일 수정도 할 때 첨부파일 테이블 데이터 먼저 삭제 -->
+	<delete id="delAtch" parameterType="String">
+		DELETE FROM ATCH_FILE
+		WHERE AF_ID = #{intvAfId}
+	</delete>
+	
+	<update id="updatePost" parameterType="boardInterViewVO">
+		UPDATE BOARD_INCUMBENT_INTER
+			    SET 
+			            MEM_ID = #{memId}
+			          , INTER_JOB_CD     = #{interJobCd}
+			          , BOARD_TITLE      = #{boardTitle}
+			          , BOARD_CNTNT      = #{boardCntnt}
+			          , INTER_NM         = #{interNm}
+			          , INTER_ENT_NM     = #{interEntNm}
+			          , INTER_DEPT_NM    = #{interDeptNm}
+			          , BOARD_UPDT_DT    = SYSDATE
+			          , INTV_AF_ID       = #{intvAfId}      
+			          , BOARD_SE_TITLE   = #{boardSeTitle}
+			          , INTV_PROFILE     = #{intvProfile}
+			    WHERE   BOARD_ID = #{boardId}
+	</update>
+	
+	<update id="updatePostQNA" parameterType="boardInterViewQNAVO">
+		UPDATE  BOARD_INCUM_INTER_QNA
+		    SET 
+			      QU_ANSWER    = #{quAnswer}
+			      
+   		   WHERE  BOARD_ID = #{boardId}
+   		   	AND   QU_CODE = #{quCode}
+	</update>
+	
+	<delete id="delete" parameterType="boardInterViewVO">
+		DELETE FROM BOARD_INCUMBENT_INTER
+    		WHERE BOARD_ID = #{boardId}
+	</delete>
+	
+	<delete id="deleteAtcFile" parameterType="String">
+		DELETE FROM ATCH_FILE
+		WHERE  AF_ID = #{afId}
+	
+	</delete>
+	
+	
+	<!-- 조회수 증가 -->
+	<update id="countUp" parameterType="String">
+		UPDATE   BOARD_INCUMBENT_INTER
+			SET  BOARD_CNT = BOARD_CNT + 1
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	<!-- 프로필 사진 등록  -->
+	<update id="updateProfile"	parameterType="atchFileDetailVO">
+		UPDATE  BOARD_INCUMBENT_INTER
+			SET INTV_PROFILE = #{afdSaveNm}
+		WHERE BOARD_ID = #{afId}
+	</update>
+	
+	
+</mapper>

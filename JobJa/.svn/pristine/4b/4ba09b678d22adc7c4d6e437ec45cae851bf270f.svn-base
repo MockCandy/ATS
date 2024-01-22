@@ -1,0 +1,41 @@
+package jobja.item.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobja.item.mapper.ConsultReviewMapper;
+import jobja.item.service.ConsultReviewService;
+import jobja.item.vo.ConsultantReviewVO;
+
+@Service
+public class ConsultReviewServiceImpl implements ConsultReviewService {
+	
+	@Autowired
+	ConsultReviewMapper consultReviewMapper;
+	
+	//마이페이지 내가 쓴 리뷰 목록 가져오기.
+	@Override
+	public List<ConsultantReviewVO> getMyconsultReview(Map<String, Object> map) {
+		return this.consultReviewMapper.getMyconsultReview(map);
+	}
+	
+	//마이페이지 총 갯수
+	@Override
+	public int getMyTotal(Map<String, Object> map) {
+		return this.consultReviewMapper.getMyTotal(map);
+	}
+
+	@Override
+	public int getTotalByConId(Map<String, Object> map) {
+		return consultReviewMapper.getTotalByConId(map);
+	}
+
+	@Override
+	public List<ConsultantReviewVO> getConsultRevByConId(Map<String, Object> map) {
+		return consultReviewMapper.getConsultRevByConId(map);
+	}
+
+}

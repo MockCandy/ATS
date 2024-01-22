@@ -1,0 +1,32 @@
+package jobja.board.dao;
+
+import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import jobja.atchfile.vo.AtchFileDetailVO;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
+@Repository
+public class AtchFileDetailDao {
+	//DI, IoC
+	@Autowired
+	SqlSessionTemplate sqlSessionTemplate;
+	
+	//ATCH_FILE_DETAIL 테이블에 insert
+	public int insertAtchFileDetail(AtchFileDetailVO atchFileDetailVO) {
+		//namespace.id
+		
+		log.info("xcvjkhzxcjhvlkjzxchvlkjzxchvljkzxchvl:" +atchFileDetailVO );
+		int result=this.sqlSessionTemplate.insert("jobja.atchfile.mapper.AtchFileDetailMapper.insertAtchFile"
+							,atchFileDetailVO);
+		
+		result=this.sqlSessionTemplate.insert("jobja.atchfile.mapper.AtchFileDetailMapper.insertAtchFileDetail"
+				,atchFileDetailVO);
+		
+		return result;
+	}
+	
+}

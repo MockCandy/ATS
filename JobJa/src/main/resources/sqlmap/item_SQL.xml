@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.item.mapper.ItemMapper">
+
+	<!-- 배너광고 가져오기. -->
+	<select id="getBannerItemList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD  = 'PDC01002'
+		AND 	(    ITEM_NO = 'PDCEO001'
+		  		  OR ITEM_NO = 'PDCEO002'
+		  		  OR ITEM_NO = 'PDCEO003')
+	</select>
+	
+	<!-- 채용광고 가져오기. -->
+	<select id="getRecruitItemList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD  = 'PDC01002'
+		AND 	(    ITEM_NO = 'PDCEO004'
+		  		  OR ITEM_NO = 'PDCEO005'
+		  		  OR ITEM_NO = 'PDCEO006')
+	</select>
+	
+	<!-- 로그인한 회원의 기업 정보 가져오기 -->
+	<select id="getLoginEntInfo" parameterType="String" resultType="memberVO">
+		SELECT 
+				A.MEM_ID, A.MEM_NM, A.MEM_TEL,
+				B.ENT_NO,B.ENT_ADDR, B.ENT_NM, B.ENT_POSTNO, B.ENT_ADDR2, B.ENT_CEONM
+		
+		FROM    MEMBER A, ENTERPRISE B, ENT_APRV C
+		WHERE   A.MEM_ID = #{memId}
+		AND     A.MEM_ID = C.MEM_ID
+		AND     B.ENT_NO = C.ENT_NO
+	</select>
+	
+	<!-- 기업상품 등록 -->
+	<insert id="ajaxinsertEntPay" parameterType="paymentVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="payNo">
+			SELECT 'PAY' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(PAY_NO),4) + 1,'0000')),'0001')
+			FROM   PAYMENT
+		</selectKey>
+		INSERT INTO PAYMENT
+					(
+			          PAY_NO
+			        ,ITEM_COMPANY_NO
+			        ,PAY_AMOUNT
+			        ,PAY_METHOD
+			        ,PAY_DT
+			        ,PAY_USER_ID
+			        ,PAY_STDT
+			        ,PAY_EDDT
+			        ,PAY_ENT_NO
+			        )
+			VALUES  (
+					 #{payNo}
+					,#{itemCompanyNo}
+					,#{payAmount}
+					,#{payMethod}
+					,SYSDATE
+					,#{payUserId}
+					,SYSDATE
+				<if test="itemNm == '배너광고 1주' or  itemNm == '상위노출 1주'">
+					,SYSDATE+7
+				</if>
+				<if test="itemNm == '배너광고 2주' or  itemNm == '상위노출 2주'">
+					,SYSDATE+14
+				</if>
+				<if test="itemNm == '배너광고 4주' or  itemNm == '상위노출 4주'">
+					,SYSDATE+30
+				</if>
+					,#{payEntNo}
+					)
+	</insert>
+
+	<!-- 상담 상품 가져오기 -->
+	<select id="getConsultItemList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		        , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD, ITEM_COUNT
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD =  'PDC01001'
+		AND 	(	ITEM_CD =  'PDC0100101'
+		         OR ITEM_CD =  'PDC0100102'
+		         OR ITEM_CD =  'PDC0100103')    
+	</select>
+	
+	<!-- 배너광고 결제한 기업정보 가져오기. -->
+	<select id="getBannerPayEnt" parameterType="paymentVO" resultType="paymentVO">
+		SELECT PAY_NO, ITEM_COMPANY_NO, PAY_AMOUNT, PAY_METHOD, PAY_DT, PAY_USER_ID, PAY_REMNDR_CNT, PAY_STDT, PAY_EDDT, PAY_CON_ID, PAY_ENT_NO
+		FROM   PAYMENT 
+		WHERE  PAY_NO = #{payNo}
+	</select>
+	
+	
+	<!-- 배너 광고 구매 기업 배너이미지 -->
+	<select id="getBannerImg" resultMap="paymentVOMap">
+		SELECT T.*
+		FROM
+		(
+			    SELECT A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT, A.PAY_METHOD, A.PAY_DT
+			         , A.PAY_USER_ID, A.PAY_REMNDR_CNT, A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID, A.PAY_ENT_NO
+			         , B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM, B.AFD_EXTSN, B.AFD_CNTNT         
+			    FROM   PAYMENT A, ATCH_FILE_DETAIL B    
+			    WHERE  A.ITEM_COMPANY_NO BETWEEN 'PDCEO001' AND 'PDCEO003' 
+			    AND    SYSDATE BETWEEN A.PAY_STDT AND A.PAY_EDDT    
+			    AND    B.AF_ID = A.PAY_NO       
+			    ORDER BY DBMS_RANDOM.VALUE
+		) T
+		<![CDATA[WHERE   ROWNUM <= 1]]>
+	</select>
+	
+	
+	<resultMap type="paymentVO" id="paymentVOMap">
+		<result property="payConId" column="PAY_CON_ID"/>
+		<result property="payEntNo" column="PAY_ENT_NO"/>
+		<result property="payNo" column="PAY_NO"/>
+		<result property="itemCompanyNo" column="ITEM_COMPANY_NO"/>
+		<result property="payAmount" column="PAY_AMOUNT"/>
+		<result property="payMethod" column="PAY_METHOD"/>
+		<result property="payDt" column="PAY_DT"/>
+		<result property="payUserId" column="PAY_USER_ID"/>
+		<result property="payRemndrCnt" column="PAY_REMNDR_CNT"/>
+		<result property="payStdt" column="PAY_STDT"/>
+		<result property="payEddt" column="PAY_EDDT"/>
+		<association property="atchFileDetailVO" resultMap="atchFileDetailVOMap"></association>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailVOMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+
+	<!-- 상담상품 등록 -->
+	<insert id="insertMemPayMent" parameterType="paymentVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="payNo">
+			SELECT 'PAY' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(PAY_NO),4) + 1,'0000')),'0001')
+			FROM   PAYMENT
+		</selectKey>
+		INSERT INTO PAYMENT
+					(
+			         PAY_NO
+			       , ITEM_COMPANY_NO
+			       , PAY_METHOD
+			       , PAY_DT
+			       , PAY_USER_ID
+			       , PAY_REMNDR_CNT
+			       , PAY_STDT
+			       , PAY_CON_ID
+			       , PAY_AMOUNT
+			       
+			        )
+			VALUES  (
+					 #{payNo}
+					,#{itemCompanyNo}
+					,#{payMethod}
+					,SYSDATE
+					,#{payUserId}
+				    ,#{payRemndrCnt}
+					,SYSDATE
+					,#{payConId}
+				    ,#{payAmount}
+					)
+	</insert>
+	
+	
+	<!-- 기업이 구매한 상품 내역 -->
+	<select id="getEntPayTotalList" parameterType="hashMap" resultType="paymentVO">
+		<![CDATA[SELECT T.* FROM (
+				    SELECT
+				        ROW_NUMBER() OVER(ORDER BY A.PAY_NO DESC) RNUM,
+				        A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT, A.PAY_METHOD
+						         , A.PAY_DT, A.PAY_USER_ID,A.PAY_REMNDR_CNT, A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID, A.PAY_ENT_NO
+						         ,(SELECT B.ITEM_NM FROM ITEM B WHERE B.ITEM_NO = A.ITEM_COMPANY_NO) AS ITEM_NM
+				    	, CASE WHEN TRUNC(PAY_EDDT - SYSDATE) <= 0 THEN 0 ELSE TRUNC(PAY_EDDT - SYSDATE) END AS REMAINING_DAYS
+						FROM PAYMENT A
+						WHERE PAY_ENT_NO = #{entNo}
+						ORDER BY A.PAY_DT DESC ) T
+				WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})]]>
+	</select>
+	
+	<select id="getEntpayTotal" parameterType="hashMap" resultType="int">
+		SELECT    COUNT(*)
+		FROM      PAYMENT
+		WHERE     PAY_ENT_NO = #{entNo}
+	</select>
+	
+	<!-- 기업이 구매한 상품 총 금액 -->
+	
+	<select id="getEntPayTotalMoney" parameterType="String" resultType="paymentVO">
+		SELECT SUM(PAY_AMOUNT) AS TOTAL_PAY_AMOUNT FROM PAYMENT WHERE PAY_ENT_NO = #{entNo}
+	</select>
+	
+	<!-- 일반회원이 구매한 상담 상품 내역 -->
+	<select id="getmemPayitems" parameterType="hashMap" resultType="paymentVO">
+		SELECT T.* FROM (
+		    SELECT
+		        ROW_NUMBER() OVER(ORDER BY A.PAY_NO DESC) RNUM,
+		        A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT, A.PAY_METHOD, A.PAY_DT, A.PAY_USER_ID
+				        , A.PAY_REMNDR_CNT, A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID
+				        , (SELECT B.MEM_NM FROM MEMBER B WHERE B.MEM_ID = A.PAY_CON_ID) AS CON_NM
+				        , (SELECT C.ITEM_NM FROM ITEM C WHERE C.ITEM_NO = A.ITEM_COMPANY_NO) AS ITEM_NM
+				         
+				FROM PAYMENT A
+				WHERE A.PAY_USER_ID = #{memId}
+				ORDER BY A.PAY_DT DESC
+		         ) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<!-- 일반회원이 구매한 상담상품 총 갯수 -->
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT    COUNT(*)
+		FROM      PAYMENT
+		WHERE     PAY_USER_ID = #{memId}
+	</select>
+	
+	<!-- 일반회원이 구매한 상담상품 총 금액 -->
+	<select id="getmemPayTotalMoney" parameterType="String" resultType="paymentVO">
+		SELECT SUM(PAY_AMOUNT) AS TOTAL_PAY_AMOUNT FROM PAYMENT WHERE PAY_USER_ID = #{memId}
+	</select>
+	
+	<!-- 상담회원이 판매한 상품 리스트 -->
+	<select id="getConsultSales" parameterType="hashMap" resultType="paymentVO">
+		SELECT T.* FROM 
+		    (
+		    SELECT
+		        ROW_NUMBER() OVER(ORDER BY A.PAY_NO DESC) RNUM,
+		        A.PAY_NO, A.ITEM_COMPANY_NO, A.PAY_AMOUNT, A.PAY_METHOD
+		                 , A.PAY_DT, A.PAY_USER_ID,A.PAY_REMNDR_CNT, A.PAY_STDT, A.PAY_EDDT, A.PAY_CON_ID, A.PAY_ENT_NO
+		                 ,(SELECT B.ITEM_NM FROM ITEM B WHERE B.ITEM_NO = A.ITEM_COMPANY_NO) AS ITEM_NM
+		        , CASE WHEN TRUNC(PAY_EDDT - SYSDATE) <![CDATA[<=]]> 0 THEN 0 ELSE TRUNC(PAY_EDDT - SYSDATE) END AS REMAINING_DAYS
+		        FROM PAYMENT A
+		        WHERE PAY_CON_ID = #{memId}
+		        ORDER BY A.PAY_DT DESC 
+		    ) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getConsultSalesTotal" parameterType="hashMap" resultType="int">
+	    SELECT COUNT(*)
+	        FROM PAYMENT A
+	        WHERE PAY_CON_ID = #{memId}
+	        ORDER BY A.PAY_DT DESC 
+	</select>
+	
+	<select id="getConsultSalesTotalMoney" parameterType="String" resultType="Integer">
+	    SELECT
+	        NVL(SUM(PAY_AMOUNT),0) FROM PAYMENT
+	        WHERE PAY_CON_ID = #{memId}
+	        GROUP BY PAY_CON_ID
+	</select>
+	
+</mapper>

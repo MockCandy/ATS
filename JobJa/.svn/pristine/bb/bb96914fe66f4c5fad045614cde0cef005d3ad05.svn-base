@@ -1,0 +1,31 @@
+package jobja.member.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class ApplicationVO {
+
+	private String appNo;
+	private String memId;
+	private String recruitNo;
+	private String resumeNo;
+	private String ptflNo;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appStdt;
+	private String appStateCd;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appStateDt;
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date appApplyDt;
+	
+	//마이페이지 내가 지원한 공고제목 가져오기.
+	private String recruitTitle;
+	
+	//마이페이지 내가 지원한 공고의 상태를 알기위해.
+	private String appStateNm;
+	
+}

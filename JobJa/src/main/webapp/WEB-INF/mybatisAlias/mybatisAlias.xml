@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+   <!-- 
+   [마이바티스] 스프링에서 "_"를 사용한 컬럼명을 사용 시(BOOK 테이블의 BOOK_ID)
+   카멜케이스로 읽어줌(bookId), INSERT_DATE => insertDate
+   ex) 테이블 컬러명이 member_id인 경우 jsp화면단에서 이 값을 사용 시 memberId로 사용
+   -->
+	<settings>
+		<!-- 전통적인 데이터베이스 컬럼명 형태인 A_COLUMN을 CamelCase형태의 자바 프로퍼티명 형태인 aColumn으로 자동으로 매핑하도록 함 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+		<!--  파라미터에 Null 값이 있을 경우 에러 처리 -->
+		<setting name="jdbcTypeForNull" value="VARCHAR"></setting>
+	</settings>
+   
+   <!-- 자주 사용하는 타입의 별칭을 세팅 -->
+   <typeAliases>
+      <typeAlias type="jobja.mypage.member.vo.MemberVO" alias="memberVO"/>
+      <typeAlias type="jobja.member.vo.MemberAuthVO" alias="memberAuthVO"/>
+      <typeAlias type="jobja.member.vo.EnterpriseVO" alias="enterpriseVO"/>
+      <typeAlias type="jobja.board.vo.BoardClassVO" alias="brdclsVO"/>
+      <typeAlias type="jobja.board.vo.BoardQNAVO" alias="boardQNAVO"/>
+      <typeAlias type="jobja.board.vo.BoardNewsVO" alias="boardNewsVO"/>
+      <typeAlias type="jobja.board.vo.BoardEmplConsultVO" alias="boardEmplConsultVO"/>
+      <typeAlias type="jobja.atchfile.vo.AtchFileVO" alias="atchFileVO"/>
+      <typeAlias type="jobja.atchfile.vo.AtchFileDetailVO" alias="atchFileDetailVO"/>
+      <typeAlias type="jobja.reply.vo.ReplyVO" alias="replyVO"/>
+      <typeAlias type="jobja.common.vo.ComCodeInfoVO" alias="comCodeInfoVO"/>
+      <typeAlias type="jobja.common.vo.ComDetCodeInfoVO" alias="comDetCodeInfoVO"/>
+      <typeAlias type="jobja.likes.vo.LikesVO" alias="likesVO"/>
+      <typeAlias type="jobja.board.vo.BoardInterViewVO" alias="boardInterViewVO"/>
+      <typeAlias type="jobja.board.vo.BoardInterViewQNAVO" alias="boardInterViewQNAVO"/>
+      <typeAlias type="jobja.board.vo.BoardInterViewQNACodeVO" alias="boardInterViewQNACodeVO"/>
+      <typeAlias type="jobja.board.vo.BoardInquiryVO" alias="boardInquiryVO"/>
+      <typeAlias type="jobja.member.vo.PortfolioVO" alias="portfolioVO"/>
+       <typeAlias type="jobja.mypage.member.vo.ResumeVO" alias="resumeVO"/>
+      <typeAlias type="jobja.mypage.member.vo.CareerVO" alias="careerVO"/>
+      <typeAlias type="jobja.mypage.member.vo.LanguageVO" alias="languageVO"/>
+      <typeAlias type="jobja.mypage.member.vo.AcademicCareerVO" alias="AcademicCareerVO"/>
+      <typeAlias type="jobja.mypage.member.vo.LanguageDTVO" alias="languageDTVO"/>
+      <typeAlias type="jobja.mypage.member.vo.AwardsVO" alias="awardsVO"/>
+      <typeAlias type="jobja.mypage.member.vo.ResultVO" alias="resultVO"/>
+      <typeAlias type="jobja.recruit.vo.RecruitVO" alias="recruitVO"/>
+      <typeAlias type="jobja.recruit.vo.BenefitsVO" alias="benefitsVO"/>
+      <typeAlias type="jobja.recruit.vo.RecruitFormVO" alias="recruitFormVO"/>
+      <typeAlias type="jobja.board.vo.BoardEntReviewVO" alias="boardEntReviewVO"/>
+      <typeAlias type="jobja.member.vo.JobOfferVO" alias="jobOfferVO"/>
+      <typeAlias type="jobja.member.vo.ApplicationVO" alias="applicationVO"/>
+      <typeAlias type="jobja.member.vo.InterestRecruitVO" alias="interestRecruitVO"/>
+      <typeAlias type="jobja.member.vo.InterestEnterpriseVO" alias="interestEnterpriseVO"/>
+      <typeAlias type="jobja.board.vo.NoticeBoardVO" alias="noticeBoardVO"/>
+      <typeAlias type="jobja.report.vo.ReportVO" alias="reportVO"/>
+      <typeAlias type="jobja.member.vo.PortfolioBasicVO" alias="portBasicVO"/>
+      <typeAlias type="jobja.member.vo.PortfolioFreeVO" alias="portFreeVO"/>
+      <typeAlias type="jobja.mypage.member.vo.MemFullCalendarVO" alias="memFullCalendarVO"/>
+      <typeAlias type="jobja.member.vo.EntAprvVO" alias="entAprvVO"/>
+      <typeAlias type="jobja.alarm.vo.AlarmVO" alias="alarmVO"/>
+      <typeAlias type="jobja.blacklist.vo.BlackListVO" alias="blackListVO"/>
+      <typeAlias type="jobja.item.vo.ConsultantLogVO" alias="consultantLogVO"/>
+      <typeAlias type="jobja.item.vo.PaymentVO" alias="paymentVO"/>
+      <typeAlias type="jobja.webmail.vo.WebMailVO" alias="webMailVO"/>
+      <typeAlias type="jobja.item.vo.ConsultantReviewVO" alias="consultantReviewVO"/>
+      <typeAlias type="jobja.item.vo.ItemVO" alias="itemVO"/>
+      <typeAlias type="jobja.item.vo.ItemEntVO" alias="itemEntVO"/>
+      <typeAlias type="jobja.mypage.member.vo.ConAprvVO" alias="ConAprvVO"/>
+      <typeAlias type="jobja.chatting.vo.ChatRoomVO" alias="chatRoomVO"/>
+      <typeAlias type="jobja.chatting.vo.MessageVO" alias="messageVO"/>
+   </typeAliases>
+</configuration>
+

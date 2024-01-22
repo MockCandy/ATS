@@ -1,0 +1,518 @@
+package jobja.mypage.member.service.impl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import jobja.atchfile.controller.FileController;
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.member.mapper.MemberAuthMapper;
+import jobja.mypage.member.mapper.MemberMapper;
+import jobja.mypage.member.service.MemberService;
+import jobja.mypage.member.vo.AcademicCareerVO;
+import jobja.mypage.member.vo.AwardsVO;
+import jobja.mypage.member.vo.CareerVO;
+import jobja.mypage.member.vo.ConAprvVO;
+import jobja.mypage.member.vo.LanguageDTVO;
+import jobja.mypage.member.vo.LanguageVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.mypage.member.vo.ResultVO;
+import jobja.mypage.member.vo.ResumeVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class MemberServiceImpl implements MemberService {
+	
+	
+	@Autowired
+	MemberMapper memberMapper;
+	
+	@Autowired
+	MemberAuthMapper memberAuthMapper;
+	
+	@Autowired
+	FileController fileController;
+	
+	@Autowired
+	String uploadFolder;
+	
+	//일반회원등록
+	@Transactional
+	@Override
+	public int createPost(MemberVO memberVO) {
+		int result = this.memberMapper.createPost(memberVO);
+		
+		result += this.memberAuthMapper.createPostAuth(memberVO.getMemId());
+		
+		log.info("memServiceImpl -> createPost : " + result);
+		
+		return result;
+	}
+	
+	@Transactional
+	@Override
+	public int createResumePost(ResumeVO resumeVO) {
+		
+		/*
+		 * 멤버 : 이력서 = 1 : N
+		 * 이력서 : 경력 = 1 : N
+		 * 이력서 : 학력 = 1 : N
+		 * 이력서 : 성과 = 1 : N
+		 * 이력서 : 수상 = 1 : N
+		 * 이력서 : 어학 = 1 : N
+		 * 어학 : 어학상세 = 1 : N
+		 * */
+		
+		// 이력서 INSERT
+		int result = this.memberMapper.createResumePost(resumeVO);
+		
+		// 이력서에 경력사항들 INSERT
+		List<CareerVO> careerVOList = resumeVO.getCareerVOList();
+		
+		// 이력서에 성과들 INSERT
+		List<ResultVO> resultVOList = resumeVO.getResultVOList();
+		
+		// 이력서에 수상들 INSERT
+		List<AwardsVO> awardsVOList = resumeVO.getAwardsVOList();
+		
+		// 이력서에 어학들 INSERT
+		List<LanguageVO> languageVOList = resumeVO.getLanguageVOList();
+		
+		
+		// 경력번호, 성과번호, 어학번호, 어학상세번호, 수상번호 seq에 넣어주기 위한 변수
+		int seq = 0;
+		
+		// 어학상세
+		int seqq = 0;
+		
+		for(CareerVO careerVO : careerVOList) {
+			
+			careerVO.setResumeNo(resumeVO.getResumeNo());
+			careerVO.setCareerSeq(seq);
+			
+			if(careerVO.getCompanyEmpStatus() == null) {
+				
+				careerVO.setCompanyEmpStatus("0");
+			}
+			
+			result += this.memberMapper.createCareerPost(careerVO);
+			
+			log.info("createResumePost -> createCareerPost : " +careerVO);
+			
+			++seq;
+		}
+		
+		seq = 0;
+		
+		for(ResultVO resultVO : resultVOList) {
+			
+			resultVO.setResumeNo(resumeVO.getResumeNo());
+			resultVO.setResultSeq(seq);
+			
+			result += this.memberMapper.createResultPost(resultVO);
+			
+			++seq;
+			
+		}
+		
+		seq = 0;
+		
+		for(AwardsVO awardsVO : awardsVOList) {
+			
+			awardsVO.setResumeNo(resumeVO.getResumeNo());
+			awardsVO.setAwdSeq(seq);
+			
+			result += this.memberMapper.createAwardsPost(awardsVO);
+			
+			++seq;
+		}
+		
+		seq = 0;
+		
+		
+		for(LanguageVO languageVO : languageVOList) {
+			
+			languageVO.setResumeNo(resumeVO.getResumeNo());
+			languageVO.setLangSeq(seq);
+			
+			result += this.memberMapper.createLangPost(languageVO);
+			
+			log.info("createResumePost -> createLangPost : " +languageVO);
+			
+			List<LanguageDTVO> languageDTVOList = languageVO.getLanguageDTVOList();
+			log.info("seq 자식 for문 들어가기전 : " +seq, "seqq : " +seqq);
+			
+			for(LanguageDTVO languageDTVO : languageDTVOList) {
+				
+				languageDTVO.setResumeNo(resumeVO.getResumeNo());
+				languageDTVO.setLangSeq(seq);
+				languageDTVO.setLangNo(languageVO.getLangNo());
+				languageDTVO.setLangDetSeqq(seqq);
+				
+				result += this.memberMapper.createLangDetPost(languageDTVO);
+				
+				++seqq;
+				
+				log.info("seq 자식 for문 들어가고 난 후 : " +seq, "seqq : " +seqq);
+			}
+			
+			seqq = 0;
+			++seq;
+			log.info("seq 자식 for문 다 빠져나오고 초기화된 후 : " +seq, "seqq : " +seqq);
+		}
+		
+		
+		return result;
+	}
+	
+	@Override
+	public List<ComDetCodeInfoVO> getComDetLangList() {
+		
+		return this.memberMapper.getComDetLangList();
+	}
+	
+	@Override
+	public List<ComCodeInfoVO> getComCodeVOList() {
+		
+		return this.memberMapper.getComCodeVOList();
+	}
+	
+	@Override
+	public List<ComDetCodeInfoVO> getComDetCode(String comCd) {
+		
+		return this.memberMapper.getComDetCode(comCd);
+	}
+
+	@Override
+	public List<AcademicCareerVO> getMemAcademicCareerList(String memId) {
+		
+		return this.memberMapper.getMemAcademicCareerList(memId);
+	}
+
+	@Override
+	public int createCareerPost(CareerVO careerVO) {
+		
+		return this.memberMapper.createCareerPost(careerVO);
+	}
+
+	@Override
+	public List<ResumeVO> resumeList(Map<String, Object> map) {
+		
+		return memberMapper.resumeList(map);
+	}
+
+	@Override
+	public int getTotal(Map<String, Object> map) {
+		
+		return memberMapper.getTotal(map);
+	}
+	
+	@Override
+	public MemberVO resumeMemberDetail(Map<String, Object> map) {
+		
+		return memberMapper.resumeMemberDetail(map);
+	}
+
+	@Override
+	public List<AcademicCareerVO> resumeAcademicCareerDetail(Map<String, Object> map) {
+		return memberMapper.resumeAcademicCareerDetail(map);
+	}
+
+	@Override
+	public List<ResumeVO> resumeResumeDetail(Map<String, Object> map) {
+		return memberMapper.resumeResumeDetail(map);
+	}
+
+	@Override
+	public List<CareerVO> resumeCareerDetail(Map<String, Object> map) {
+		return memberMapper.resumeCareerDetail(map);
+	}
+
+	@Override
+	public List<ResultVO> resumeResultDetail(Map<String, Object> map) {
+		return memberMapper.resumeResultDetail(map);
+	}
+
+	@Override
+	public List<LanguageVO> resumeLanguageDetail(Map<String, Object> map) {
+		return memberMapper.resumeLanguageDetail(map);
+	}
+
+	@Override
+	public List<AwardsVO> resumeAwardsDetail(Map<String, Object> map) {
+		return memberMapper.resumeAwardsDetail(map);
+	}
+	
+
+	@Override
+	public int memberDeleteResumeLangDET(Map<String, Object> map) {
+		
+		return memberMapper.memberDeleteResumeLangDET(map);
+	}
+
+	@Override
+	public int memberDeleteResumeLang(Map<String, Object> map) {
+
+		return memberMapper.memberDeleteResumeLang(map);
+	}
+
+	@Override
+	public int memberDeleteResumeAWD(Map<String, Object> map) {
+
+		return memberMapper.memberDeleteResumeAWD(map);
+	}
+
+	@Override
+	public int memberDeleteResumeRES(Map<String, Object> map) {
+
+		return memberMapper.memberDeleteResumeRES(map);
+	}
+
+	@Override
+	public int memberDeleteResumeCAR(Map<String, Object> map) {
+
+		return memberMapper.memberDeleteResumeCAR(map);
+	}
+
+	@Override
+	public int memberDeleteResumeR(Map<String, Object> map) {
+
+		return memberMapper.memberDeleteResumeR(map);
+	}
+
+	@Override
+	public int memberUpdateResumePost(Map<String, Object> map, ResumeVO resumeVO) {
+		
+		ConAprvVO conAprvVO = this.memberMapper.selectConAprvVO(map);
+		log.info("memberUpdateResumePost -> conAprvVO : " +conAprvVO);
+		
+		String tempMemId = "";
+		String tempPtflNo = "";
+		Date tempConAprvDt = null;
+		Date tempConAprvUpdt = null;
+		
+		if (conAprvVO != null) {
+			
+			tempMemId = conAprvVO.getMemId();
+			log.info("memberUpdateResumePost -> tempMemId : " +tempMemId);
+			tempPtflNo = conAprvVO.getPtflNo();
+			log.info("memberUpdateResumePost -> tempPtflNo : " +tempPtflNo);
+			
+			tempConAprvDt = conAprvVO.getConAprvDt();
+			log.info("memberUpdateResumePost -> tempConAprvDt : " +tempConAprvDt);
+			
+			tempConAprvUpdt = conAprvVO.getConAprvUpdt();
+			log.info("memberUpdateResumePost -> tempConAprvUpdt : " +tempConAprvUpdt);
+		}
+		
+		int result = memberMapper.memberDeleteResumeLangDET(map);
+		result += memberMapper.memberDeleteResumeLang(map);
+		result += memberMapper.memberDeleteConAprv(map);
+		result += memberMapper.memberDeleteResumeAWD(map);
+		result += memberMapper.memberDeleteResumeRES(map);
+		result += memberMapper.memberDeleteResumeCAR(map);
+		result += memberMapper.memberDeleteResumeR(map);
+		
+		// 이력서 INSERT
+		result += this.memberMapper.createResumePost(resumeVO);
+		
+		String tempResumeNo = resumeVO.getResumeNo();
+		log.info("memberUpdateResumePost -> tempResumeNo : "+tempResumeNo) ;
+		
+		
+		if (conAprvVO != null) {
+			
+			Map<String, Object> conAprvMap = new HashMap<String, Object>();
+			
+			conAprvMap.put("tempMemId", tempMemId);
+			conAprvMap.put("tempPtflNo", tempPtflNo);
+			conAprvMap.put("tempConAprvDt", tempConAprvDt);
+			conAprvMap.put("tempConAprvUpdt", tempConAprvUpdt);
+			conAprvMap.put("tempResumeNo", tempResumeNo);
+			
+			log.info("memberUpdateResumePost -> conAprvMap : "+conAprvMap);
+			
+			result += memberMapper.insertConAprv(conAprvMap);
+		}
+		
+		// 이력서에 경력사항들 INSERT
+		List<CareerVO> careerVOList = resumeVO.getCareerVOList();
+		
+		// 이력서에 성과들 INSERT
+		List<ResultVO> resultVOList = resumeVO.getResultVOList();
+		
+		// 이력서에 수상들 INSERT
+		List<AwardsVO> awardsVOList = resumeVO.getAwardsVOList();
+		
+		// 이력서에 어학들 INSERT
+		List<LanguageVO> languageVOList = resumeVO.getLanguageVOList();
+		
+		
+		// 경력번호, 성과번호, 어학번호, 어학상세번호, 수상번호 seq에 넣어주기 위한 변수
+		int seq = 0;
+		
+		// 어학상세
+		int seqq = 0;
+		
+		for(CareerVO careerVO : careerVOList) {
+			
+			careerVO.setResumeNo(resumeVO.getResumeNo());
+			careerVO.setCareerSeq(seq);
+			
+			result += this.memberMapper.createCareerPost(careerVO);
+			
+			log.info("createResumePost -> createCareerPost : " +careerVO);
+			
+			++seq;
+		}
+		
+		seq = 0;
+		
+		for(ResultVO resultVO : resultVOList) {
+			
+			resultVO.setResumeNo(resumeVO.getResumeNo());
+			resultVO.setResultSeq(seq);
+			
+			result += this.memberMapper.createResultPost(resultVO);
+			
+			++seq;
+			
+		}
+		
+		seq = 0;
+		
+		for(AwardsVO awardsVO : awardsVOList) {
+			
+			awardsVO.setResumeNo(resumeVO.getResumeNo());
+			awardsVO.setAwdSeq(seq);
+			
+			result += this.memberMapper.createAwardsPost(awardsVO);
+			
+			++seq;
+		}
+		
+		seq = 0;
+		
+		
+		for(LanguageVO languageVO : languageVOList) {
+			
+			languageVO.setResumeNo(resumeVO.getResumeNo());
+			languageVO.setLangSeq(seq);
+			
+			result += this.memberMapper.createLangPost(languageVO);
+			
+			log.info("createResumePost -> createLangPost : " +languageVO);
+			
+			List<LanguageDTVO> languageDTVOList = languageVO.getLanguageDTVOList();
+			log.info("seq 자식 for문 들어가기전 : " +seq, "seqq : " +seqq);
+			
+			for(LanguageDTVO languageDTVO : languageDTVOList) {
+				
+				languageDTVO.setResumeNo(resumeVO.getResumeNo());
+				languageDTVO.setLangSeq(seq);
+				languageDTVO.setLangNo(languageVO.getLangNo());
+				languageDTVO.setLangDetSeqq(seqq);
+				
+				result += this.memberMapper.createLangDetPost(languageDTVO);
+				
+				++seqq;
+				
+				log.info("seq 자식 for문 들어가고 난 후 : " +seq, "seqq : " +seqq);
+			}
+			
+			seqq = 0;
+			++seq;
+			log.info("seq 자식 for문 다 빠져나오고 초기화된 후 : " +seq, "seqq : " +seqq);
+		}
+		
+		
+		return result;
+	}
+
+	@Override
+	public AtchFileDetailVO uploadFileKeyCheck(MemberVO memberVO) {
+		
+		AtchFileDetailVO atchFileDetailVO = this.fileController.uploadFileKeyCheck(memberVO.getUploadFile(), memberVO.getMemId());
+		log.info("uploadFile -> atchFileDetailVO : ppppllll" + atchFileDetailVO);
+		
+		return atchFileDetailVO;
+	}
+
+	@Override
+	public List<AtchFileDetailVO> atchList(Map<String, Object> map) {
+		
+		return this.memberMapper.atchList(map);
+	}
+
+	@Override
+	public int deleteFileAjax(AtchFileDetailVO atchFileDetailVO) {
+		
+		return this.fileController.deleteFileAjax(atchFileDetailVO);
+	}
+
+	@Override
+	public int setResumeRepreComm(Map<String, Object> map) {
+		
+		log.info("오긴 오나ㅋㅋㅋㅋㅋ?");
+		
+		return this.memberMapper.setResumeRepreComm(map);
+	}
+
+	@Override
+	public int setResumeRepre(Map<String, Object> map) {
+		
+		return this.memberMapper.setResumeRepre(map);
+	}
+	
+	@Override
+	public List<MemberVO> getRecommMemList(Map<String, Object> map) {
+		return memberMapper.getRecommMemList(map);
+	}
+
+	@Override
+	public int getRecommMemCount(Map<String, Object> map) {
+		return memberMapper.getRecommMemCount(map);
+	}
+
+	// 기업 첨부파일함 리스트
+	@Override
+	public List<AtchFileDetailVO> atchDtList(String memId) {
+		return this.memberMapper.atchDtList(memId);
+	}
+	
+	// ajax 기업 첨부파일 리스트
+	@Override
+	public List<AtchFileDetailVO> atchFileDtVO(String memId) {
+		return this.memberMapper.atchFileDtVO(memId);
+	}
+
+	@Override
+	public int memberDeleteResumeAprv(Map<String, Object> map) {
+		return this.memberMapper.memberDeleteResumeAprv(map);
+	}
+
+	@Override
+	public int memberDeleteResumeAPPL(Map<String, Object> map) {
+		return  this.memberMapper.memberDeleteResumeAPPL(map);
+	}
+
+	@Override
+	public List<MemberVO> memList(Map<String, Object> map) {
+		return memberMapper.memList(map);
+	}
+
+	@Override
+	public MemberVO getMemberById(String memId) {
+		return memberMapper.getMemberById(memId);
+	}
+
+
+}

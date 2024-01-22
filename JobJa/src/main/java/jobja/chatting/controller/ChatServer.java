@@ -1,0 +1,86 @@
+package jobja.chatting.controller;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@ServerEndpoint("/chatserver")
+public class ChatServer {
+	
+	// 현재 채팅 서버에 접속한 클라이언트(WebSocket Session) 목록
+	// static 붙여야함!!
+	private static List<Session> list = new ArrayList<Session>();
+	
+	private void print(String msg) {
+		System.out.printf("[%tT] %s\n", Calendar.getInstance(), msg);
+		log.info("11111111111");
+	}
+	
+	@OnOpen
+	public void handleOpen(Session session) {
+		//chat.jsp의 [연결]버튼 클릭 시
+		print("클라이언트 연결");
+		list.add(session); // 접속자 관리(****)
+		log.info("세션에 뭐가 있냐??" +session);
+		log.info("22222222222222");
+	}
+	
+	//chat.jsp의 [대화 내용을 입력하세요]에 글 작성 후 엔터키를 누르면 
+	@OnMessage
+	public void handleMessage(String msg, Session session) throws JsonMappingException, JsonProcessingException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		Map<String, String> map = mapper.readValue(msg, Map.class);
+		
+		String type = map.get("type");
+		
+		log.info("handleMessage -> msg : " +msg);
+		log.info("handleMessage-> list : " +list);
+		
+		for (Session s : list) {
+			if (s != session) { // 현재 접속자가 아닌 나머지 사람들
+				try {
+					s.getBasicRemote().sendText(msg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			}
+		}			
+		
+		if (type.equals("close")) {
+			list.remove(session);
+		}
+		
+	}
+	
+	@OnClose
+	public void handleClose() {
+		
+	}
+	
+	@OnError
+	public void handleError(Throwable t) {
+		
+	}
+	
+	
+
+}

@@ -1,0 +1,13 @@
+package jobJa.common.mapper;
+
+import jobJa.common.vo.ComCodeInfoVO;
+
+public interface ComCodeMapper {
+
+	ComCodeInfoVO getComCodeInfo(String comCode);
+
+	ComCodeInfoVO getComDetCodeInfo(String recruitJob);
+
+	
+	
+}

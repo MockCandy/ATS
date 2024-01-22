@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.report.mapper.ReportMapper">
+
+   <insert id="report" parameterType="reportVO">
+      <selectKey resultType="String" order="BEFORE" keyProperty="repNo">
+         SELECT 'REP' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(REP_NO),4) + 1,'00000')),'00001')
+         FROM   REPORT
+      </selectKey>
+   
+      INSERT INTO REPORT
+         (  
+              REP_NO
+            , REP_SUB_ID
+            , REP_DT
+            , REP_REASON
+            , REP_TYPE_CD
+            , REPORTER_ID
+            , REP_BOARD_ID 
+            , ADMIN_ID
+            , REP_RESULT_CD
+         )
+      VALUES
+         (
+              #{repNo}
+            , #{repSubId}
+            , SYSDATE
+            , #{repReason}
+            , #{repTypeCd}
+            , #{reporterId}
+            , #{repBoardId}
+            , 'ADMIN'
+            , 'AYN01002'
+         )
+   </insert>
+   
+   <select id="getReportListById" parameterType="String" resultType="reportVO">
+   		SELECT 
+	   		REP_NO, 
+	   		REP_SUB_ID, 
+	   		REP_DT, 
+	   		REP_REASON, 
+	   		REP_TYPE_CD, 
+	   		REPORTER_ID, 
+	   		ADMIN_ID, 
+	   		REP_RESULT_CD, 
+	   		REP_RESULT_CNTNT, 
+	   		REP_BOARD_ID
+		FROM REPORT 
+		WHERE REPORTER_ID = #{memId}
+   </select>
+
+</mapper>

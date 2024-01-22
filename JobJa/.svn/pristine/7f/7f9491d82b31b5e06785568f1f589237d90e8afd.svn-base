@@ -1,0 +1,26 @@
+package jobJa.myPage.member.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class LanguageDTVO {
+	
+	private int langDetSeqq;
+	private int langSeq;
+	private String langNo;
+	private String resumeNo;
+	
+	private int langDetailScore;
+	private String langDetailName;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date langDetailAcqDt;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date langDetailExpDt;
+
+}

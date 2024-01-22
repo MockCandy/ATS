@@ -1,0 +1,48 @@
+package jobJa.admin.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface AdminService {
+
+	//일반회원 리스트
+	public List<MemberVO> getMember(Map<String,Object> map);
+
+	//일반회원 총 수
+	 public int getTotalMem(Map<String,Object> map);
+	 
+	//멤버 디테일
+	public MemberVO getMem(Map<String,Object> map);
+
+	//멤버 삭제
+	public int deleteAjax(String memId);
+
+	//멤버 일정관리 삭제
+	public int deleteSchedule(String memId);
+
+	//관심기업테이블 멤버 삭제
+	public int deleteInterestEnt(String memId);
+
+	//알림 테이블 멤버 삭제
+	public int deleteAlarm(String memId);
+
+	//자격증 테이블 멤버 삭제
+	public int deleteCertificate(String memId);
+
+	//자기소개서 테이블 멤버 삭제
+	public int deletePortfolio(String memId);
+
+	//관심공고 테이블 멤버 삭제
+	public int deleteInterestRecruit(String memId);
+
+	//권한 테이블 멤버 삭제
+	public int deleteAuth(String memId);
+	
+	//상품결제 테이블 멤버 삭제
+	public int deleteProduct(String memId);
+
+
+
+}

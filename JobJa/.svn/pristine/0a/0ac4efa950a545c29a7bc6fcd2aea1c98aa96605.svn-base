@@ -1,0 +1,480 @@
+package jobJa.admin.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobJa.admin.service.AdminService;
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.common.vo.ComDetCodeInfoVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.util.ArticlePage;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/admin")
+@Controller
+public class AdminController {
+
+	@Autowired
+	AdminService adminService;
+
+	
+	@GetMapping("/main")
+	public String page() {
+		return "admin/mainPage";
+	}
+
+	@RequestMapping(value = "/adminMemberMyPage")
+	public String admin(MemberVO memberVO,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("memberVOzzeze" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+				
+		int totalMem = this.adminService.getTotalMem(map);
+
+		List<MemberVO> memberVOList  = this.adminService.getMember(map);
+
+		ArticlePage<MemberVO> info 
+			= new ArticlePage<MemberVO>(totalMem, currentPage, 12, memberVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminMemberMyPage");
+		
+		log.info("MEMBERVOLIST : " + memberVOList);
+		
+		model.addAttribute("memberVOList", memberVOList);
+		
+		model.addAttribute("totalMem", totalMem);
+		
+		model.addAttribute("info", info);
+		
+		log.info("totalMem : " + totalMem);
+		
+		return "admin/adminMemberMyPage";
+	}
+	
+	@ResponseBody
+	@PostMapping("/selectAjax")
+	public MemberVO selectAjax(Model model,@RequestBody MemberVO memberVO) {
+		log.info("와야한다");
+		log.info("memberVOgg" + memberVO);
+		
+		String memberId = memberVO.getMemId();
+		
+		String comCd = memberVO.getMemWishJobCate();
+		
+		log.info("comCdzzee" + comCd );
+		
+		String comDetCd = memberVO.getMemWishJob();
+		
+		log.info("comDetCdzzee " + comDetCd);
+		
+		String memIntWord = memberVO.getMemIntWord();
+		
+		log.info("memIntWordZZEE" + memIntWord);
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		map.put("memId", memberId);
+		
+		map.put("memWishJobCate", comCd);
+		
+		map.put("memWishJob", comDetCd);
+		
+		
+		
+		MemberVO memberVO2 = this.adminService.getMem(map);
+		
+		memberVO2.setMemIntWord(memIntWord);
+		
+		log.info("memberVO2" + memberVO2);
+		
+		return memberVO2;
+	}
+	
+	
+	@ResponseBody
+	@PostMapping("/deleteAjax")
+	public int deleteAjax(Model model,@RequestBody MemberVO memberVO) {
+		
+		String memId = memberVO.getMemId();
+		
+		log.info("여쿠"+memId);
+		
+		//멤버 일정관리 삭제 
+		int result = this.adminService.deleteSchedule(memId); 
+		
+		//관심기업테이블 회원 삭제
+		result += this.adminService.deleteInterestEnt(memId);
+		
+		//알림 테이블 회원 삭제
+		result += this.adminService.deleteAlarm(memId);
+		
+		//자격증 테이블 회원 삭제
+		result += this.adminService.deleteCertificate(memId);
+		
+		//자기소개서 테이블 회원 삭제
+		result += this.adminService.deletePortfolio(memId);
+		
+		//관심 채용공고 테이블 회원 삭제
+		result += this.adminService.deleteInterestRecruit(memId);
+		
+		//권한 테이블 회원 삭제
+		result += this.adminService.deleteAuth(memId);
+		
+		//상품결제 테이블 회원삭제
+		result += this.adminService.deleteProduct(memId);
+		
+		//멤버 테이블 회원삭제
+		result += this.adminService.deleteAjax(memId);
+		
+		return result;
+		
+	}
+	
+	@RequestMapping(value = "/adminCounselorMyPage")
+	public String adminCounselor(MemberVO memberVO,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("memberVOzzeze" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+				
+		int totalCounsel = this.adminService.getTotalCounsel(map);
+		
+		List<MemberVO> memberVOList  = this.adminService.getCounselor(map);
+
+		ArticlePage<MemberVO> info 
+			= new ArticlePage<MemberVO>(totalCounsel, currentPage, 12, memberVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminCounselorMyPage");
+		
+		log.info("MEMBERVOLIST : " + memberVOList);
+		
+		model.addAttribute("memberVOList", memberVOList);
+		
+		model.addAttribute("totalCounsel", totalCounsel);
+		
+		model.addAttribute("info", info);
+		
+		log.info("totalMem : " + totalCounsel);
+		
+		return "admin/adminCounselorMyPage";
+	}
+	
+	@RequestMapping(value = "/adminEnterpriseMyPage")
+	public String adminEnterprise(MemberVO memberVO,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("memberVOzzeze" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+				
+		int totalEnter = this.adminService.getTotalEnter(map);
+		
+		List<MemberVO> enterVOList  = this.adminService.getEnter(map);
+
+		ArticlePage<MemberVO> info 
+			= new ArticlePage<MemberVO>(totalEnter, currentPage, 12, enterVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminEnterpriseMyPage");
+		
+		log.info("enterVOList : " + enterVOList);
+		
+		model.addAttribute("enterVOList", enterVOList);
+		
+		model.addAttribute("totalEnter", totalEnter);
+		
+		model.addAttribute("info", info);
+		
+		log.info("totalEnter : " + totalEnter);
+		
+		return "admin/adminEnterpriseMyPage";
+	}
+	
+	@RequestMapping(value = "/adminCounselorProposal")
+	public String adminCounselorPropo(MemberVO memberVO,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		
+		log.info("여기안온다고?");
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+				
+		int totalCounsel = this.adminService.getTotalCounselOffer(map);
+
+		int csCompleteCount = this.adminService.getcsCompleTeCount(map);
+		
+		int csWaitCount = this.adminService.getcsWaitCount(map);
+		
+		int csFalseCount = this.adminService.getcsFalseCount(map);
+		
+		List<MemberVO> memberVOList  = this.adminService.getCounselorOffer(map);
+		
+		ArticlePage<MemberVO> info 
+		= new ArticlePage<MemberVO>(totalCounsel, currentPage, 12, memberVOList);
+	
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminCounselorProposal");
+		
+		model.addAttribute("memberVOList", memberVOList);
+		
+		model.addAttribute("totalCounsel", totalCounsel);
+		
+		model.addAttribute("csCompleteCount", csCompleteCount);
+		
+		model.addAttribute("csWaitCount", csWaitCount);
+		
+		model.addAttribute("csFalseCount", csFalseCount);
+		
+		model.addAttribute("info", info);
+		
+		log.info("memberVOList" + memberVOList);
+		
+		return "admin/adminCounselorProposal";
+	}
+	
+	@RequestMapping(value = "/adminSuccess")
+	public String adminSuccess(MemberVO memberVO,String sort,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("adminSuccess" + memberVO);
+		log.info("sort" + sort);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+		
+		int csCompleteCount = this.adminService.getcsCompleTeCount(map);
+		
+		int totalCounsel = this.adminService.getTotalCounselOffer(map);
+		
+		int csWaitCount = this.adminService.getcsWaitCount(map);
+		
+		int csFalseCount = this.adminService.getcsFalseCount(map);
+		
+		List<MemberVO> successCsVOList = this.adminService.getCounselorSuccess(map);
+		
+		ArticlePage<MemberVO> info 
+		= new ArticlePage<MemberVO>(csCompleteCount, currentPage, 12, successCsVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminSuccess");
+		
+		if(sort !=null) {
+			
+			info.setSort(sort);
+		}
+		
+		model.addAttribute("successCsVOList", successCsVOList);
+		
+		model.addAttribute("totalCounsel", totalCounsel);
+		
+		model.addAttribute("csWaitCount", csWaitCount);
+		
+		model.addAttribute("csFalseCount", csFalseCount);
+		
+		model.addAttribute("csCompleteCount", csCompleteCount);
+		
+		model.addAttribute("info", info);
+		
+		return "admin/adminSuccess";
+	}
+	
+	@RequestMapping(value = "/adminWaiting")
+	public String adminWaiting(MemberVO memberVO,String sort,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("adminWaiting" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+		
+		int csCompleteCount = this.adminService.getcsCompleTeCount(map);
+		
+		int totalCounsel = this.adminService.getTotalCounselOffer(map);
+		
+		int csWaitCount = this.adminService.getcsWaitCount(map);
+		
+		int csFalseCount = this.adminService.getcsFalseCount(map);
+		
+		List<MemberVO> waitingCsVOList = this.adminService.getCounselorWaiting(map);
+		
+		ArticlePage<MemberVO> info 
+		= new ArticlePage<MemberVO>(csWaitCount, currentPage, 12, waitingCsVOList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminSuccess");
+		
+		if(sort !=null) {
+			
+			info.setSort(sort);
+		}
+		
+		model.addAttribute("waitingCsVOList", waitingCsVOList);
+		
+		model.addAttribute("totalCounsel", totalCounsel);
+		
+		model.addAttribute("csWaitCount", csWaitCount);
+		
+		model.addAttribute("csFalseCount", csFalseCount);
+		
+		model.addAttribute("csCompleteCount", csCompleteCount);
+		
+		model.addAttribute("info", info);
+		
+		return "admin/adminWaiting";
+	}
+	
+	@RequestMapping(value = "/adminFalse")
+	public String adminFalse(MemberVO memberVO,String sort,Model model,@RequestParam( value = "currentPage",required = false,defaultValue="1")int currentPage) {
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		log.info("adminFalse" + memberVO);
+		
+		String keyWord = memberVO.getMemNm();
+		
+		map.put("keyword", keyWord);
+		
+		map.put("currentPage",currentPage);
+		
+		int csCompleteCount = this.adminService.getcsCompleTeCount(map);
+		
+		int totalCounsel = this.adminService.getTotalCounselOffer(map);
+		
+		int csWaitCount = this.adminService.getcsWaitCount(map);
+		
+		int csFalseCount = this.adminService.getcsFalseCount(map);
+		
+		List<MemberVO> adminFalseList = this.adminService.getAdminFalseList(map);
+		
+		ArticlePage<MemberVO> info 
+		= new ArticlePage<MemberVO>(csFalseCount, currentPage, 12, adminFalseList);
+		
+		info.setKeyword(memberVO.getMemNm());
+		
+		info.setUrl("/admin/adminSuccess");
+		
+		if(sort !=null) {
+			
+			info.setSort(sort);
+		}
+		model.addAttribute("adminFalseList", adminFalseList);
+		
+		model.addAttribute("totalCounsel", totalCounsel);
+		
+		model.addAttribute("csWaitCount", csWaitCount);
+		
+		model.addAttribute("csFalseCount", csFalseCount);
+		
+		model.addAttribute("csCompleteCount", csCompleteCount);
+		
+		model.addAttribute("info", info);
+		
+		return "admin/adminFalse";
+	}
+	
+	@ResponseBody
+	@PostMapping("/selectCounselorAjax")
+	public MemberVO selectCounselorAjax(Model model,@RequestBody MemberVO memberVO) {
+		log.info("와야한다");
+		log.info("memberVOgg" + memberVO);
+		String memberId = memberVO.getMemId();
+		
+		String comCd = memberVO.getMemWishJobCate();
+		
+		log.info("comCdzzee" + comCd );
+		
+		String comDetCd = memberVO.getMemWishJob();
+		
+		log.info("comDetCdzzee " + comDetCd);
+		
+		String memIntWord = memberVO.getMemIntWord();
+		
+		log.info("memIntWordZZEE" + memIntWord);
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		map.put("memId", memberId);
+		
+		map.put("memWishJobCate", comCd);
+		
+		map.put("memWishJob", comDetCd);
+		
+		MemberVO memberVO2 = this.adminService.getMem(map);
+		
+		memberVO2.setMemIntWord(memIntWord);
+		
+		log.info("memberVO2" + memberVO2);
+		
+		return memberVO2;
+	}
+	
+	@ResponseBody
+	@PostMapping("/updateCounselorAjax")
+	public int updateCounselorAjax(Model model,@RequestBody MemberVO memberVO) {
+		
+		String memYn = memberVO.getMemYn();
+		
+		String memId = memberVO.getMemId();
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		map.put("memYn", memYn);
+		
+		map.put("memId", memId);
+		
+		int result = this.adminService.updateYn(map);
+		
+		return result;
+	}
+	
+	
+}

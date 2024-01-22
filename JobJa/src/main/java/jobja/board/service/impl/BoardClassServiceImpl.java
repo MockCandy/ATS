@@ -1,0 +1,244 @@
+package jobja.board.service.impl;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.atchfile.mapper.AtchFileDetailMapper;
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.atchfile.vo.AtchFileVO;
+import jobja.board.mapper.BoardClassMapper;
+import jobja.board.service.BoardClassService;
+import jobja.board.vo.BoardClassVO;
+import jobja.common.vo.ComCodeInfoVO;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
+
+// 강의등록
+@Slf4j
+@Service
+public class BoardClassServiceImpl implements BoardClassService {
+	
+	@Autowired
+	BoardClassMapper brdClsMapper;
+	
+	@Autowired
+	AtchFileDetailMapper atchFileDetailMapper;
+
+	@Autowired
+	String uploadFolder;
+	
+	// 강의클래스 목록
+	@Override
+	public List<BoardClassVO> list(Map<String, Object> map) {
+		return this.brdClsMapper.list(map);
+	}
+
+	// 총 페이지 수
+	@Override
+	public int getTotal(Map<String, Object> map) {
+		return this.brdClsMapper.getTotal(map);
+	}
+
+	// 강의클래스 등록
+	@Override
+	public int createForm(BoardClassVO boardClassVO) {
+		// brdcls 테이블에 insert
+		int result = this.brdClsMapper.createForm(boardClassVO);
+		
+		MultipartFile[] uploadFile = boardClassVO.getUploadFile();
+		
+		uploadFile(uploadFile,boardClassVO.getBoardId());
+
+		// 첨부파일 업로드. 테이블에 insert / 파일객체, 기본키데이터 
+		log.info("uploadFile");
+		log.info("result");
+		
+		return result;
+	}
+
+	private int uploadFile(MultipartFile[] uploadFile, String boardId) {
+
+		//파일이 업로드 될 경로
+			String uploadFileName = "";
+			log.info("uploadFile->uploadFolder : " + uploadFolder);
+			
+			int result = 0;
+			
+			//연월일 폴더 만들기 시작/////////////////////
+			File uploadPath = new File(uploadFolder, getFolder());
+			log.info("uploadPath : " + uploadPath);
+			
+			//만약 연/월/일 해당 폴더가 없으면 생성
+			if(uploadPath.exists()==false) {
+				uploadPath.mkdirs();
+			}
+			//연월일 폴더 만들기 끝/////////////////////
+			
+			//uploadFile : MultipartFile[] uploadFile / uploadFile[0] : MultipartFile 1개
+			if(uploadFile[0].getOriginalFilename().length() > 2) {
+				// 첨부파일 삭제
+				this.brdClsMapper.delAtch(boardId);
+				
+				//파일객체배열로부터 파일을 하나씩 꺼내서 확인
+				for(MultipartFile multipartFile : uploadFile) {
+					log.info("-------------------");
+					log.info("파일명 : " + multipartFile.getOriginalFilename());
+					log.info("크기 : " + multipartFile.getSize());
+					log.info("MIME타입 : " + multipartFile.getContentType());
+					
+					//파일명
+					uploadFileName = multipartFile.getOriginalFilename();
+					
+					// 같은날 같은 이미지를 업로드 시 파일 중복 방지 시작//////////////
+					//java.util.UUID => 랜덤값 생성
+					UUID uuid = UUID.randomUUID();	//임의의 값을 생성
+					
+					//원래의 파일 이름과 구분하기 위해서 _를 붙임
+					uploadFileName = uuid.toString() + "_" + uploadFileName;
+					log.info("uploadFileName : "+uploadFileName);
+					// 같은날 같은 이미지를 업로드 시 파일 중복 방지 끝//////////////
+					
+					//File 객체 설계(복사할 대상 경로, 파일명)
+					//uploadPath : 연월일 처리된 경로
+					//uploadFileName : uuid 처리된 파일명
+					File saveFile = new File(uploadPath, uploadFileName);
+					
+					try {
+						//파일 복사가 일어남
+						//파일객체.transferTo(설계)
+						multipartFile.transferTo(saveFile);
+						
+						//썸네일
+						//이미지인지 체킹
+//						if(checkImagetype(saveFile)) {//이미지라면..
+//							//설계
+//							FileOutputStream thumbnail = new FileOutputStream(
+//								new File(uploadPath, "s_" + uploadFileName)
+//							);
+//							//섬네일 생성
+//							Thumbnailator.createThumbnail(multipartFile.getInputStream(),thumbnail,100,100);
+//							thumbnail.close();
+//						}
+						
+						//ATCH_FILE_DETAIL 테이블에 insert
+						AtchFileDetailVO atchFileDetailVO = new AtchFileDetailVO();
+						atchFileDetailVO.setAfId(boardId);	//P.K
+						atchFileDetailVO.setAfdSeq(0);				//P.K
+						atchFileDetailVO.setAfdSavePath(
+								uploadPath + "\\" + uploadFileName);
+						atchFileDetailVO.setAfdSaveNm(
+								getFolder().replaceAll("\\\\", "/") + "/" + uploadFileName);
+						atchFileDetailVO.setAfdOriginNm(multipartFile.getOriginalFilename());
+						atchFileDetailVO.setAfdExtsn(
+								uploadFileName.substring(uploadFileName.lastIndexOf(".")+1));
+						atchFileDetailVO.setAfdCntnt("");
+						atchFileDetailVO.setAfdFileSize(multipartFile.getSize());
+						
+						log.info("atchFileDetailVO : " + atchFileDetailVO);
+						
+						AtchFileVO atchFileVO = new AtchFileVO();
+						atchFileVO.setAfId(boardId);
+						
+						//쿼리 실행
+						result += this.atchFileDetailMapper.insertAtchFile(atchFileVO);
+						result += this.atchFileDetailMapper.insertAtchFileDetail(atchFileDetailVO);
+						
+					} catch (IllegalStateException | IOException e) {
+						log.error(e.getMessage());
+					}
+				}//end for
+			}//end if
+			
+			return result;
+	}
+
+	// 기본키 +1
+	@Override
+	public String getBoardId() {
+		return this.brdClsMapper.getBoardId();
+	}
+	
+	// 강의클래스 수정
+	@Override
+	public int updatePost(BoardClassVO boardClassVO) {
+		
+		int result = this.brdClsMapper.updatePost(boardClassVO);
+		
+		MultipartFile[] uploadFile = boardClassVO.getUploadFile();
+		log.info("uploadFile => " + uploadFile);
+		
+		uploadFile(uploadFile,boardClassVO.getBoardId());
+		
+		return result;
+	}
+
+	private String getFolder() {
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date date = new Date();
+		
+		String str = sdf.format(date);
+		
+		return str.replace("-", File.separator);
+	}
+	// 강의클래스 삭제
+	@Transactional
+	@Override
+	public int delete(BoardClassVO boardClassVO) {
+		
+		// 첨부파일 먼저 삭제
+		int result = this.brdClsMapper.delAtch(boardClassVO.getBoardId());
+
+		// 첨부파일 상세 삭제
+//		result += this.brdClsMapper.delAtchdt(boardClassVO.getBoardId());
+		
+		// 테이블 삭제
+		result += this.brdClsMapper.delete(boardClassVO);
+		
+		return result;
+	}
+	
+	// 첨부파일 삭제
+//	@Override
+//	public int delAtch(String boardId) {
+//		return this.brdClsMapper.delAtch(boardId);
+//	}
+
+	// 직군 코드
+	@Override
+	public List<ComCodeInfoVO> comJob() {
+		return this.brdClsMapper.comJob();
+	}
+
+	// 아이디 값 꺼내오기
+	@Override
+	public BoardClassVO selectOne(String boardId) {
+		return this.brdClsMapper.selectOne(boardId);
+	}
+
+	// 수정시 목록 가져오기
+	@Override
+	public BoardClassVO updatelist(String boardId) {
+		return this.brdClsMapper.updatelist(boardId);
+	}
+
+	// 직군과 연결된 리스트들 출력 
+	@Override
+	public List<BoardClassVO> listAjax(String cateCd) {
+		return this.brdClsMapper.listAjax(cateCd);
+	}
+
+}

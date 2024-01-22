@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobJa.myPage.member.mapper.ConAprvMapper">
+	
+	<insert id="ajaxApplyCon" parameterType="hashMap">
+		INSERT INTO  CON_APRV
+					( MEM_ID
+					, RESUME_NO
+					, PTFL_NO
+					, CON_APRV_DT
+					, CON_APRV_UPDT)
+	    VALUES
+					(
+					  #{memId}
+					, #{resumeNo}
+					, #{ptflNo}
+					, SYSDATE
+					, SYSDATE )
+	</insert>
+	
+	<update id="updateMemApproval" parameterType="String">
+		UPDATE 	MEMBER
+		   SET  MEM_YN = 'AYN01002'
+		WHERE   MEM_ID = #{memId}
+	</update>
+	
+	
+
+
+</mapper>

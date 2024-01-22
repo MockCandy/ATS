@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.mypage.member.mapper.MemProfileMapper">
+	<resultMap type="memberVO" id="memberVOMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memIntWord" column="MEM_INT_WORD"/>
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comCodeDetInfoVOMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	
+	
+	
+	<select id="comDetCode" resultType="comDetCodeInfoVO">
+		SELECT 
+		   		 COM_DET_CD, COM_CD, COM_DET_CD_NM, COM_DET_DESCRIPTIONS
+		FROM      
+		   		 COM_DET_CODE_INFO
+		WHERE 
+				COM_DET_CD LIKE 'IKW01%'
+				OR COM_CD  LIKE 'MWJ01'
+	</select>
+	
+	<resultMap type="memberVO" id="memberMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memIntWord" column="MEM_INT_WORD"/>
+		<collection property="atchfileDetailVO" resultMap="atchfileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchfileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+
+	<select id="detail" parameterType="String" resultMap="memberMap">
+		SELECT  A.MEM_ID, A.MEM_PASS, A.MEM_NM, A.MEM_POSTNO, A.MEM_ADDR
+		        , A.MEM_ADDR2, A.MEM_TEL, A.MEM_REG_DT, A.MEM_OPEN_RESUME
+		        , A.MEM_STATE_CD, A.MEM_BIRTH, A.MEM_GEN, A.MEM_EMAIL, A.MEM_CD
+		        , A.MEM_YN, A.MEM_INTRCN, A.MEM_NCNM, A.MEM_AF_ID, A.MEM_WISH_JOB_CATE
+		        , A.MEM_WISH_JOB, A.ENABLED, A.MEM_INT_WORD
+		        , B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM, B.AFD_FILE_SIZE, B.AFD_SAVE_PATH, B.AFD_EXTSN, B.AFD_CNTNT, B.AFD_UPLOAD_DT
+		FROM    MEMBER A, ATCH_FILE_DETAIL B
+		WHERE   A.MEM_ID = B.AF_ID(+)
+		AND     A.MEM_ID = #{memId}
+	</select>
+	
+	<update id="mypagePost" parameterType="memberVO">
+		UPDATE MEMBER
+		    SET   MEM_NM 			= #{memNm}
+			    , MEM_POSTNO 		= #{memPostno}
+			    , MEM_ADDR 			= #{memAddr}
+			    , MEM_ADDR2			= #{memAddr2}
+			    , MEM_TEL			= #{memTel}
+			    , MEM_BIRTH			= #{memBirth}
+			    , MEM_GEN			= #{memGen}
+			    , MEM_EMAIL			= #{memEmail}
+			    , MEM_INTRCN		= #{memIntrcn}
+			    , MEM_NCNM			= #{memNcnm}
+			    , MEM_WISH_JOB_CATE = #{memWishJobCate}
+			    , MEM_INT_WORD		= #{memIntWord}
+		WHERE MEM_ID = #{memId}
+	
+	</update>
+	
+	<delete id="delAtch" parameterType="String">
+		DELETE FROM ATCH_FILE
+		WHERE AF_ID = #{intvAfId}
+	</delete>
+	
+	<!-- 프로필사진 등록1) -->
+	<insert id="insertAtch" parameterType="String">
+		INSERT INTO ATCH_FILE(AF_ID, AF_CREAT_DT, AF_YN)
+		VALUES(#{memId},SYSDATE,'Y')
+	</insert>
+	
+	<!-- 회원테이블에 프로필 사진 저장명 추가 -->
+	<update id="updateMyProfile" parameterType="atchFileDetailVO">
+		UPDATE MEMBER
+		   SET MEM_AF_ID = #{afdSaveNm}
+		WHERE MEM_ID = #{afId}  
+	</update>
+	
+</mapper>

@@ -1,0 +1,47 @@
+.mypage-aside-con{
+    width: 240px;
+	border-radius: 30px;
+	background-color: #fff;
+	padding: 80px 36px 36px 36px;
+	
+}
+.mem-ul-set{
+	display: flex;
+    flex-direction: column;
+    gap: 16px;
+	
+}
+.mem-ul-set ul li {
+	display: flex;
+    align-items: center;
+    margin-top: 4px;
+}
+.sub-title{
+	font-size:16px;
+	font-weight: bold;
+	margin-left: 12px;
+}
+.sub-title:hover{
+	text-decoration: none;
+}
+.body-sub-con{
+	height: 700px;
+    overflow-y: scroll;
+}
+.title-hr{
+	width: 1050px;
+}
+.mem-ul{
+	margin-bottom: 16px;
+}
+
+.mem-ul li{
+	padding: 4px 4px 2px 16px;  
+}
+.mem-ul li a{
+	margin-left: 16px;
+}
+.memActive{
+/*  	border-bottom: 1px solid #00c362;  */
+	color: #00c362;
+}

@@ -1,0 +1,83 @@
+package jobja.member.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.mypage.member.service.MemberService;
+import jobja.mypage.member.vo.AcademicCareerVO;
+import jobja.mypage.member.vo.CareerVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.mypage.member.vo.ResumeVO;
+import jobja.recruit.service.RecruitService;
+import jobja.recruit.vo.RecruitFormVO;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/member")
+public class MemberController {
+
+	@Autowired
+	MemberService memberService;
+
+	@Autowired
+	PasswordEncoder encoder;
+
+	@Autowired
+	RecruitService recruitService;
+
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	
+
+	@GetMapping("/create")
+	public String create(RecruitFormVO recruitFormVO,Model model) {
+		
+		
+		List<ComCodeInfoVO> comCodeInfoVOList = this.recruitService.getComCode();
+		
+		recruitFormVO.setComCodeInfoVOList(comCodeInfoVOList);
+		
+		log.info("create -> comCodeInfoVOList" + comCodeInfoVOList);
+
+		model.addAttribute("recruitFormVO", recruitFormVO);
+		
+		log.info("recruitFormVOzezezez:" + recruitFormVO);
+		
+		return "sign-up";
+	}
+
+	@PostMapping("/createPost")
+	public String createFrom(MemberVO memberVO) {
+		
+		log.info("createPost -> memberVO : " + memberVO);
+
+		memberVO.setMemPass(encoder.encode(memberVO.getMemPass()));
+
+		log.info("memberVO pass :" + memberVO);
+
+		int result = this.memberService.createPost(memberVO);
+
+		log.info("createPost -> " + result);
+
+		return "redirect:/login";
+
+	}
+	
+	
+	
+
+}

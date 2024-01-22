@@ -1,0 +1,13 @@
+package jobJa.application.mapper;
+
+import java.util.Map;
+
+import jobJa.member.vo.ApplicationVO;
+
+public interface ApplicationMapper {
+
+	int insert(ApplicationVO applicationVO);
+
+	int isApplicated(Map<String, Object> appMap);
+
+}

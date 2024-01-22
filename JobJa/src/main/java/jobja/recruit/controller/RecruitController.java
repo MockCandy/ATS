@@ -1,0 +1,587 @@
+package jobja.recruit.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.servlet.annotation.MultipartConfig;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.application.service.ApplicationService;
+import jobja.atchfile.mapper.AtchFileDetailMapper;
+import jobja.atchfile.vo.AtchFileDetailVO;
+import jobja.common.mapper.ComCodeMapper;
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.item.vo.PaymentVO;
+import jobja.member.service.JobOfferService;
+import jobja.member.service.PortfolioService;
+import jobja.member.service.ResumeService;
+import jobja.member.vo.ApplicationVO;
+import jobja.member.vo.InterestRecruitVO;
+import jobja.member.vo.JobOfferVO;
+import jobja.member.vo.PortfolioVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.mypage.member.vo.ResumeVO;
+import jobja.recruit.mapper.InterestRecruitMapper;
+import jobja.recruit.service.RecruitService;
+import jobja.recruit.vo.BenefitsVO;
+import jobja.recruit.vo.RecruitFormVO;
+import jobja.recruit.vo.RecruitVO;
+import jobja.util.ArticlePage;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@MultipartConfig
+@Slf4j
+@RequestMapping("/recruit")
+@Controller
+public class RecruitController {
+
+   @Autowired
+   RecruitService recruitService;
+   
+   @Autowired
+   ModelAttributeUtil modelAttributeUtil;
+   
+   @Autowired
+   JobOfferService jobOfferService;
+   
+   @Autowired
+   ResumeService resumeService;
+   
+   @Autowired
+   InterestRecruitMapper interestRecruitMapper;
+   
+   @Autowired
+   ComCodeMapper comCodeMapper;
+   
+   @Autowired
+   AtchFileDetailMapper atchFileDetailMapper;
+   
+   @Autowired
+   PortfolioService portfolioService;
+   
+   @Autowired
+   ApplicationService applicationService;
+   
+   
+   @GetMapping("/create")
+   public String create(RecruitFormVO recruitFormVO, Model model) {
+      
+      List<ComCodeInfoVO> comCodeInfoVOList = this.recruitService.getComCode();
+      
+      //학력 공통 코드 가지고 오는것
+      List<ComDetCodeInfoVO> comCodeAb = this.recruitService.getComCodeInfoa();
+      
+      //고용형태 가지고 오는것 
+      List<ComDetCodeInfoVO> comCodeAC = this.recruitService.getComCodeInfob();
+      
+      // 인사 담당자 직급 가지고 오는것 
+      List<ComDetCodeInfoVO> comCodeAd = this.recruitService.getComCodeInfod();
+      
+      MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+      
+      
+      String memId = memberVO.getMemId();
+      
+      log.info("memIdZZZ:"+memId);
+      String entNo = this.recruitService.getEntNo(memId);
+      log.info("memIdZZZz:"+entNo);
+      recruitFormVO.setComCodeInfoVOList(comCodeInfoVOList);
+      recruitFormVO.setComCodeAb(comCodeAb);
+      recruitFormVO.setComCodeAC(comCodeAC);
+      recruitFormVO.setComCodeAd(comCodeAd);
+      recruitFormVO.setEntNo(entNo);
+      
+      
+      model.addAttribute("recruitFormVO", recruitFormVO);
+
+      log.info("comCodeInfoVOListikjjij :" +recruitFormVO.getEntNo());
+      log.info("comCodeInfoVOListikjjijZZZ :" +comCodeAb);
+      log.info("comCodeInfoVOListikjjijZZZaa :" +comCodeAb);
+      log.info("comCodeInfoVOListikjjijZZZaa :" +comCodeAC);
+      log.info("comCodeInfoVOList comCodeAd @@@ :" +comCodeAd);
+      log.info("comCodeInfoVOListikjjijZZZaa :" + recruitFormVO.getBenCd());
+      
+      
+      
+      
+      return "recruit/recruitCreate"; 
+   }
+   
+   @ResponseBody
+   @PostMapping("/createAjax")
+   public List<ComDetCodeInfoVO> createAjax(Model model,@RequestBody RecruitVO recruitVO){
+      log.info("여까지오니?");
+      
+      log.info("zzzzzzzzzzzzddddddd" + recruitVO);
+      
+      String comCd = recruitVO.getComCd();
+      
+      String recruitJob = recruitVO.getRecruitJob();
+      
+      
+      List<ComDetCodeInfoVO> comDetCodeInfoVO = this.recruitService.getComDetCode(comCd);
+
+      return comDetCodeInfoVO;
+   }
+   
+   
+   @ResponseBody
+   @PostMapping("/createAjax2")
+   public List<ComDetCodeInfoVO> createAjax2(Model model,@RequestBody RecruitVO recruitVO){
+      log.info("여까지오니?");
+      
+      log.info("zzzzzzzzzzzzddddddd" + recruitVO);
+      
+      String recruitJob = recruitVO.getRecruitJob();
+      
+      List<ComDetCodeInfoVO> comDetCodeInfoVO = this.recruitService.getComDetCode(recruitJob);
+
+      return comDetCodeInfoVO;
+   }
+   
+   // create는 기업만 하는 것 같아서 리턴 경로 바꿨어요!
+   // 사용하셔야 하면 말씀해주세요!
+   @PostMapping("/createPost")
+   public String createPost(RecruitFormVO recruitFormVO) {
+      log.info("createPost->recruitFormVO : " + recruitFormVO);
+      
+      log.info("recruitFormVO.recruitNo : " +  recruitFormVO.getRecruitNo() );
+      
+      int result = this.recruitService.createPost(recruitFormVO);
+      
+      log.info("createPost->recruitFormVO : " + recruitFormVO);
+      
+      return "redirect:/entRecruit/recruitList";
+   }
+   
+   //일반 리스트 불러오기
+   ///list?keyword=&recruitJob=&recruitLocation=&recruitWorkType=IWS01002&recruitAcdmCr=&currentPage=2&sort=null
+   @RequestMapping(value = "/list")
+   public String list(RecruitFormVO formVO, Model model,@RequestParam(value = "currentPage",required = false,defaultValue = "1") int currentPage) {
+	   int total=0;
+	   List<RecruitVO> recruitVOList=null;
+      MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+      log.info("memberVO : " + memberVO);
+      log.info("formVO : " + formVO);
+      
+      log.info("list => formVO : " + formVO);
+      log.info("currentPage : {}", formVO.getCurrentPage());
+      
+      
+      
+      // 입사제안 리스트
+      List<JobOfferVO> jobOfferVOList = jobOfferService.getOffers(memberVO);
+      log.info("list => jobOfferVOList : " + jobOfferVOList);
+      
+      // 이력서 리스트
+      List<ResumeVO> resumeVOList = resumeService.getResumes(memberVO);
+      log.info("list => resumeVOList : " + resumeVOList);
+      
+      List<ComCodeInfoVO> comCodeInfoVOList = this.recruitService.getComCode();
+		
+	  List<ComDetCodeInfoVO> comCodeAb = this.recruitService.getComCodeInfoa();
+      
+	  String memId = "";
+	  
+	  if(memberVO == null || Objects.isNull(memberVO)) {
+		  memId = null;
+	  }else {
+		  memId = memberVO.getMemId();
+	  }
+	  
+	  
+	  //고용 형태 가지고 오는 것
+	  List<ComDetCodeInfoVO> comCodeAa = this.recruitService.getComCodeInfob();
+	  
+      
+     log.info("comCodeAc" + comCodeAa);
+     // 입사지원 횟수
+      int appCnt = 0;
+      for(int i = 0; i < resumeVOList.size(); i++) {
+          List<ApplicationVO> applicationList = resumeService.getApplications(resumeVOList.get(i).getResumeNo());
+          log.info("applicationList : " + applicationList);
+          appCnt += applicationList.size();
+      }
+      log.info("appCnt : " + appCnt);
+      
+      List<InterestRecruitVO> interestRecruitVOList = recruitService.getInterestRecruit(memberVO);
+      log.info("interestRecruitVOList : " + interestRecruitVOList);
+      
+      //채용공고 상품구매한 기업 LIST 랜덤으로 가져오기.
+      List<PaymentVO> paymentVOList = this.recruitService.getRecruititemEntList();
+      
+      log.info("고ㅓㅏ연 : 부디ㅣㅣㅣㅣㅣㅣ :" + paymentVOList);
+      
+      
+      Map<String,Object> map = new HashMap<String, Object>();
+
+      int size = 9;
+      
+      map.put("size", size);
+      //페이징 처리
+      map.put("memId", memId);
+           
+      map.put("currentPage", formVO.getCurrentPage());
+
+      map.put("sort",formVO.getSort());
+      
+      
+      log.info("asdfkjhbasdjkfhajsdf"  + formVO);
+      if (formVO.getRecruitWorkType() != null) {
+          map.put("recruitLevels", formVO.getRecruitWorkType());
+      }
+      if (formVO.getRecruitJobs() != null) {
+          map.put("recruitJobs", formVO.getRecruitJobs());
+      }
+      if (formVO.getRecruitLocation() != null) {
+          map.put("recruitLocations", formVO.getRecruitLocation());
+      }
+      if (formVO.getRecruitAcdmCr() != null) {
+          map.put("selectStudies", formVO.getRecruitAcdmCr());
+      }
+
+      recruitVOList = this.recruitService.getList(map);
+      
+      log.info("zkdjfkljz" + recruitVOList );
+      
+      if(formVO.getRecruitWorkType() == null && formVO.getRecruitJobs() == null 
+    		  	&& formVO.getRecruitLocation() == null && formVO.getRecruitAcdmCr() == null) {
+    	  total = this.recruitService.getTotal(map);
+      }else {
+    	  total = this.recruitService.getConditionTotal(map);
+      }
+      log.info("total: " + total);
+      
+      ArticlePage<RecruitVO> data = new ArticlePage<RecruitVO>(total, formVO.getCurrentPage(), 9, 5, recruitVOList);
+      
+      data.setUrl("/recruit/list");
+      data.setRecruitJobs(formVO.getRecruitJobs() );
+      data.setRecruitLocation(formVO.getRecruitLocation());
+      data.setRecruitWorkType(formVO.getRecruitWorkType());
+      data.setRecruitAcdmCr(formVO.getRecruitAcdmCr());
+      data.setSort(formVO.getSort());
+      
+      log.info("zzeb: " + comCodeInfoVOList);
+      
+      model.addAttribute("memId", memId);
+      
+      model.addAttribute("jobOfferVOList",jobOfferVOList);
+      
+      model.addAttribute("resumeVOList",resumeVOList);
+      
+      model.addAttribute("appCnt",appCnt);
+      
+      model.addAttribute("interestRecruitVOList",interestRecruitVOList);
+      
+      model.addAttribute("recruitVOList",recruitVOList);
+      
+      model.addAttribute("comCodeInfoVOList", comCodeInfoVOList);
+      
+      //고용 형태
+      model.addAttribute("recruitWorkType", formVO.getRecruitWorkType());
+      
+      //학력
+      model.addAttribute("selectStudies", formVO.getRecruitAcdmCr());     
+      
+      //근무지역
+      model.addAttribute("recruitLocation", formVO.getRecruitLocation());     
+      
+      //직업
+      model.addAttribute("recruitJobz", formVO.getRecruitJobs());     
+      
+      model.addAttribute("comCodeAb", comCodeAb);
+      
+      model.addAttribute("comCodeAa", comCodeAa);
+
+      model.addAttribute("data", data);
+      //채용공고 상품 등록한 기업 List 랜덤으로 뿌려주기.
+      model.addAttribute("paymentVOList", paymentVOList);
+      
+      return "recruit/list";
+   }
+   
+   //스크랩순으로 리스트 불러오기
+   @GetMapping("/scrapList")
+   public String scrapList(RecruitFormVO formVO,String sort,Model model,@RequestParam(value = "currentPage",required = false,defaultValue = "1") int currentPage ) {
+
+      MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+      
+      log.info("list => memberVO : " + memberVO);
+      
+      // 입사제안 리스트
+      List<JobOfferVO> jobOfferVOList = jobOfferService.getOffers(memberVO);
+      log.info("list => jobOfferVOList : " + jobOfferVOList);
+      
+      // 이력서 리스트
+      List<ResumeVO> resumeVOList = resumeService.getResumes(memberVO);
+      log.info("list => resumeVOList : " + resumeVOList);
+      
+      List<ComCodeInfoVO> comCodeInfoVOList = this.recruitService.getComCode();
+		
+	  List<ComDetCodeInfoVO> comCodeAb = this.recruitService.getComCodeInfoa();
+      
+	  String memId = memberVO.getMemId();
+	  
+	  //고용 형태 가지고 오는 것
+	  List<ComDetCodeInfoVO> comCodeAa = this.recruitService.getComCodeInfob();
+	  
+	  int size = 9;
+      
+     log.info("comCodeAc" + comCodeAa);
+     // 입사지원 횟수
+      int appCnt = 0;
+      for(int i = 0; i < resumeVOList.size(); i++) {
+          List<ApplicationVO> applicationList = resumeService.getApplications(resumeVOList.get(i).getResumeNo());
+          log.info("applicationList : " + applicationList);
+          appCnt += applicationList.size();
+      }
+      log.info("appCnt : " + appCnt);
+      
+      List<InterestRecruitVO> interestRecruitVOList = recruitService.getInterestRecruit(memberVO);
+      log.info("interestRecruitVOList : " + interestRecruitVOList);
+      
+      Map<String,Object> map = new HashMap<String, Object>();
+      
+      //페이징 처리
+      map.put("memId", memId);
+
+      map.put("currentPage", currentPage);
+      
+      map.put("size", size);
+      
+      List<RecruitVO> recruitVOList = this.recruitService.getScrapList(map);
+      
+      int total = this.recruitService.getTotal(map);
+      
+      ArticlePage<RecruitVO> data = new ArticlePage<RecruitVO>(total, currentPage, 9, recruitVOList);
+      
+      data.setUrl("/recruit/scrapList");
+      if(sort != null) {
+      data.setSort(sort);
+      }
+      log.info("zzeb: " + comCodeInfoVOList);
+      
+      model.addAttribute("memId", memId);
+      
+      model.addAttribute("jobOfferVOList",jobOfferVOList);
+      
+      model.addAttribute("resumeVOList",resumeVOList);
+      
+      model.addAttribute("appCnt",appCnt);
+      
+      model.addAttribute("interestRecruitVOList",interestRecruitVOList);
+      
+      model.addAttribute("recruitVOList",recruitVOList);
+      
+      model.addAttribute("comCodeInfoVOList", comCodeInfoVOList);
+      
+      model.addAttribute("comCodeAb", comCodeAb);
+      
+      model.addAttribute("comCodeAa", comCodeAa);
+
+      model.addAttribute("data", data);
+      
+      return "recruit/list";
+   }
+   
+   //마감임박 순으로 불러오기
+   @GetMapping("/deadlineList")
+   public String deadlineList(Model model,String sort,@RequestParam(value = "currentPage",required = false,defaultValue = "1") int currentPage ) {
+
+      MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+      
+      log.info("list => memberVO : " + memberVO);
+      
+      // 입사제안 리스트
+      List<JobOfferVO> jobOfferVOList = jobOfferService.getOffers(memberVO);
+      log.info("list => jobOfferVOList : " + jobOfferVOList);
+      
+      // 이력서 리스트
+      List<ResumeVO> resumeVOList = resumeService.getResumes(memberVO);
+      log.info("list => resumeVOList : " + resumeVOList);
+      
+      List<ComCodeInfoVO> comCodeInfoVOList = this.recruitService.getComCode();
+		
+	  List<ComDetCodeInfoVO> comCodeAb = this.recruitService.getComCodeInfoa();
+      
+	  String memId = memberVO.getMemId();
+	  
+	  //고용 형태 가지고 오는 것
+	  List<ComDetCodeInfoVO> comCodeAa = this.recruitService.getComCodeInfob();
+	  
+      
+	  log.info("comCodeAc" + comCodeAa);
+	  // 입사지원 횟수
+      int appCnt = 0;
+      for(int i = 0; i < resumeVOList.size(); i++) {
+          List<ApplicationVO> applicationList = resumeService.getApplications(resumeVOList.get(i).getResumeNo());
+          log.info("applicationList : " + applicationList);
+          appCnt += applicationList.size();
+      }
+      log.info("appCnt : " + appCnt);
+      
+      List<InterestRecruitVO> interestRecruitVOList = recruitService.getInterestRecruit(memberVO);
+      log.info("interestRecruitVOList : " + interestRecruitVOList);
+      
+      Map<String,Object> map = new HashMap<String, Object>();
+
+      int size = 9;
+      
+      map.put("size", size);
+      //페이징 처리
+      map.put("memId", memId);
+      
+      map.put("currentPage", currentPage);
+      
+      List<RecruitVO> recruitVOList = this.recruitService.getDeadlineList(map);
+      
+      int total = this.recruitService.getTotal(map);
+      
+      ArticlePage<RecruitVO> data = new ArticlePage<RecruitVO>(total, currentPage, 9, recruitVOList);
+      
+      data.setUrl("/recruit/deadlineList");
+      if(sort != null) {
+          data.setSort(sort);
+          }
+      
+      log.info("zzeb: " + comCodeInfoVOList);
+      
+      model.addAttribute("memId", memId);
+      
+      model.addAttribute("jobOfferVOList",jobOfferVOList);
+      
+      model.addAttribute("resumeVOList",resumeVOList);
+      
+      model.addAttribute("appCnt",appCnt);
+      
+      model.addAttribute("interestRecruitVOList",interestRecruitVOList);
+      
+      model.addAttribute("recruitVOList",recruitVOList);
+      
+      model.addAttribute("comCodeInfoVOList", comCodeInfoVOList);
+      
+      model.addAttribute("comCodeAb", comCodeAb);
+      
+      model.addAttribute("comCodeAa", comCodeAa);
+
+      model.addAttribute("data", data);
+      
+      return "recruit/list";
+   }
+   @ResponseBody
+   @PostMapping("/ajaxInterestRecruit")
+   public int ajaxInterestRecruit(@RequestBody InterestRecruitVO interestRecruitVO) {
+      
+      log.info("interestRecruitVO : "+ interestRecruitVO);
+      
+      int res = interestRecruitMapper.ajaxInterestRecruit(interestRecruitVO);
+      
+      log.info("res : " + res);
+      
+      if(res == 0) {
+         res = interestRecruitMapper.ajaxInterestRecAdd(interestRecruitVO);
+         log.info("add -> res : " + res);
+      }else {
+         res = interestRecruitMapper.ajaxInterestRecDel(interestRecruitVO);
+         log.info("del -> res : " + res);
+      }
+      
+      int count = interestRecruitMapper.getStoredRecruit(interestRecruitVO);
+      
+      return count;
+   }
+   
+	/**
+	 * 채용 공고 디테일 
+	 */
+   @GetMapping("/{recruitNo}/detail")
+   public String detail(@PathVariable("recruitNo") String recruitNo , Model model) {
+	   
+	   
+	   // 회원 아이디
+	   MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+	   
+	   log.info("recruitNo : " + recruitNo);
+	   // 채용 공고 상세정보
+	   RecruitVO recruitVO = recruitService.getByRecNo(recruitNo);
+	   log.info("recruitVO : " + recruitVO);
+
+	   // 직무 공통코드로 불러오기
+	   ComCodeInfoVO job = comCodeMapper.getComDetCodeInfo(recruitVO.getRecruitJob());
+	   log.info("job : " + job);
+
+	   // 고용형태 공통코드로 불러오기
+	   ComCodeInfoVO workType = comCodeMapper.getComDetCodeInfo(recruitVO.getRecruitWorkType());
+	   log.info("workType : " + workType);
+	   
+	   // 인사 담당자 직급 가지고 오는것 
+	   ComCodeInfoVO level = comCodeMapper.getComDetCodeInfo2(recruitVO.getRecruitLevel());
+	   log.info("level : " + level);
+	   
+	   // 혜택 및 복지 정보
+	   List<BenefitsVO> benefitsVOList = recruitService.getBenefits(recruitNo);
+	   log.info("benefitsVOList : " , benefitsVOList);
+	   
+	   // 첨부파일 리스트
+	   List<AtchFileDetailVO> atchFileList = atchFileDetailMapper.getAtchByAfId(recruitNo);
+
+	   // 관심공고 리스트
+	   List<InterestRecruitVO> interestRecruitVOList = recruitService.getInterestRecruit(memberVO);
+	   log.info("interestRecruitVOList : " + interestRecruitVOList);
+
+	   // 이력서 리스트
+	   List<ResumeVO> resumeVOList = resumeService.getResumes(memberVO);
+	   log.info("list => resumeVOList : " + resumeVOList);
+	   
+	   // 자기소개서 리스트
+	   String memId = "";
+  
+	   if(memberVO == null || Objects.isNull(memberVO)) {
+		   memId = null;
+	   }else {
+		   memId = memberVO.getMemId();
+	   }
+	   
+	   Map<String, Object> appMap = new HashMap<String, Object>();
+	   appMap.put("memId", memId);
+	   appMap.put("recruitNo", recruitNo);
+	   
+	   // 로그인한 멤버가 해당 채용공고에 지원을 했는지 여부
+	   int applicated = applicationService.isApplicated(appMap);
+	   
+       Map<String,Object> map = new HashMap<String,Object>();
+       map.put("memId",memId);
+		
+	   List<PortfolioVO> portfolioVOList = portfolioService.list(map); 
+	   log.info("list => portfolioVOList : " + portfolioVOList);
+	  
+	   model.addAttribute("recruitVO", recruitVO);
+	   model.addAttribute("benefitsVOList", benefitsVOList);
+	   model.addAttribute("job", job);
+	   model.addAttribute("workType", workType);
+	   model.addAttribute("level", level);
+	   model.addAttribute("atchFileList", atchFileList);
+	   model.addAttribute("interestRecruitVOList", interestRecruitVOList);
+	   model.addAttribute("resumeVOList", resumeVOList);
+	   model.addAttribute("portfolioVOList", portfolioVOList);
+	   model.addAttribute("applicated", applicated);
+	   
+	   return "recruit/detail";
+   }
+	   
+
+}

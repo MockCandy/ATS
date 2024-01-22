@@ -1,0 +1,192 @@
+.mypage-aside-con{
+    width: 240px;
+	border-radius: 30px;
+	background-color: #fff;
+	padding: 80px 36px 36px 36px;
+	font-family: 'Noto Sans KR', sans-serif;
+}
+.mem-ul-set{
+	display: flex;
+    flex-direction: column;
+    gap: 16px;
+	
+}
+.mem-ul-set ul li {
+	display: flex;
+    align-items: center;
+    margin-top: 4px;
+}
+.sub-title{
+	font-size:16px;
+	font-weight: bold;
+	margin-left: 12px;
+}
+.sub-title:hover{
+	text-decoration: none;
+}
+.mem-ul{
+	margin-bottom: 16px;
+}
+
+.body-sub-con-tit{
+	font-size:15px;
+	color:#666c76;
+}
+
+.mem-ul li{
+	padding: 4px 4px 2px 16px;  
+}
+.mem-ul li a{
+	margin-left: 16px;
+}
+.memActive{
+/*  	border-bottom: 1px solid #00c362;  */
+	color: #00c362;
+}
+
+
+.body-sub-con::-webkit-scrollbar {
+    width: 5px;  /* 스크롤바의 너비 */
+}
+
+.body-sub-con::-webkit-scrollbar-thumb {
+    height: 30%; /* 스크롤바의 길이 */
+    background: #00c362; /* 스크롤바의 색상 */
+    
+    border-radius: 10px;
+}
+
+.body-sub-con::-webkit-scrollbar-track {
+    background: rgba(33, 122, 244, .1);  /*스크롤바 뒷 배경 색상*/
+}
+.rcmd-list{
+	display:grid;
+	grid-template-columns : 1fr 1fr;
+	gap : 25px;
+}
+.rcmd-item {
+	display:flex;
+	gap:10px;
+	align-items:center;
+	padding:10px;
+}
+.rcmd-item {
+	border: 1px solid #efefef;
+}
+.consult-item {
+	margin-bottom:40px;
+}
+.consult-tit {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    width:185px;
+}
+.rcmd-item-info{
+	width:calc(100% - 90px);
+	padding:5px 10px;
+}
+.rcmd-item-img {
+	width:65px;
+	height:65px;
+}
+.rcmd-item-img img{
+	width:100%;
+	height:100%;
+	object-fit:cover;
+}
+
+.rcmd-item-top {
+	display:flex;
+	margin-bottom:9px;
+}
+
+.preview{
+	cursor:pointer;
+	transition:all 0.3s;
+}
+.preview:hover{
+	font-weight:bold;
+}
+
+
+#modal-preview{
+	padding:40px 0 40px 40px;
+	height:800px!important;
+}
+#modal-preview .icon-close{
+    background: #FFF;
+    margin-bottom: 10px;
+    position: absolute;
+    right: -15px;
+    top: -50px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a9a9a9;
+    cursor: pointer;
+}
+
+
+#modal-preview section{
+	height:720px;
+	overflow-y:auto;
+}
+.detail-one-line{
+	display:grid;
+	grid-template-columns:90px auto;
+	padding-right:90px;
+}
+
+.career, .acdmcr, .result, .awards, .languages{
+	display:grid;
+	grid-template-columns: 140px auto;
+	margin-bottom:20px;
+}
+.detail-left-area{
+	display:flex;
+	
+}
+.detail-right-area{
+	display:grid;
+	grid-template-columns: 1fr 1fr;
+	row-gap:15px;
+}
+
+.detail-right-area>div {
+	display:grid;
+	align-items:center;
+	grid-template-columns : 70px auto;
+}
+
+.detail-career, .detail-acdmcr {
+	margin-bottom:40px;
+}
+
+.language-top{
+	display:flex;
+	align-items:center;
+	gap:7px;
+}
+
+.language {
+	display:grid;
+	grid-template-columns: 40px auto;
+	grid-template-rows: 29px auto;
+}
+
+.language-detail{
+	display:grid;
+	grid-template-columns: 1fr 1fr;
+	margin-bottom:12px;
+}
+
+.language-one-col{
+	display:grid;
+	grid-template-columns: 70px auto;
+	margin-bottom:10px;
+}

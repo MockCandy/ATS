@@ -1,0 +1,236 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec"
+	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<style>
+body {
+	background-color: #fff;
+	color: #333;
+}
+
+hr {
+	border: 1px solid #4CAF50; /* 초록색 선의 스타일 설정 */
+	margin: 20px 0; /* 선의 위아래 여백 설정 */
+}
+
+tbody {
+	display: table-row-group;
+	vertical-align: middle;
+	border-color: inherit;
+}
+
+.notice-table {
+	width: 90%
+}
+
+.container {
+	/*  	max-width: 80%;  */
+	/* 	margin: 20px auto; */
+	background-color: #fff;
+	padding: 20px;
+	margin: 56px auto 80px auto;
+	width: 960px;
+}
+
+.notice {
+	margin-top: 20px;
+	padding-top: 20px;
+}
+
+.notice-date {
+	font-size: 0.9em;
+}
+
+.notice-table {
+	margin-right: 5%;
+	text-align: center;
+	padding: 10px;
+	border-bottom: 1px solid #8FBC8F;
+}
+
+.notice-cntnt {
+    display: flex;
+    justify-content: space-around;
+	margin-right: 5%;
+	text-align: center;
+	margin:3%;
+	border-bottom: 1px solid #8FBC8F;
+}
+
+.notice-category {
+	display: inline-block;
+	margin-right: 5px;
+}
+
+.notice-link {
+	text-decoration: none;
+	color: #333;
+	font-weight: 500;
+}
+
+.notice-link:hover {
+	color: #41A541;
+}
+
+.notice-icon {
+	color: #41A541;
+	margin-left: 5px;
+}
+
+.notice-highlight {
+	color: #41A541;
+	font-weight: bold;
+}
+
+.title {
+	display: inline-block;
+	color: #444;
+	font-size: 32px;
+	font-weight: normal;
+	letter-spacing: -4px;
+	line-height: 36px;
+	vertical-align: top;
+}
+
+.middle-tit {
+	margin-bottom: 20px;
+	margin-left: 20px;
+}
+
+.searchTypeBox {
+	display: flex;
+    justify-content: flex-end;
+}
+
+.
+#content {
+	margin: 56px auto 80px auto;
+	width: 960px;
+}
+
+.trNum {
+	color: #329632;
+}
+
+.notice-tit {
+	padding: 14px; 10px;
+}
+
+.list-btn {
+	font-size: 14px;
+	background-color: #0000;
+	border-radius: 15px;
+	border-color: #0000;
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 10px;
+	margin-top: 10px;
+	/* 	line-height:50%; */
+	padding: 5px;
+	margin-left: 90%;
+}
+
+.list-btn:hover {
+	padding:8px;
+	background-color: rgba(143, 188, 143, 1);
+	color: white;
+}
+
+.paging-in-ul {
+	display: flex;
+	justify-content: center;
+	margin: 30px;
+}
+
+.paging-in-li {
+	margin-right: 10px;
+}
+
+.not-search{
+	display: flex;
+    justify-content: flex-end;
+}
+
+.not-keyword {
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.not-search-btn {
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    cursor: pointer;
+    padding:5px;
+}
+.not-keyword:focus {
+	 border: 1px solid green;
+	 outline: none;
+}
+
+.not-search-btn:hover {
+	border: 1px solid green;
+}
+
+.not-keyword:hover {
+	 border: 1px solid green;
+ }
+ 
+ .notice-mid-tit {
+    display: flex;
+    justify-content: space-around;
+}
+</style>
+
+<div class="container">
+	<h3 class="title mt-20 mb-40">고객센터</h3>
+	<h2 class="middle-tit">공지사항</h2>
+	<hr style="color: #1E821E;" />
+	
+		<form class="not-search">
+			<input class="not-keyword" type="text" placeholder="검색어를 입력하세요" name="keyword" value="${keyword}" />
+			<input class="not-search-btn" type="submit" value="검색" />
+		</form>
+		
+	<button type="button" onclick="location.href='/noticeBoard/create'" class="list-btn">공지등록</button>
+	
+	
+	<div style="font-size: 20px;" class="notice mb-20 mt-20">
+		<ul class="notice-category u-list-inline g-font-weight-500 mb-2">
+			<li class="notice-category">
+				<a class="notice-link g-color-gray-dark-v5 g-color-main--hover" href="/">Home</a>
+					<i class="notice-icon fa fa-angle-right g-color-gray-light-v2"></i></li>
+			<li class="notice-category">
+				<a class="notice-link g-color-gray-dark-v5 g-color-main--hover" href="#">고객센터</a>
+					<i class="notice-icon fa fa-angle-right g-color-gray-light-v2"></i></li>
+			<li class="notice-category">
+				<a href="/noticeBoard/list" class="notice-highlight">공지사항</a></ul>
+			</li>
+		</ul> 
+	</div>
+		
+		<div class="notice-mid-tit mt-30 mb-20">
+			<div>번호</div>
+			<div>제목</div>
+			<div>작성일</div>
+		</div>
+		
+		<div class="notice-content">
+			<c:forEach var="noticeVO" items="${data.content}">
+				<div class="notice-cntnt">
+<%-- 					<input type="hidden" name="boardId" value="${noticeVO.boardId}" /> --%>
+					<p style="width: 50px;">${noticeVO.rnum}</p>
+					<p style="width: 400px;"><a href="/noticeBoard/detail?boardId=${noticeVO.boardId}">${noticeVO.boardTitle}</a></p>
+					<p style="width: 100px;"><fmt:formatDate value="${noticeVO.boardWritingDt}" pattern="yyyy.MM.dd" /></p>
+				</div>
+			</c:forEach>
+		</div>
+<div class="lecture-page">${data.getPagingArea3()}</div>
+</div>
+

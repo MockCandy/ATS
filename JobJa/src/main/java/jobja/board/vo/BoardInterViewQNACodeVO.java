@@ -1,0 +1,12 @@
+package jobja.board.vo;
+
+import lombok.Data;
+
+@Data
+public class BoardInterViewQNACodeVO {
+	
+	private String quCode;			//질문코드
+	private String quQuestion;		//질문내용
+	private String quQuestionNm;	//질문번호
+
+}

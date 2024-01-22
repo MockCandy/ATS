@@ -1,0 +1,122 @@
+.consultDetail-line {
+	display:grid;
+	grid-template-columns:100px auto;
+}
+
+.memberProfile-line{
+	display:grid;
+	grid-template-columns:110px auto;
+	align-items:center;
+}
+
+.memberProfile{
+	display:grid;
+	grid-template-columns:165px auto;
+}
+
+.memberImg {
+	padding:5px;
+	width:150px;
+	height:150px;
+	border:1px solid #ccc;
+}
+
+.memberProfile img{
+	width:100%;
+	height:100%;
+	object-fit:cover;
+}
+
+.memberDetail{
+	display:flex;
+	flex-direction:column;
+	justify-content:space-around;
+}
+.consultArea{
+	padding:5px;
+	margin-top: 40px;	
+}
+.consultArea >div {
+	padding-right:30px;
+	margin-bottom:25px;
+}
+
+.consultCont{
+	line-height:30px;
+}
+
+#sortForm span{
+	font-size : 14px;
+	color:#999;
+	cursor:pointer;
+}
+#sortForm span.active{
+	color:#666;
+	font-weight:bold;	
+}
+
+#modal-cnsltntReview {
+	height:600px!important;
+	padding:20px;
+}
+
+#modal-cnsltntReview .icon-close{
+    background: #FFF;
+    margin-bottom: 10px;
+    position: absolute;
+    right: -35px;
+    top: -35px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a9a9a9;
+    cursor: pointer;
+}
+
+.icon-close:before {
+    content: "\f00d";
+    display: inline-block;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: #666;
+    cursor: pointer;
+}
+
+#modal-cnsltntReview .btnArea{
+	text-align:center;
+}
+
+.review-rate{
+	display:flex;
+	align-items:center;
+	font-size:14px;
+}
+
+.review-cont{
+	height:220px;
+	overflow-y:scroll;
+}
+
+#modal-report {
+	padding:20px;
+	height:500px!important;
+}
+
+#modal-report .icon-close{
+    background: #FFF;
+    margin-bottom: 10px;
+    position: absolute;
+    right: -35px;
+    top: -35px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    color: #a9a9a9;
+    cursor: pointer;
+}

@@ -1,0 +1,168 @@
+package jobja.mypage.member.controller;
+
+import java.security.Principal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.item.service.ConsultReviewService;
+import jobja.item.service.ConsultService;
+import jobja.item.service.ItemService;
+import jobja.item.vo.ConsultantLogVO;
+import jobja.item.vo.ConsultantReviewVO;
+import jobja.item.vo.ItemVO;
+import jobja.item.vo.PaymentVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/memberPremium")
+@Controller
+public class MemberConsultantController {
+	
+	@Autowired
+	ConsultService consultService;
+	
+	@Autowired
+	ConsultReviewService consultReviewService;
+
+	@Autowired
+	ItemService itemService;
+	 
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	
+	@GetMapping("/consultantLog")
+	public String consultantLog(Principal principal, Model model) {
+		
+		//나의 상담기록 가져오기
+		List<MemberVO> consultantLogVOList = this. consultService.getMyConsultantLog(principal.getName());
+		
+		log.info("rhkdus?//?/?? list : " + consultantLogVOList);
+		
+		model.addAttribute("consultantLogVOList", consultantLogVOList);
+		
+		return "mypageMem/memberConsultantLog";
+	}
+	
+	
+	@PostMapping("/ajaxgetOneReview")
+	@ResponseBody
+	public ConsultantLogVO ajaxgetOneReview(@RequestBody ConsultantLogVO consultantLogVO) {
+		log.info("ㅎㅇㅎㅇㅎㅇ" + consultantLogVO);
+		
+		//가져온 상담 기록에서 기록 보기 눌렀을 때 상담사가 기록한 코멘트 보기
+		consultantLogVO = this.consultService.ajaxgetOneReview(consultantLogVO.getCnsltntNo());
+		
+		log.info("감ㅅ다온거 : " + consultantLogVO);
+		
+		return consultantLogVO;
+	}
+	
+	@PostMapping("/ajaxgetReviewInfo")
+	@ResponseBody
+	public PaymentVO ajaxgetReviewInfo(@RequestBody PaymentVO paymontVO) {
+		log.info(" ㅎㅇㅎㅇ" + paymontVO);
+		
+		//마이페이지 리뷰 작성 전 info 가져옴.
+		paymontVO = this.consultService.ajaxgetReviewInfo(paymontVO.getPayNo());
+		
+		log.info(":dddddd 리뷰ㅜ " + paymontVO);
+		
+		return paymontVO;
+	}
+	
+	@PostMapping("/ajaxinsertReview")
+	@ResponseBody
+	public int ajaxinsertReview(@RequestBody ConsultantReviewVO consultantReviewVO) {
+		
+		log.info("gggg" + consultantReviewVO);
+		
+		//리뷰 등록
+		int result = this.consultService.ajaxinsertReview(consultantReviewVO);
+		
+		log.info("resultasldfas : " + result);
+		
+		return 1;
+	}
+	
+	
+	/** 상담사 회원 리스트 출력
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/consultantList")
+	public String consultantList(Model model) {
+		
+		List<MemberVO> memberVOList = this.consultService.consultantList();
+		
+		log.info("consultantList -> memberVOList : " +memberVOList);
+		
+		model.addAttribute("memberVOList", memberVOList);
+		
+		return "mypageMem/memberConsultantList";
+	}
+	
+
+	@RequestMapping(value = "/items")
+	public String items(Model model,ItemVO itemVO) {
+		
+		log.info("itemVO" + itemVO);
+		
+		MemberVO memberVO = modelAttributeUtil.getCurrentLoginName();
+		
+		log.info("memberVO2" + memberVO);
+		
+		List<ItemVO> consultItemVOList = this.itemService.getConsultItemList();
+		
+		String conMemId = itemVO.getConMemId();
+		
+		model.addAttribute("conMemId", conMemId);
+		
+		model.addAttribute("consultItemVOList", consultItemVOList);
+		
+		model.addAttribute("memberVO", memberVO);
+		
+		log.info("conMemId"+conMemId);
+		
+		return "mypageMem/consultItems";
+	}
+	
+	
+
+	
+	//일반회원이 구매한 상담목록
+	@GetMapping("/payitems")
+	public String memPayitems(Principal principal, Model model) {
+		
+		List<PaymentVO> paymentVOList = this.itemService.getmemPayitems(principal.getName());		
+		
+		log.info("paymentVOList : ㅇㅇ" + paymentVOList);
+		
+		PaymentVO memTotalPay = this.itemService.getmemPayTotalMoney(principal.getName());
+		
+		for (PaymentVO paymentVO : paymentVOList) {
+		    if (paymentVO.getItemCompanyNo().equals("PDC0100101")) {
+		        paymentVO.setItemNm("상담 상품!");
+		    }
+		}
+
+		
+		model.addAttribute("paymentVOList", paymentVOList);
+		model.addAttribute("memTotalPay", memTotalPay);
+		
+		return "mypageMem/memberPayItems";
+	}
+	
+	
+
+}

@@ -1,0 +1,651 @@
+<style>
+
+.page-main-box{
+	border-radius: 30px;
+	display:grid;
+	grid-template-columns: 1fr 2fr;
+	gap : 20px;
+	margin-bottom : 30px;
+}
+
+.inner-box{
+	background-color: white;
+    border-radius: 24px;
+	padding: 40px 30px;
+	margin-bottom: 30px;
+}
+
+.rsm_ttl {
+    font-size: 16px;
+    letter-spacing: -0.4px;
+    color: #444;
+    font-weight: normal;
+    padding-bottom:8px;
+    display:flex;
+    align-items:center;
+}
+
+.rsm_ttl__valid {
+    display: inline-block;
+    width: 10px;
+    margin-right: 4px;
+    color: #f44336;
+    text-align: center;
+    font-size: 18px;
+}
+
+.rsm-vertical-center {
+    display: flex;
+    align-items: center;
+	position:relative;
+	margin-bottom:20px;
+}
+.rsm-vertical-center::before{
+	content:"";
+	position:absolute;
+	width:100%;
+	height:1px;
+	background-color: #eee;
+	bottom:0;
+	left:0;
+	
+}
+
+hr {
+    height: 1px;
+    background-color: #dcdcdc;
+    border: none;
+}
+
+.rsm_section {
+    position: relative;
+}
+
+.input_resume_basic {
+    position: relative;
+    padding-bottom: 30px;
+    min-height: 148px;
+    color: #ccc;
+}
+
+.photo_use_basic {
+    clear: both;
+}
+
+.photo_use_basic .set1 {
+    float: left;
+    padding-right: 0;
+    
+}
+
+.input_resume_basic .set2 {
+    width: 320px;
+    padding-bottom: 12px;
+    
+    
+}
+
+.input_resume_basic input {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+.photo_use_basic .resume_addphoto {
+    position: absolute;
+    top: 16px;
+    right: 0;
+}
+
+.input_resume_basic .input_resume_name_kr {
+    font-size: 28px;
+    font-weight: bold;
+    line-height: 34px;
+    padding: 2px 0 2px;
+}
+
+.photo_use_basic.input_resume_basic .set1 {
+    float: none;
+}
+
+.input_resume_basic .set1 {
+    box-sizing: border-box;
+    padding: 16px 0 18px;
+}
+
+.input_resume_basic .set2 .input_resume_email, .input_resume_basic .set2 .input_resume_phone {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.input_resume_basic .input_resume_email, .input_resume_basic .input_resume_phone {
+    font-size: 14px;
+    line-height: 19px;
+    padding: 2px 0 2px;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.input_resume_basic input {
+    display: block;
+    width: 100%;
+    border: none;
+}
+
+.resume-basic__gender-birth {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 21px;
+}
+
+.with_icon {
+    display: flex;
+    align-items: center;
+}
+
+.with_icon i {
+	font-size: 15px;
+	color:#c5c7cc;
+	margin-right: 10px;
+}
+.with_icon p {
+	color:black;
+	font-weight:bold;
+	font-size:15px;
+}
+
+.resume_addphoto {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 108px;
+    height: 108px;
+    background: #f9f9fb;
+    border: 1px solid #f3f3f4;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+.resume_addphoto img{
+	width:100%;
+	height:100%;
+	object-fit:	cover;
+}
+
+#preview_img{
+	width:108px;
+	height:108px;
+}
+
+.aa{
+	background-color: white;
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 13px;
+    height: 48px;
+}
+
+.rsm_sub_info {
+    background: #f9f9fb;
+    border-radius: 6px;
+    margin: 12px 0 12px;
+    padding: 10px 12px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.rsm_sub_info li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+
+.rsm_input {
+    padding: 60px 80px 80px;
+    color: #444;
+}
+
+.resume-recommend-skill__title {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.resume-recommend-skill {
+    margin-bottom: 20px;
+}
+
+.resume-recommend-skill__list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.rsm_section .tag_input {
+    height: 48px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e6e9;
+}
+
+.rsm_section .cssel_ty1 .btn_sel, .rsm_section .tag_input {
+    line-height: 22px;
+    font-size: 16px;
+    font-weight: normal;
+    color: #57595b;
+    letter-spacing: -0.5px;
+}
+
+.rsm_section .iptwrap_ty1 {
+    position: relative;
+    width: 100%;
+}
+
+.iptwrap_ty1 {
+    display: inline-block;
+}
+
+.rsm_section .tagging_wrap {
+    position: relative;
+}
+
+.input_acd-score{
+	font-size:15px;
+}
+
+.career-three-div input {
+	font-size:15px;
+}
+
+/*  ///////////////// 회사 경력 css 시작  ///////////////// */
+.career-div {
+	display:grid;
+	grid-template-columns:250px auto;
+}
+
+.career-left-div{
+	width:280px;
+}
+
+.career-left-div .group-date{
+	display:flex;
+	align-items:center;
+	gap:3px;
+}
+
+.career-right-div{
+	display:flex;
+	flex-direction:column;
+	gap:12px;
+}
+.career-right-div p{
+	font-size:15px;
+	font-weight:bold;
+}
+.acd-career-right-div{
+	display:flex;
+	flex-direction:column;
+	gap:15px;
+}
+.acd-career-right-div p{
+	font-size:15px;
+	font-weight:bold;
+}
+.acd-career-div {
+	display:grid;
+	grid-template-columns:280px auto;
+	margin-bottom:40px;
+}
+
+
+.enterprise-name p{
+	font-size:20px;
+	font-weight:bold;
+}
+
+
+.enterprise-dept-position{
+	display:flex;
+	gap: 60px;
+	margin-bottom: 10px;
+}
+
+.input_ent_dept {
+	width: 250px;
+	font-size:15px;
+}
+
+.input_ent_position{
+	width: 250px;
+	font-size:15px;
+}
+
+.input_resume_text1{
+	width:250px;
+	font-size:15px;
+	font-size:20px;
+	font-weight:bold;
+}
+
+
+.enterprise-job-sal{
+	display:flex;
+	gap: 60px;
+	margin-bottom: 10px;
+}
+
+.input_ent_job{
+	width: 250px;
+	font-size:15px;
+}
+
+.input_ent_salary{
+	width: 250px;
+	font-size:15px;
+}
+
+.flexible_textarea textarea{
+	width:100%;
+	border:none;
+	outline:none;
+	font-size:15px;
+	min-height:115px;
+	resize:none;
+}
+
+
+.input_acd-score{
+	width:100px;
+}
+
+
+        #wordInput {
+            padding: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        #wordContainer {
+            display: flex;
+            flex-wrap: wrap;
+            gap:10px;
+            margin-top:12px;
+        }
+
+        .wordButton {
+		    display: inline-flex;
+		    align-items: center;
+		    padding: 9px 12px;
+		    background: #fff;
+		    background: #ebf9ef;
+		    border-radius: 4px;
+		    color: #00c362;
+		    font-size: 14px;
+		    font-weight: bold;
+		    position:relative;
+		    padding-right:30px;
+        }
+
+
+        .deleteIcon {
+		    position: absolute;
+		    top: 51%;
+		    transform: translateY(-50%);
+		    right: 6px;
+		    cursor: pointer;
+		    font-size: 13px;
+		    color: #00c362;
+		    margin-right: 0;
+        }
+        
+        .deleteIcon::before {
+		    content:'\f00d';
+		    display: inline-block;
+		    position: absolute;
+		    top: 50%;
+		    right: 50%;
+		    transform: translate(-50%, -50%);
+		    font-family: "Font Awesome 5 Free";
+		    font-size: 12px;
+		    font-weight: 900;
+		    color: #00c362;
+		    cursor: pointer;
+    	}
+
+.lang-line-parent{
+	display: flex;
+}
+
+.lang-line-child{
+	display: flex;
+}
+
+.resume-name {
+	font-size: 28px;
+	font-weight:bold;
+	margin-bottom:17px;
+}
+
+.resume-one-line{
+	margin-bottom:20px;
+}
+
+.resume-two-div {
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	margin-bottom:60px;
+}
+
+.career-two-div {
+	display:grid;
+	grid-template-columns:1fr 1fr;
+}
+.career-three-div {
+	display:grid;
+	grid-template-columns:1fr 1fr 1fr;
+}
+
+.career-four-div{
+	display:grid;
+	grid-template-columns:1fr 1fr 1fr 1fr;
+}
+
+.flexible_textarea{
+	width:100%;
+	height:150px;
+	overflow:auto;
+	padding:12px;
+    border: 1px solid #e5e6e9;
+    border-radius:5px;
+}
+
+.btn_check {
+	font-size:14px;
+	font-weight:bold;
+	display:flex;
+	align-items:center;
+	gap:7px;
+	margin-top:12px;
+}
+
+.group-date {
+	letter-spacing:-0.04em;
+	font-size:15px;
+	font-weight:bold;
+}
+
+input[type=date]{
+	width:130px;
+}
+
+.certi-career-div {
+	display:grid;
+	grid-template-columns: 280px auto;
+	margin-bottom:40px;
+	row-gap:40px;
+}
+
+.result-div {
+	display:grid;
+	grid-template-columns: 280px auto;
+	margin-bottom:40px;
+	row-gap:40px;
+}
+
+.result-div-right-div{
+	display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.certi-career-right-div {
+	display:flex;
+	flex-direction: column;
+	gap:15px;
+}
+
+.awards-career-div{
+	display:grid;
+	grid-template-columns:250px auto;
+}
+
+#awards-career-div {
+	display:grid;
+	row-gap:40px;
+}
+
+.awards-career-right-div{
+	display:flex;
+	flex-direction: column;
+	gap:12px;
+}
+
+.lang-career-left-div>p{
+	display:flex;
+	align-items:center;
+	gap:15px;
+}
+
+.lang-career-div {
+	display:grid;
+	grid-template-columns:250px auto;
+}
+
+.lang-det-left-div{
+	display:grid;
+	grid-template-columns : 250px auto;
+}
+
+.lang-det-left-div input[type=text] {
+	width:95%;	
+	padding:2px 5px!important;
+}
+
+.lang-det-left-div .group-date{ 
+	display:grid;
+	grid-template-columns:1fr 1fr;
+	font-size:16px; 
+	font-weight:normal;
+	margin-bottom:7px;
+}
+.lang-career-right-div {
+	display:flex;
+	flex-direction: column;
+}
+
+
+
+
+/*
+	20240108 이력서 css 다시 간다. 심우식
+*/
+
+.lang-div {
+	display:grid;
+	grid-template-columns:250px auto;
+}
+
+.lang-det-div-left{
+	grid-template-columns : 250px auto;
+	gap:12px;
+}
+
+.lang-det-div-right{
+	margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.lang-date-text{
+	display: grid;
+    grid-template-columns: 1fr 1fr;
+    text-align: center;
+    font-weight: bold;
+}
+
+
+.fixed-footer {
+	position:fixed;
+	width:100%;
+	height: 88px;
+	background-color:#fff;
+	bottom:0;
+	left:0;
+	z-index:999;
+}
+
+.fixed-footer .cen {
+	display:flex; 
+	justify-content:flex-end;
+	align-items:center;
+	padding:0;
+	height:100%;
+	gap:10px;
+}
+
+#btnPDFSave {
+	border:none;
+	position:relative;
+	padding-left:23px;
+	color:#00c362;
+	background-color:#fff;
+	font-weight:bold;
+	transition:all 0.2s;
+	cursor:pointer;
+}
+#btnPDFSave:hover {
+	color:#00a85d;
+}
+
+#btnPDFSave::before {
+	content:"\f0c7";
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    font-size:20px;
+    color:#00c362;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 400;
+    cursor: pointer;
+	transition:all 0.2s;
+}
+#btnPDFSave:hover::before {
+    color:#00a85d;
+}
+
+.no-border input[type=text] {
+	border:none;
+	padding: 5px 10px;
+}
+.no-border input[type=text]:focus {
+	outline:1px solid #ccc;
+}

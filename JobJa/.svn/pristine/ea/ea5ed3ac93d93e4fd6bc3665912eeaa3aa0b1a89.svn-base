@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardInquiryMapper">
+
+	<insert id="createPost" parameterType="boardInquiryVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="boardId">
+			SELECT 
+    			'INQ' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BOARD_ID, 4))), 0) + 1, 5, '0') AS NEXT_BOARD_ID
+			FROM  
+    			BOARD_INQUIRY
+		</selectKey>
+	
+		INSERT INTO BOARD_INQUIRY
+			(
+			  BOARD_ID
+			, MEM_ID
+			, BOARD_TITLE
+			, BOARD_CNTNT
+			, WIRT_DT
+			, BOARD_UPDT_DT
+			, EMPL_TIP_AF_ID
+			, BOARD_ADMIN_ANSWER
+			)
+		VALUES
+			(
+			  #{boardId}
+			, #{memId}
+			, #{boardTitle}
+			, #{boardCntnt}
+			, SYSDATE
+			, null
+			, #{emplTipAfId}
+			, #{boardAdminAnswer}
+			)
+	
+	</insert>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM 
+			BOARD_INQUIRY
+		WHERE 1=1
+	</select>
+	
+	<select id="list" resultMap="boardInquiryMap">
+		SELECT 
+			T.*
+		FROM 
+		(
+	    	SELECT 
+	    	  ROW_NUMBER() OVER(ORDER BY A.WIRT_DT DESC) RNUM
+	    	, A.BOARD_ID
+	        , A.MEM_ID
+	        , A.BOARD_TITLE
+	        , A.BOARD_CNTNT
+	        , A.WIRT_DT
+	        , A.BOARD_UPDT_DT
+	        , A.EMPL_TIP_AF_ID
+	        , B.AFD_SEQ
+	        , B.AF_ID
+	        , B.AFD_ORIGIN_NM
+	        , B.AFD_SAVE_NM
+	        , B.AFD_FILE_SIZE
+	        , B.AFD_SAVE_PATH
+	        , B.AFD_EXTSN
+	        , B.AFD_CNTNT
+	        , B.AFD_UPLOAD_DT
+    	FROM 
+    		BOARD_INQUIRY A LEFT OUTER JOIN ATCH_FILE_DETAIL B ON A.BOARD_ID = B.AF_ID
+    	WHERE A.MEM_ID = #{memId}
+		) T
+		WHERE 
+			T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+		
+		
+	</select>
+	
+	<resultMap type="boardInquiryVO" id="boardInquiryMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="wirtDt" column="WIRT_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="emplTipAfId" column="EMPL_TIP_AF_ID"/>
+		<result property="boardAdminAnswer" column="BOARD_ADMIN_ANSWER"/>
+		<association property="atchFileVO" resultMap="atchFileMap"></association>
+	</resultMap>
+	
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID"/>
+		<result property="afCreatDt" column="AF_CREAT_DT"/>
+		<result property="afYn" column="AF_YN"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<select id="detail" parameterType="String" resultMap="boardInquiryMap">
+		SELECT 
+			  A.BOARD_ID
+			, A.MEM_ID
+			, A.BOARD_TITLE
+			, A.BOARD_CNTNT
+			, A.WIRT_DT
+			, A.BOARD_UPDT_DT
+			, A.EMPL_TIP_AF_ID
+			, A.BOARD_ADMIN_ANSWER
+			, B.AFD_SEQ
+			, B.AF_ID
+			, B.AFD_ORIGIN_NM
+			, B.AFD_SAVE_NM
+			, B.AFD_FILE_SIZE
+			, B.AFD_SAVE_PATH
+			, B.AFD_EXTSN
+			, B.AFD_CNTNT
+			, B.AFD_UPLOAD_DT
+		FROM 
+			BOARD_INQUIRY A 
+		LEFT OUTER JOIN ATCH_FILE_DETAIL B 
+		ON A.BOARD_ID = B.AF_ID
+		WHERE   BOARD_ID = #{boardId}
+	</select>
+	
+	<update id="updatePost" parameterType="String">
+		UPDATE 
+			BOARD_INQUIRY
+		SET 
+			  BOARD_TITLE = #{boardTitle}
+			, BOARD_CNTNT = #{boardCntnt}
+			, BOARD_UPDT_DT = SYSDATE
+		WHERE BOARD_ID = #{boardId}
+	</update>
+	
+	<delete id="delAtchdt" parameterType="String">
+		DELETE FROM 
+			ATCH_FILE_DETAIL
+		WHERE AF_ID = #{afId}
+	</delete>
+	
+	<delete id="delAtch" parameterType="String">
+		DELETE FROM 
+			ATCH_FILE
+		WHERE AF_ID = #{afId}
+	</delete>
+	
+	<delete id="deletePost" parameterType="boardInquiryVO">
+		DELETE FROM 
+			BOARD_INQUIRY
+		WHERE BOARD_ID = #{boardId}
+	</delete>
+	
+	<!-- 마이페이지 내가 쓴 게시글 가져오기. -->
+	<select id="myList" parameterType="hashMap" resultType="boardInquiryVO">
+	
+		SELECT T.* FROM
+       		 (
+		       SELECT 
+		            ROW_NUMBER() OVER(ORDER BY BOARD_ID) RNUM,
+				          BOARD_ID
+				        , MEM_ID
+				        , BOARD_TITLE
+				        , BOARD_CNTNT
+				        , WIRT_DT
+				        , BOARD_UPDT_DT
+				        , EMPL_TIP_AF_ID
+				FROM    
+						BOARD_INQUIRY
+				WHERE MEM_ID = #{memId}
+		        )T
+		       
+		  WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+		
+	</select>
+	
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+        FROM    BOARD_INQUIRY
+        WHERE   MEM_ID = #{memId}
+	</select>
+	
+	<select id="chatConsultant" parameterType="paymentVO" resultType="paymentVO">
+		SELECT
+		      PAY_NO
+		    , ITEM_COMPANY_NO
+		    , PAY_AMOUNT
+		    , PAY_METHOD
+		    , PAY_DT
+		    , PAY_USER_ID
+		    , PAY_REMNDR_CNT
+		    , PAY_STDT
+		    , PAY_EDDT
+		    , PAY_CON_ID
+		FROM 
+		    PAYMENT
+		WHERE PAY_USER_ID = #{payUserId}
+		AND   PAY_CON_ID = #{payConId}
+	</select>
+</mapper>

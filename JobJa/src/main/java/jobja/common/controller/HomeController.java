@@ -1,0 +1,55 @@
+package jobja.common.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import jobja.board.service.BoardEntReviewService;
+import jobja.board.vo.BoardEntReviewVO;
+import jobja.item.service.ItemService;
+import jobja.item.vo.PaymentVO;
+import jobja.recruit.service.RecruitService;
+import jobja.recruit.vo.RecruitVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Controller
+@Slf4j
+public class HomeController {
+	
+	@Autowired
+	RecruitService recruitService;
+	
+	@Autowired
+	BoardEntReviewService boardEntReviewService;
+	
+	@Autowired
+	ItemService itemService;
+	
+	@GetMapping("/")
+	public String main(Model model) {
+		
+		
+		// 스크랩이 많이 된 채용공고 리스트
+		List<RecruitVO> recruitVOList = recruitService.getPopularDesc();
+		log.info("recruitVOList : " + recruitVOList);
+		
+		// 공감이 많은 기업 리뷰 
+		List<BoardEntReviewVO> entReviewVOList = boardEntReviewService.getRecent();
+		log.info("entReviewVOList : " + entReviewVOList);
+		
+		//배너광고 구매 기업 이미지
+		PaymentVO paymentVO = this.itemService.getBannerImg();
+		
+		log.info("paymentVO dsaf : " + paymentVO);
+		
+		model.addAttribute("paymentVO", paymentVO);
+		model.addAttribute("recruitVOList", recruitVOList);
+		model.addAttribute("entReviewVOList", entReviewVOList);
+		
+		return "common/mainPage";
+	}
+
+}

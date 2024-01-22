@@ -1,0 +1,116 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<script src="/resources/ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="/resources/js/jquery-3.6.0.js"></script>
+
+<!-- lecture CSS 파일 링크 -->
+<link rel="stylesheet" type="text/css" href="/resources/css/lecture.css">
+
+<style>
+body {
+	font-weight: 400;
+	font-size: 1rem;
+	line-height: 1.6;
+	color: #052c52;
+/* 	-webkit-font-smoothing: antialiased; */
+/* 	-moz-osx-font-smoothing: grayscale; */
+/* 	-moz-font-feature-settings: "liga", "kern"; */
+	text-rendering: optimizelegibility;
+	background-color: #fff;
+}
+
+.col-lg-9 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.justify-content-center {
+	-ms-flex-pack: center !important;
+	justify-content: center !important;
+}
+
+img {
+	max-width: 90%;
+	height: auto;
+	padding: 20px;
+}
+
+.btm-btn{
+	text-align-last: justify;
+}
+
+.ck.ck-editor {
+   	max-width: 500px;
+}
+
+.ck-editor__editable {
+    min-height: 300px;
+}
+
+.ck-contnt{
+	margin-bottom: 20px;
+}
+
+.form-main {
+ margin-top: 20px;
+}
+
+.title {
+	text-align: left;
+}
+</style>
+
+<div class="lectureCen">
+	<div class="lectureBoard">
+		<h1 class="lecture-main-tit">공지사항 수정</h1>
+		<div class="lec-h-div-line"></div>
+		<form class="mt-20" name="frm" action="/noticeBoard/updatePost?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+
+			<p> <input type="hidden" name="boardId" value="${noticeBoardVO.boardId}" /> </p>
+			<p> <input type="hidden" name="memId" value="${noticeBoardVO.memId}" /> </p>
+<%-- 			<p> <input type="hidden" name="boardUpdtDt" value="${noticeBoardVO.boardUpdtDt}" /> </p> --%>
+			
+			<p class="title">공지사항 제목</p>
+			<p> <input class="notice-title-input" type="text" name="boardTitle" value="${noticeBoardVO.boardTitle}" /> </p>
+			
+			<div>
+				<p class="title">공지사항 내용</p>
+				<textarea id="editor" name="boardCntnt" required >${noticeBoardVO.boardCntnt}</textarea>
+			</div>
+			<br />
+			<div class="form-file" >
+				<p class="title">변경할 파일 선택</p>
+					<input type="file" id="uploadFile" name="uploadFile" alt="" multiple />
+
+				<p class="title">등록된 파일</p>
+					<c:forEach var="atchFile" items="${noticeBoardVO.atchFileVO.atchFileDetailVOList}">
+						<img src="/resources/upload/${atchFile.afdSaveNm}"  alt="등록된 파일이 없습니다." width="70%" style="margin-top: 20px;" />
+					</c:forEach>
+			</div>
+
+			<p>
+				<button type="submit" class="list-btn">저장</button>
+				<button type="reset" class="list-btn">초기화</button>
+			</p>
+			
+			<sec:csrfInput />
+		</form>
+				<button onclick="location.href='/noticeBoard/list'" class="list-btn">목록</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+// 에디터로 생성
+CKEDITOR.replace('editor');
+
+//html 태그 사라지는 오류 해결
+CKEDITOR.config.allowedContent = true;
+
+</script>
+

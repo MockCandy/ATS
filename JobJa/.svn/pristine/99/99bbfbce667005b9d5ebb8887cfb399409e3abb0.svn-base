@@ -1,0 +1,203 @@
+package jobJa.myPage.member.controller;
+
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobJa.board.service.BoardInquiryService;
+import jobJa.board.service.BoardQNAService;
+import jobJa.board.vo.BoardInquiryVO;
+import jobJa.board.vo.BoardQNAVO;
+import jobJa.member.service.EnterpriseService;
+import jobJa.member.vo.EnterpriseVO;
+import jobJa.member.vo.InterestEnterpriseVO;
+import jobJa.member.vo.InterestRecruitVO;
+import jobJa.recruit.service.RecruitService;
+import jobJa.recruit.vo.RecruitVO;
+import jobJa.reply.vo.ReplyVO;
+import jobJa.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/member")
+@Controller
+public class MemberMyBoardController {
+	
+	@Autowired
+	BoardInquiryService boardInquiryService;
+	
+	@Autowired
+	BoardQNAService boardQNAService;
+	
+	@Autowired
+	RecruitService recruitService;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	@Autowired
+	EnterpriseService enterpriseService;
+	
+	
+	//내가 등록한 일대일게시판 목록 가져오기.
+	@GetMapping("/myBoardInquiry")
+	public String boardInquiryList(Principal principal, Model model) {
+		
+		String memId = principal.getName();
+		
+		log.info(" memId ? -> " + memId);
+		
+		List<BoardInquiryVO> myBoardInquiryList = this.boardInquiryService.myList(memId);
+		
+		log.info(" myboardInquiryList : " + myBoardInquiryList);
+		
+		model.addAttribute("data", myBoardInquiryList);
+		
+		return "mypageMem/memberBoardInquiry";
+	}
+	
+	//내가 등록한 취업QNA목록 가져오기.
+	@GetMapping("/myBoardQNA")
+	public String boardQNAList(Principal principal, Model model) {
+		
+		log.info("dhkdn?  와우?");
+		
+		String memId = principal.getName();
+		
+		List<BoardQNAVO> myBoardQNAList = this.boardQNAService.myList(memId);
+		
+		log.info("myBoardQNAList : -->>" + myBoardQNAList);
+		
+		model.addAttribute("data", myBoardQNAList);
+		
+		return "mypageMem/memberBoardQNA";
+	}
+	
+	//ajax로 내가 등록한 취업QNA글 목록 가져오기.
+	@ResponseBody
+	@PostMapping("/ajaxmyBoardQNAList")
+	public List<BoardQNAVO> ajaxmyBoardQNAList(Principal principal){
+		
+		String memId = principal.getName();
+		
+		List<BoardQNAVO> ajaxmyBoardQNAList = this.boardQNAService.myList(memId);
+		
+		log.info("ajaxmyBoardQNAList : " + ajaxmyBoardQNAList);
+		
+		return ajaxmyBoardQNAList;
+	}
+	
+	//내가 등록한 취업QNA댓글목록 가져오기.
+	@ResponseBody
+	@PostMapping("/myBoardQNAReply")
+	public List<ReplyVO> getQNARePlyList(Principal principal){
+		
+		String memId = principal.getName();
+		
+		List<ReplyVO> QNARePlyList = this.boardQNAService.myReplyList(memId);
+		
+		log.info("QNARePlyList : " + QNARePlyList);
+		
+		return QNARePlyList;
+		
+	}
+	
+	//스크랩한 채용공고 가져오기.
+	@GetMapping("/myRecruit")
+	public String myRecruitList(Principal principal, Model model) {
+		log.info("dhkdb와우우우ㅜㅇn?????");
+		
+		String memId = principal.getName();
+		
+		List<RecruitVO> myRecruitList = this.recruitService.myRecruitList(memId);
+		
+		log.info("myRecruitList : " + myRecruitList);
+		
+		model.addAttribute("data", myRecruitList);
+		
+		return "mypageMem/memberRecruit";
+	}
+	
+	//스크랩했던 채용공고 삭제
+	@ResponseBody
+	@PostMapping("/ajaxdeleteRecruit")
+	public int ajaxdeleteRecruit(@RequestBody InterestRecruitVO interestRecruitVO, Principal principal) {
+		log.info("오나? interestRecruitVO" + interestRecruitVO);
+		
+		String memId = principal.getName();
+		interestRecruitVO.setMemId(memId);
+		
+		int result = this.recruitService.ajaxdeleteRecruit(interestRecruitVO);
+		log.info("result : " + result);
+		
+		return result;
+	}
+	
+	//스크랩했던 채용공고 삭제 후 다시 등록
+	@ResponseBody
+	@PostMapping("/ajaxinsertRecruit")
+	public int ajaxinsertRecruit(@RequestBody InterestRecruitVO interestRecruitVO, Principal principal) {
+		log.info("다시 들우 가야해!!!!!!!" + interestRecruitVO);
+		
+		String memId = principal.getName();
+		interestRecruitVO.setMemId(memId);
+		
+		int result = this.recruitService.ajaxinsertRecruit(interestRecruitVO);
+		log.info("result insert : " + result);
+		
+		return result;
+		
+	}
+	
+	//마이페이지 스크랩했던 관심기업 가져오기.
+	@GetMapping("/myEnterpriseList")
+	public String myEnterpriseList(Principal principal,Model model) {
+		
+		String memId = principal.getName();
+		
+		List<EnterpriseVO> enterpriseVO = this.enterpriseService.myEntList(memId);
+		
+		log.info("enterpriseVO 마이ㅣㅣㅣ : " + enterpriseVO);
+		
+		model.addAttribute("data", enterpriseVO);
+		
+		return "mypageMem/memberEnterprise";
+	}
+	
+	//마이페이지 스크랩했던 관심기업 삭제.
+	@ResponseBody
+	@PostMapping("/ajaxdeleteEnterprise")
+	public int ajaxdeleteEnterprise(@RequestBody InterestEnterpriseVO interestEnterpriseVO) {
+		log.info("????????????? gmgm: " + interestEnterpriseVO);
+		
+		int result = this.enterpriseService.ajaxdeleteEnterprise(interestEnterpriseVO);
+		
+		log.info("ㅎㅇㅎㅇㅎㅇㅎㅇresult : " + result);
+		
+		return result;
+	}
+	
+	//마이페이지 삭제했던 관심기업 다시 추가.
+	@ResponseBody
+	@PostMapping("/ajaxinsertEnterprise")
+	public int ajaxinsertEnterprise(@RequestBody InterestEnterpriseVO interestEnterpriseVO) {
+		log.info("다ㅏㅏㅏㅏ시ㅣㅣㅣ들어가ㅏㅏㅏㅏ : " + interestEnterpriseVO);
+		
+		int result = this.enterpriseService.ajaxinsertEnterprise(interestEnterpriseVO);
+		
+		log.info("sdafasdfas result : " + result);
+		
+		return result;
+	}
+	
+	
+}

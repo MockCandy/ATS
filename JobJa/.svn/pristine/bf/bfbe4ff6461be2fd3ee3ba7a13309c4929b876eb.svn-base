@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.item.mapper.ItemMapper">
+	
+	<!-- 배너광고 가져오기. -->
+	<select id="getBannerItemList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD  = 'PDC01002'
+		AND 	(    ITEM_CD = 'PDC0100201'
+		  		  OR ITEM_CD = 'PDC0100202'
+		  		  OR ITEM_CD = 'PDC0100203')
+	</select>
+	
+	<!-- 채용광고 가져오기. -->
+	<select id="getRecruitItemList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD =  'PDC01002'
+		AND 	(	ITEM_CD =  'PDC0100204'
+		         OR ITEM_CD =  'PDC0100205'
+		         OR ITEM_CD =  'PDC0100206')
+	</select>
+
+
+
+</mapper>

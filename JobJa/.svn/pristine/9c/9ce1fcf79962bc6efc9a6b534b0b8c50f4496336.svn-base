@@ -1,0 +1,24 @@
+package jobja.chatting.util;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class RoomService {
+    private static final Map<String, Room> rooms = new HashMap<>();
+
+    public Room createRoom(String roomId) {
+    	
+        Room room = new Room(roomId);
+        rooms.put(roomId, room);
+        
+        return room;
+    }
+
+    public Room getRoom(String roomId) {
+    	
+        return rooms.get(roomId);
+    }
+}

@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardEntReviewMapper">
+	
+	
+	<sql id="order">
+		<choose>
+			<when test = "sortBy=='newest'">
+				ORDER BY REG_DATE DESC
+			</when>
+			<when test = "sortBy=='oldest'">
+				ORDER BY REG_DATE ASC
+			</when>
+			<when test = "sortBy=='pointDesc'">
+				ORDER BY (er.ENT_REV_CHANCES + er.ENT_REV_WELFARE +er.ENT_REV_BALANCE + er.ENT_REV_CULTURE + er.ENT_REV_MANAGER) DESC
+			</when>
+			<when test = "sortBy=='pointAsc'">
+				ORDER BY (er.ENT_REV_CHANCES + er.ENT_REV_WELFARE +er.ENT_REV_BALANCE + er.ENT_REV_CULTURE + er.ENT_REV_MANAGER) ASC
+			</when>
+			<otherwise>
+				ORDER BY REG_DATE DESC
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<insert id="createPost" parameterType="boardEntReviewVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="entRevNo">
+			SELECT 'REV' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(ENT_REV_NO),4) + 1,'00000')),'00001')
+			FROM   ENT_REVIEW
+		</selectKey>
+	
+		INSERT INTO ENT_REVIEW
+		(
+		ENT_REV_NO
+		, ENT_NO
+		, MEM_ID
+		, ENT_REV_WORK_YN
+		, ENT_REV_WORK_LOC
+		, JOB_CATEGORY_CD
+		, JOB_CD
+		, ENT_REV_EMPL_TYPE
+		, ENT_REV_SHORT_REVIEW
+		, ENT_REV_PROS
+		, ENT_REV_CONS
+		, ENT_REV_WISHES
+		, ENT_REV_CHANCES
+		, ENT_REV_WELFARE
+		, ENT_REV_BALANCE
+		, ENT_REV_CULTURE
+		, ENT_REV_MANAGER
+		, ENT_REV_CEO_VIEW
+		, ENT_REV_POTENTIAL
+		, ENT_REV_RECOMEND_YN
+		, REG_DATE)
+		VALUES
+		(
+		#{entRevNo},
+		#{entNo},
+		#{memId},
+		#{entRevWorkYn},
+		#{entRevWorkLoc},
+		#{jobCategoryCd},
+		#{jobCd},
+		#{entRevEmplType},
+		#{entRevShortReview},
+		#{entRevPros},
+		#{entRevCons},
+		#{entRevWishes},
+		#{entRevChances},
+		#{entRevWelfare},
+		#{entRevBalance},
+		#{entRevCulture},
+		#{entRevManager},
+		#{entRevCeoView},
+		#{entRevPotential},
+		#{entRevRecomendYn},
+		SYSDATE
+		)
+	</insert>
+	
+	<resultMap type="boardEntReviewVO" id="boardEntReviewMap">
+		<id property="entRevNo" column="ENT_REV_NO"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="entRevWorkYn" column="ENT_REV_WORK_YN"/>
+		<result property="entRevWorkLoc" column="ENT_REV_WORK_LOC"/>
+		<result property="jobCategoryCd" column="JOB_CATEGORY_CD"/>
+		<result property="jobCd" column="JOB_CD"/>
+		<result property="entRevEmplType" column="ENT_REV_EMPL_TYPE"/>
+		<result property="entRevShortReview" column="ENT_REV_SHORT_REVIEW"/>
+		<result property="entRevPros" column="ENT_REV_PROS"/>
+		<result property="entRevCons" column="ENT_REV_CONS"/>
+		<result property="entRevWishes" column="ENT_REV_WISHES"/>
+		<result property="entRevChances" column="ENT_REV_CHANCES"/>
+		<result property="entRevWelfare" column="ENT_REV_WELFARE"/>
+		<result property="entRevBalance" column="ENT_REV_BALANCE"/>
+		<result property="entRevCulture" column="ENT_REV_CULTURE"/>
+		<result property="entRevManager" column="ENT_REV_MANAGER"/>
+		<result property="entRevCeoView" column="ENT_REV_CEO_VIEW"/>
+		<result property="entRevPotential" column="ENT_REV_POTENTIAL"/>
+		<result property="entRevRecomendYn" column="ENT_REV_RECOMEND_YN"/>
+		<result property="reviewCount" column="REVIEW_COUNT"/>
+		<result property="regDate" column="REG_DATE"/>
+		<result property="rnum" column="RNUM"/>
+		<result property="entReviewAvg" column="ENT_REVIEW_AVG"/>
+		<association property="enterpriseVO" resultMap="enterpriseMap"></association>
+		<association property="comCodeVO" resultMap="comCodeMap"></association>
+		<association property="comDetCodeVO" resultMap="comDetCodeMap"></association>
+		<collection property="likeVOList" ofType="likesVO" resultMap="likeMap"></collection>
+	</resultMap>
+	<resultMap type="enterpriseVO" id="enterpriseMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+	</resultMap>
+	<resultMap type="comCodeInfoVO" id="comCodeMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+	</resultMap>
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	<resultMap type="likesVO" id="likeMap">
+		<id property="boardId" column="BOARD_ID"/>
+		<!-- result의 column은 테이블의 컬럼명이 아니라, SQL문의 실행 결과의 column 명이다 -->
+		<!-- 따라서 AS로 alias를 준 후에 그 alias에 column을 맞추면 알맞게 매핑된다 -->
+		<id property="memId" column="LIKE_ID"/>
+	</resultMap>
+	<select id="getByEntNo" parameterType="hashMap" resultMap="boardEntReviewMap">
+		 SELECT T.*
+			FROM
+			(
+				SELECT DENSE_RANK() OVER(<include refid="order"></include>, er.ENT_REV_NO DESC) RNUM 
+					, ENT_REV_NO 
+					, er.ENT_NO
+					, er.MEM_ID
+					, er.ENT_REV_WORK_YN
+					, er.ENT_REV_WORK_LOC
+					, er.JOB_CATEGORY_CD
+					, er.JOB_CD
+					, er.ENT_REV_EMPL_TYPE
+					, er.ENT_REV_SHORT_REVIEW
+					, er.ENT_REV_PROS
+					, er.ENT_REV_CONS
+					, er.ENT_REV_WISHES
+					, er.BOARD_LIKE
+					, er.ENT_REV_CHANCES
+					, er.ENT_REV_WELFARE
+					, er.ENT_REV_BALANCE
+					, er.ENT_REV_CULTURE
+					, er.ENT_REV_MANAGER
+					, er.ENT_REV_CEO_VIEW
+					, er.ENT_REV_POTENTIAL
+					, er.ENT_REV_RECOMEND_YN
+					, er.REG_DATE
+		            , cci.COM_CD
+		            , cci.COM_CD_NM
+		            , cci.COM_CD_DESCRIPTIONS
+		            , cdci.COM_DET_CD
+		            , cdci.COM_DET_CD_NM
+		            , cdci.COM_DET_DESCRIPTIONS
+		            , lk.BOARD_ID
+		            , lk.MEM_ID as LIKE_ID
+		        FROM ENT_REVIEW er 
+		            LEFT OUTER JOIN COM_CODE_INFO cci ON er.JOB_CATEGORY_CD = cci.COM_CD
+		            LEFT OUTER JOIN COM_DET_CODE_INFO cdci ON er.JOB_CD = cdci.COM_DET_CD
+		            LEFT OUTER JOIN LIKES lk ON er.ENT_REV_NO = lk.BOARD_ID
+				WHERE ENT_NO=#{entNo}
+			) T
+			WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	
+	<update id="ajaxLikeUp" parameterType="boardEntReviewVO">
+		UPDATE ENT_REVIEW SET BOARD_LIKE = BOARD_LIKE + 1
+		WHERE ENT_REV_NO=#{entRevNo}
+	</update>
+	
+	
+	<update id="ajaxLikeCancel" parameterType="boardQNAVO">
+		UPDATE ENT_REVIEW SET BOARD_LIKE = BOARD_LIKE - 1
+		WHERE ENT_REV_NO=#{entRevNo}
+	</update>
+	
+	<select id="getTotalCount" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM ENT_REVIEW
+		WHERE ENT_NO = #{entNo}
+	</select>
+	
+	<select id="getRecent" resultMap="boardEntReviewMap">
+
+		SELECT 
+		    A.ENT_REV_NO, 
+		    A.ENT_NO, 
+		    A.MEM_ID, 
+		    A.ENT_REV_WORK_YN, 
+		    A.ENT_REV_WORK_LOC, 
+		    A.JOB_CATEGORY_CD, 
+		    A.JOB_CD, 
+		    A.ENT_REV_EMPL_TYPE, 
+		    A.ENT_REV_SHORT_REVIEW, 
+		    A.ENT_REV_PROS, 
+		    A.ENT_REV_CONS, 
+		    A.ENT_REV_WISHES, 
+		    A.ENT_REV_CHANCES, 
+		    A.ENT_REV_WELFARE, 
+		    A.ENT_REV_BALANCE, 
+		    A.ENT_REV_CULTURE, 
+		    A.ENT_REV_MANAGER, 
+		    A.ENT_REV_CEO_VIEW,
+		    A.ENT_REV_POTENTIAL,
+		    A.ENT_REV_RECOMEND_YN,
+		    A.REG_DATE, 
+		    A.BOARD_LIKE,
+		    B.REVIEW_COUNT,
+		    C.ENT_NO, 
+		    C.ENT_NM, 
+		    C.ENT_APRV, 
+		    C.ENT_REG_DT, 
+		    C.ENT_APRV_DT, 
+		    C.ENT_INTRCN, 
+		    C.ENT_URL, 
+		    C.ENT_SALES, 
+		    C.ENT_SECTOR, 
+		    C.ENT_EMPCNT, 
+		    C.ENT_BDAY, 
+		    C.ENT_FAX, 
+		    C.ENT_CEONM, 
+		    C.ENT_LOGO, 
+		    C.ENT_INT_WORD, 
+		    C.ENT_POSTNO, 
+		    C.ENT_ADDR, ENT_ADDR2,
+		    D.COM_CD, 
+		    D.COM_CD_NM, 
+		    D.COM_CD_DESCRIPTIONS,
+		    E.COM_DET_CD, 
+		    E.COM_DET_CD_NM, 
+		    E.COM_DET_DESCRIPTIONS
+		FROM ENT_REVIEW A ,
+		    (
+		        SELECT ENT_NO,COUNT(*) REVIEW_COUNT FROM
+		        ENT_REVIEW
+		        GROUP BY ENT_NO
+		    ) B, 
+		    ENTERPRISE C,
+		    COM_CODE_INFO D,
+		    COM_DET_CODE_INFO E
+		WHERE A.ENT_NO = B.ENT_NO
+		    AND A.ENT_NO = C.ENT_NO
+		    AND A.JOB_CATEGORY_CD = D.COM_CD
+		    AND A.JOB_CD = E.COM_DET_CD
+		ORDER BY BOARD_LIKE DESC
+	</select>
+	
+	
+	<!-- 기업 리뷰 목록  -->
+	<select id="brdEnterpriseVOList" parameterType="String" resultMap="boardEntReviewMap">
+		/* BOARD ENTERPRISEVO LIST */
+		
+		SELECT	
+				ROW_NUMBER() OVER(ORDER BY ENT_REV_NO DESC) RNUM,
+				ENT_REV_NO,
+			    ENT_NO,
+			    MEM_ID,
+			    ENT_REV_WORK_YN,
+			    ENT_REV_WORK_LOC,
+			    JOB_CATEGORY_CD,
+			    JOB_CD,
+			    ENT_REV_EMPL_TYPE,
+			    ENT_REV_SHORT_REVIEW,
+			    ENT_REV_PROS,
+			    ENT_REV_CONS,
+			    ENT_REV_WISHES,
+			    ENT_REV_CHANCES,
+			    ENT_REV_WELFARE,
+			    ENT_REV_BALANCE,
+			    ENT_REV_CULTURE,
+			    ENT_REV_MANAGER,
+			    ENT_REV_CEO_VIEW,
+			    ENT_REV_POTENTIAL,
+			    ENT_REV_RECOMEND_YN,
+			    REG_DATE,
+			    BOARD_LIKE,
+			    (
+				  ent_rev_chances + 
+				  ent_rev_welfare + 
+				  ent_rev_balance + 
+				  ent_rev_culture +
+				  ent_rev_manager
+		  		)/5 AS ENT_REVIEW_AVG
+			    
+		FROM	ENT_REVIEW
+		
+		WHERE 	ENT_NO = (SELECT ENT_NO FROM ENT_APRV WHERE MEM_ID = #{memId})
+	
+	</select>
+	
+	<!-- 마이페이지 내가 쓴 기업 리뷰목록 가져오기. -->
+	<select id="getmyEntReview" parameterType="hashMap" resultType="boardEntReviewVO">
+		SELECT T.* FROM
+            ( 
+            SELECT
+             ROW_NUMBER() OVER(ORDER BY A.ENT_REV_NO) RNUM,
+                A.ENT_REV_NO, A.ENT_NO, A.MEM_ID, A.ENT_REV_WORK_YN, 
+				A.ENT_REV_WORK_LOC, A.JOB_CATEGORY_CD, A.JOB_CD, A.ENT_REV_EMPL_TYPE, 
+				A.ENT_REV_SHORT_REVIEW, A.ENT_REV_PROS, A.ENT_REV_CONS, A.ENT_REV_WISHES,
+				A.ENT_REV_CHANCES, A.ENT_REV_WELFARE, A.ENT_REV_BALANCE, A.ENT_REV_CULTURE, 
+				A.ENT_REV_MANAGER, A.ENT_REV_CEO_VIEW, A.ENT_REV_POTENTIAL, A.ENT_REV_RECOMEND_YN, A.REG_DATE, A.BOARD_LIKE,
+				(SELECT B.ENT_NM FROM ENTERPRISE B WHERE B.ENT_NO =  A.ENT_NO) ENT_NM,
+				(SELECT C.MEM_NM FROM MEMBER C WHERE C.MEM_ID =  A.MEM_ID) MEM_NM
+		FROM ENT_REVIEW A
+		WHERE MEM_ID = #{memId}
+        )T
+        WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+        FROM     ENT_REVIEW
+        WHERE    MEM_ID = #{memId}
+	</select>
+	
+	<select id="entReviewVO" parameterType="String" resultMap="boardEntReviewMap">
+		/* ENTREVIEWVO LIST */
+		
+		SELECT	
+				ENT_REV_NO,
+			    ENT_NO,
+			    MEM_ID,
+			    ENT_REV_WORK_YN,
+			    ENT_REV_WORK_LOC,
+			    JOB_CATEGORY_CD,
+			    JOB_CD,
+			    ENT_REV_EMPL_TYPE,
+			    ENT_REV_SHORT_REVIEW,
+			    ENT_REV_PROS,
+			    ENT_REV_CONS,
+			    ENT_REV_WISHES,
+			    ENT_REV_CHANCES,
+			    ENT_REV_WELFARE,
+			    ENT_REV_BALANCE,
+			    ENT_REV_CULTURE,
+			    ENT_REV_MANAGER,
+			    ENT_REV_CEO_VIEW,
+			    ENT_REV_POTENTIAL,
+			    ENT_REV_RECOMEND_YN,
+			    REG_DATE,
+			    BOARD_LIKE,
+			    (
+				  ent_rev_chances + 
+				  ent_rev_welfare + 
+				  ent_rev_balance + 
+				  ent_rev_culture +
+				  ent_rev_manager
+		  		)/5 AS ENT_REVIEW_AVG
+			    
+		FROM	ENT_REVIEW
+		
+		WHERE 	ENT_REV_NO = #{entRevNo}
+		
+	</select>
+	
+</mapper>

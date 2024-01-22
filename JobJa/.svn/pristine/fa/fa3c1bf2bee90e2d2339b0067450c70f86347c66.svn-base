@@ -1,0 +1,2068 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.admin.mapper.AdminMapper">
+
+<sql id="where">
+	<if test='keyword !=null and keyword!="" and !keyword.equals("null") '>
+		AND (MEM_NM LIKE '%' || #{keyword} || '%')
+	</if>
+</sql>
+
+<sql id="where2">
+	<if test='keyword !=null and keyword!="" and !keyword.equals("null")'>
+		AND (ENT_NM LIKE '%' || #{keyWord} || '%')
+	</if>
+</sql>
+
+<sql id="where3">
+	<if test='keyword !=null and keyword !="" and !keyword.equals("null") '>
+		AND (REP_SUB_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</sql>
+
+
+<select id="getMember" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,a.MEM_ID
+		  ,a.MEM_PASS
+		  ,a.MEM_NM
+		  ,a.MEM_POSTNO
+		  ,a.MEM_ADDR
+		  ,a.MEM_ADDR2
+		  ,a.MEM_TEL
+		  ,a.MEM_REG_DT
+		  ,a.MEM_OPEN_RESUME
+		  ,a.MEM_STATE_CD
+		  ,a.MEM_BIRTH
+		  ,a.MEM_GEN
+		  ,a.MEM_EMAIL
+		  ,a.MEM_CD
+		  ,a.MEM_YN
+		  ,a.MEM_INTRCN
+		  ,a.MEM_NCNM
+		  ,a.MEM_AF_ID
+		  ,a.MEM_WISH_JOB_CATE
+		  ,a.MEM_WISH_JOB
+		  ,a.ENABLED
+		  ,a.MEM_INT_WORD
+	FROM MEMBER a
+	WHERE MEM_CD = 'MCC01000'
+	AND MEM_STATE_CD != 'MSC01002'
+	<include refid="where"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getCounselor" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,MEM_ID
+		  ,MEM_PASS
+		  ,MEM_NM
+		  ,MEM_POSTNO
+		  ,MEM_ADDR
+		  ,MEM_ADDR2
+		  ,MEM_TEL
+		  ,MEM_REG_DT
+		  ,MEM_OPEN_RESUME
+		  ,MEM_STATE_CD
+		  ,MEM_BIRTH
+		  ,MEM_GEN
+		  ,MEM_EMAIL
+		  ,MEM_CD
+		  ,MEM_YN
+		  ,MEM_INTRCN
+		  ,MEM_NCNM
+		  ,MEM_AF_ID
+		  ,MEM_WISH_JOB_CATE
+		  ,MEM_WISH_JOB
+		  ,ENABLED
+		  ,MEM_INT_WORD
+	FROM MEMBER
+	WHERE MEM_CD = 'MCC01002'
+	AND MEM_YN = 'AYN01001'
+	<include refid="where"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getCounselorOffer" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,m.MEM_ID
+		  ,MEM_PASS
+		  ,MEM_NM
+		  ,MEM_POSTNO
+		  ,MEM_ADDR
+		  ,MEM_ADDR2
+		  ,MEM_TEL
+		  ,MEM_REG_DT
+		  ,MEM_OPEN_RESUME
+		  ,MEM_STATE_CD
+		  ,MEM_BIRTH
+		  ,MEM_GEN
+		  ,MEM_EMAIL
+		  ,MEM_CD
+		  ,MEM_YN
+		  ,MEM_INTRCN
+		  ,MEM_NCNM
+		  ,MEM_AF_ID
+		  ,MEM_WISH_JOB_CATE
+		  ,MEM_WISH_JOB
+		  ,ENABLED
+		  ,MEM_INT_WORD
+		  ,ca.ptfl_No
+		   ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_FREE B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as free_yn
+           ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_BASIC B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as basic_yn
+	FROM MEMBER m left outer join CON_APRV ca on m.mem_id = ca.mem_id
+	WHERE (MEM_CD = 'MCC01000' OR MEM_CD = 'MCC01002')
+	AND (MEM_YN = 'AYN01001' OR MEM_YN = 'AYN01002' OR MEM_YN = 'AYN01003')
+	AND NOT (MEM_CD = 'MCC01000' AND MEM_YN = 'AYN01001')
+	<include refid="where"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getEnterOffer" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,a.MEM_ID
+		  ,a.MEM_PASS
+		  ,a.MEM_NM
+		  ,a.MEM_POSTNO
+		  ,a.MEM_ADDR
+		  ,a.MEM_ADDR2
+		  ,a.MEM_TEL
+		  ,a.MEM_REG_DT
+		  ,a.MEM_OPEN_RESUME
+		  ,a.MEM_STATE_CD
+		  ,a.MEM_BIRTH
+		  ,a.MEM_GEN
+		  ,a.MEM_EMAIL
+		  ,a.MEM_CD
+		  ,a.MEM_YN
+		  ,a.MEM_INTRCN
+		  ,a.MEM_NCNM
+		  ,a.MEM_AF_ID
+		  ,a.MEM_WISH_JOB_CATE
+		  ,a.MEM_WISH_JOB
+		  ,a.ENABLED
+		  ,a.MEM_INT_WORD
+          ,c.ENT_SECTOR
+		  ,c.ENT_INT_WORD
+		  ,c.ENT_INTRCN
+	FROM MEMBER a , ENT_APRV b , ENTERPRISE c
+	WHERE a.MEM_CD = 'MCC01001'
+    AND a.MEM_ID = b.MEM_ID
+    AND b.ENT_NO = c.ENT_NO
+	AND (a.MEM_YN = 'AYN01001' OR a.MEM_YN = 'AYN01002' OR a.MEM_YN = 'AYN01003')
+	<include refid="where"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getCounselorSuccess" parameterType="hashMap" resultType="memberVO">
+
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,m.MEM_ID
+		  ,MEM_PASS
+		  ,MEM_NM
+		  ,MEM_POSTNO
+		  ,MEM_ADDR
+		  ,MEM_ADDR2
+		  ,MEM_TEL
+		  ,MEM_REG_DT
+		  ,MEM_OPEN_RESUME
+		  ,MEM_STATE_CD
+		  ,MEM_BIRTH
+		  ,MEM_GEN
+		  ,MEM_EMAIL
+		  ,MEM_CD
+		  ,MEM_YN
+		  ,MEM_INTRCN
+		  ,MEM_NCNM
+		  ,MEM_AF_ID
+		  ,MEM_WISH_JOB_CATE
+		  ,MEM_WISH_JOB
+		  ,ENABLED
+		  ,MEM_INT_WORD
+		  ,ca.ptfl_No
+		   ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_FREE B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as free_yn
+           ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_BASIC B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as basic_yn
+	FROM MEMBER m left outer join CON_APRV ca on m.mem_id = ca.mem_id
+	WHERE MEM_CD = 'MCC01002'
+	AND MEM_YN = 'AYN01001'
+	<include refid="where"></include>	
+	) T
+	WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+		
+</select>
+
+<select id="getEnter" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,a.MEM_ID
+		  ,a.MEM_PASS
+		  ,a.MEM_NM
+		  ,a.MEM_POSTNO
+		  ,a.MEM_ADDR
+		  ,a.MEM_ADDR2
+		  ,a.MEM_TEL
+		  ,a.MEM_REG_DT
+		  ,a.MEM_OPEN_RESUME
+		  ,a.MEM_STATE_CD
+		  ,a.MEM_BIRTH
+		  ,a.MEM_GEN
+		  ,a.MEM_EMAIL
+		  ,a.MEM_CD
+		  ,a.MEM_YN
+		  ,a.MEM_INTRCN
+		  ,a.MEM_NCNM
+		  ,a.MEM_AF_ID
+		  ,a.MEM_WISH_JOB_CATE
+		  ,a.MEM_WISH_JOB
+		  ,a.ENABLED
+		  ,a.MEM_INT_WORD
+          ,c.ENT_SECTOR
+		  ,c.ENT_INT_WORD
+		  ,c.ENT_INTRCN
+	FROM MEMBER a , ENT_APRV b , ENTERPRISE c
+	WHERE a.MEM_CD = 'MCC01001'
+    AND a.MEM_ID = b.MEM_ID
+    AND b.ENT_NO = c.ENT_NO
+	AND a.MEM_YN = 'AYN01001'
+	<if test='keyword !=null and keyword!="" and !keyword.equals("null") '>
+		AND (a.MEM_NM LIKE '%' || #{keyword} || '%')
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getCounselorWaiting" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 	
+		  ,m.MEM_ID
+		  ,MEM_PASS
+		  ,MEM_NM
+		  ,MEM_POSTNO
+		  ,MEM_ADDR
+		  ,MEM_ADDR2
+		  ,MEM_TEL
+		  ,MEM_REG_DT
+		  ,MEM_OPEN_RESUME
+		  ,MEM_STATE_CD
+		  ,MEM_BIRTH
+		  ,MEM_GEN
+		  ,MEM_EMAIL
+		  ,MEM_CD
+		  ,MEM_YN
+		  ,MEM_INTRCN
+		  ,MEM_NCNM
+		  ,MEM_AF_ID
+		  ,MEM_WISH_JOB_CATE
+		  ,MEM_WISH_JOB
+		  ,ENABLED
+		  ,MEM_INT_WORD
+		  ,ca.ptfl_No
+		   ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_FREE B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as free_yn
+           ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_BASIC B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as basic_yn
+	FROM MEMBER m left outer join CON_APRV ca on m.mem_id = ca.mem_id
+	WHERE MEM_CD = 'MCC01000'
+	AND MEM_YN = 'AYN01002'
+	<include refid="where"></include>	
+	) T
+	WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getEnterWaiting" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,a.MEM_ID
+		  ,a.MEM_PASS
+		  ,a.MEM_NM
+		  ,a.MEM_POSTNO
+		  ,a.MEM_ADDR
+		  ,a.MEM_ADDR2
+		  ,a.MEM_TEL
+		  ,a.MEM_REG_DT
+		  ,a.MEM_OPEN_RESUME
+		  ,a.MEM_STATE_CD
+		  ,a.MEM_BIRTH
+		  ,a.MEM_GEN
+		  ,a.MEM_EMAIL
+		  ,a.MEM_CD
+		  ,a.MEM_YN
+		  ,a.MEM_INTRCN
+		  ,a.MEM_NCNM
+		  ,a.MEM_AF_ID
+		  ,a.ENABLED
+		  ,c.ENT_SECTOR
+		  ,c.ENT_INT_WORD
+		  ,c.ENT_INTRCN
+	FROM MEMBER a , ENT_APRV b , ENTERPRISE c
+	WHERE a.MEM_CD = 'MCC01001'
+	AND a.MEM_YN = 'AYN01002'
+	AND a.MEM_ID = b.MEM_ID
+	AND b.ENT_NO = c.ENT_NO
+	<if test='keyword !=null and keyword!="" and !keyword.equals("null") '>
+		AND (a.MEM_NM LIKE '%' || #{keyword} || '%')
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getAdminFalseList" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,m.MEM_ID
+		  ,MEM_PASS
+		  ,MEM_NM
+		  ,MEM_POSTNO
+		  ,MEM_ADDR
+		  ,MEM_ADDR2
+		  ,MEM_TEL
+		  ,MEM_REG_DT
+		  ,MEM_OPEN_RESUME
+		  ,MEM_STATE_CD
+		  ,MEM_BIRTH
+		  ,MEM_GEN
+		  ,MEM_EMAIL
+		  ,MEM_CD
+		  ,MEM_YN
+		  ,MEM_INTRCN
+		  ,MEM_NCNM
+		  ,MEM_AF_ID
+		  ,MEM_WISH_JOB_CATE
+		  ,MEM_WISH_JOB
+		  ,ENABLED
+		  ,MEM_INT_WORD
+		  ,ca.ptfl_No
+		   ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_FREE B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as free_yn
+           ,(SELECT decode(count(*), 1, 'Y', 'N') 
+               FROM PORTFOLIO A, PORTFOLIO_BASIC B
+              WHERE A.PTFL_NO = B.PTFL_NO
+              AND A.MEM_ID = m.mem_id
+                 and a.ptfl_no = ca.ptfl_no) as basic_yn
+	FROM MEMBER m left outer join CON_APRV ca on m.mem_id = ca.mem_id
+	WHERE MEM_CD = 'MCC01000'
+	AND MEM_YN = 'AYN01003'
+	<include refid="where"></include>	
+	) T
+	WHERE T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getAdminEnterFalseList" parameterType="hashMap" resultType="memberVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY Mem_NM) RNUM 
+		  ,a.MEM_ID
+		  ,a.MEM_PASS
+		  ,a.MEM_NM
+		  ,a.MEM_POSTNO
+		  ,a.MEM_ADDR
+		  ,a.MEM_ADDR2
+		  ,a.MEM_TEL
+		  ,a.MEM_REG_DT
+		  ,a.MEM_OPEN_RESUME
+		  ,a.MEM_STATE_CD
+		  ,a.MEM_BIRTH
+		  ,a.MEM_GEN
+		  ,a.MEM_EMAIL
+		  ,a.MEM_CD
+		  ,a.MEM_YN
+		  ,a.MEM_INTRCN
+		  ,a.MEM_NCNM
+		  ,a.MEM_AF_ID
+		  ,a.ENABLED
+		  ,c.ENT_SECTOR
+		  ,c.ENT_INT_WORD
+		  ,c.ENT_INTRCN
+	FROM MEMBER a , ENT_APRV b , ENTERPRISE c
+	WHERE a.MEM_CD = 'MCC01001'
+	AND a.MEM_YN = 'AYN01003'
+	AND a.MEM_ID = b.MEM_ID
+	AND b.ENT_NO = c.ENT_NO
+	<if test='keyword !=null and keyword!="" and !keyword.equals("null") '>
+		AND (a.MEM_NM LIKE '%' || #{keyword} || '%')
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getRecruitVOList" parameterType="hashMap" resultType="recruitVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY RECRUIT_STDT DESC) RNUM 
+		  , a.RECRUIT_NO
+		  , a.RECRUIT_STDT
+		  , a.RECRUIT_EDDT
+		  , a.RECRUIT_TITLE
+		  , a.RECRUIT_CNTNT
+		  , a.RECRUIT_WORK
+		  , a.RECRUIT_QLF
+		  , a.RECRUIT_PREFER
+		  , a.RECRUIT_SALARY
+		  , a.RECRUIT_LOCATION
+		  , a.RECRUIT_AF_ID
+		  , a.ENT_NO
+		  , a.RECRUIT_LEVEL
+		  , a.RECRUIT_WORK_TYPE
+		  , a.RECRUIT_ACDM_CR
+		  , a.RECRUIT_CAREER
+		  , a.RECRUIT_COUNT
+		  , a.RECRUIT_PART
+		  , a.RECRUIT_THUMB
+		  , a.RECRUIT_OTT
+		  , a.RECRUIT_JOB
+		  , a.RECRUIT_SKILL
+		  , b.ENT_NM
+		  , b.ENT_APRV
+		  , b.ENT_REG_DT
+		  , b.ENT_APRV_DT
+		  , b.ENT_INTRCN
+		  , b.ENT_URL
+		  , b.ENT_SALES
+		  , b.ENT_SECTOR
+		  , b.ENT_EMPCNT
+		  , b.ENT_BDAY
+		  , b.ENT_FAX
+		  , b.ENT_CEONM
+		  , b.ENT_LOGO
+		  , b.ENT_INT_WORD
+		  , b.ENT_POSTNO
+		  , b.ENT_ADDR
+		  , b.ENT_ADDR2
+	FROM RECRUIT a, ENTERPRISE b
+	WHERE a.ENT_NO = b.ENT_NO
+	
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (b.ENT_NM LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getDeadLineRecruitVOList" parameterType="hashMap" resultType="recruitVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY RECRUIT_EDDT ) RNUM 
+		  , a.RECRUIT_NO
+		  , a.RECRUIT_STDT
+		  , a.RECRUIT_EDDT
+		  , a.RECRUIT_TITLE
+		  , a.RECRUIT_CNTNT
+		  , a.RECRUIT_WORK
+		  , a.RECRUIT_QLF
+		  , a.RECRUIT_PREFER
+		  , a.RECRUIT_SALARY
+		  , a.RECRUIT_LOCATION
+		  , a.RECRUIT_AF_ID
+		  , a.ENT_NO
+		  , a.RECRUIT_LEVEL
+		  , a.RECRUIT_WORK_TYPE
+		  , a.RECRUIT_ACDM_CR
+		  , a.RECRUIT_CAREER
+		  , a.RECRUIT_COUNT
+		  , a.RECRUIT_PART
+		  , a.RECRUIT_THUMB
+		  , a.RECRUIT_OTT
+		  , a.RECRUIT_JOB
+		  , a.RECRUIT_SKILL
+		  , b.ENT_NM
+		  , b.ENT_APRV
+		  , b.ENT_REG_DT
+		  , b.ENT_APRV_DT
+		  , b.ENT_INTRCN
+		  , b.ENT_URL
+		  , b.ENT_SALES
+		  , b.ENT_SECTOR
+		  , b.ENT_EMPCNT
+		  , b.ENT_BDAY
+		  , b.ENT_FAX
+		  , b.ENT_CEONM
+		  , b.ENT_LOGO
+		  , b.ENT_INT_WORD
+		  , b.ENT_POSTNO
+		  , b.ENT_ADDR
+		  , b.ENT_ADDR2
+	FROM RECRUIT a, ENTERPRISE b
+	WHERE 1=1
+	AND a.ENT_NO = b.ENT_NO
+	<include refid="where2"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getMoneyRecruitVOList" parameterType="hashMap" resultType="recruitVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY RECRUIT_SALARY DESC ) RNUM 
+		  , a.RECRUIT_NO
+		  , a.RECRUIT_STDT
+		  , a.RECRUIT_EDDT
+		  , a.RECRUIT_TITLE
+		  , a.RECRUIT_CNTNT
+		  , a.RECRUIT_WORK
+		  , a.RECRUIT_QLF
+		  , a.RECRUIT_PREFER
+		  , a.RECRUIT_SALARY
+		  , a.RECRUIT_LOCATION
+		  , a.RECRUIT_AF_ID
+		  , a.ENT_NO
+		  , a.RECRUIT_LEVEL
+		  , a.RECRUIT_WORK_TYPE
+		  , a.RECRUIT_ACDM_CR
+		  , a.RECRUIT_CAREER
+		  , a.RECRUIT_COUNT
+		  , a.RECRUIT_PART
+		  , a.RECRUIT_THUMB
+		  , a.RECRUIT_OTT
+		  , a.RECRUIT_JOB
+		  , a.RECRUIT_SKILL
+		  , b.ENT_NM
+		  , b.ENT_APRV
+		  , b.ENT_REG_DT
+		  , b.ENT_APRV_DT
+		  , b.ENT_INTRCN
+		  , b.ENT_URL
+		  , b.ENT_SALES
+		  , b.ENT_SECTOR
+		  , b.ENT_EMPCNT
+		  , b.ENT_BDAY
+		  , b.ENT_FAX
+		  , b.ENT_CEONM
+		  , b.ENT_LOGO
+		  , b.ENT_INT_WORD
+		  , b.ENT_POSTNO
+		  , b.ENT_ADDR
+		  , b.ENT_ADDR2
+	FROM RECRUIT a, ENTERPRISE b
+	WHERE a.ENT_NO = b.ENT_NO
+	<include refid="where2"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getReporttVOList" parameterType="hashMap" resultType="reportVO">
+    SELECT T.*
+    FROM(
+        SELECT ROW_NUMBER() OVER(ORDER BY 
+            CASE WHEN REP_RESULT_CD = 'AYN01002' THEN 0 ELSE 1 END, REP_DT
+        ) RNUM 
+        , REP_NO
+        , REP_SUB_ID
+        , REP_DT
+        , REP_REASON
+        , REP_TYPE_CD
+        , REPORTER_ID
+        , ADMIN_ID
+        , REP_RESULT_CD
+        , REP_RESULT_CNTNT
+        , REP_BOARD_ID
+        FROM REPORT
+        WHERE 1=1
+        <include refid="where3"></include>    
+    ) T
+    WHERE 
+        T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getReportSuccessVOList" parameterType="hashMap" resultType="reportVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY REP_DT) RNUM 
+		  , REP_NO
+		  , REP_SUB_ID
+		  , REP_DT
+		  , REP_REASON
+		  , REP_TYPE_CD
+		  , REPORTER_ID
+		  , ADMIN_ID
+		  , REP_RESULT_CD
+		  , REP_RESULT_CNTNT
+		  , REP_BOARD_ID
+	FROM REPORT
+	WHERE 1=1
+	AND REP_RESULT_CD = 'AYN01001'
+	<include refid="where3"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getReportWaitingVOList" parameterType="hashMap" resultType="reportVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY REP_DT) RNUM 
+		  , REP_NO
+		  , REP_SUB_ID
+		  , REP_DT
+		  , REP_REASON
+		  , REP_TYPE_CD
+		  , REPORTER_ID
+		  , ADMIN_ID
+		  , REP_RESULT_CD
+		  , REP_RESULT_CNTNT
+		  , REP_BOARD_ID
+	FROM REPORT
+	WHERE 1=1
+	AND REP_RESULT_CD = 'AYN01002'
+	<include refid="where3"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getReportFalseVOList" parameterType="hashMap" resultType="reportVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY REP_DT) RNUM 
+		  , REP_NO
+		  , REP_SUB_ID
+		  , REP_DT
+		  , REP_REASON
+		  , REP_TYPE_CD
+		  , REPORTER_ID
+		  , ADMIN_ID
+		  , REP_RESULT_CD
+		  , REP_RESULT_CNTNT
+		  , REP_BOARD_ID
+	FROM REPORT
+	WHERE 1=1
+	AND REP_RESULT_CD = 'AYN01003'
+	<include refid="where3"></include>	
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getTotalMem" parameterType="hashMap" resultType="int"> 
+	SELECT COUNT (*)
+	FROM MEMBER
+	WHERE MEM_CD = 'MCC01000'
+	<include refid="where"></include>
+</select>
+
+<select id="getTotalCounsel" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM MEMBER
+	WHERE MEM_CD = 'MCC01002'
+	AND MEM_YN = 'AYN01001'
+	<include refid="where"></include>
+</select>
+
+<select id="getTotalCounselOffer" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM MEMBER
+	WHERE (MEM_CD = 'MCC01000' OR MEM_CD = 'MCC01002')
+	AND (MEM_YN = 'AYN01001' OR MEM_YN = 'AYN01002' OR MEM_YN = 'AYN01003')
+	AND NOT (MEM_CD = 'MCC01000' AND MEM_YN = 'AYN01001')
+	<include refid="where"></include>
+</select>
+
+<select id="getcsCompleTeCount" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM MEMBER
+	WHERE MEM_CD ='MCC01002'
+	AND MEM_YN = 'AYN01001'
+</select>
+
+<select id="getcsWaitCount" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM MEMBER
+	WHERE MEM_CD = 'MCC01000'
+	AND MEM_YN = 'AYN01002'
+</select>
+
+<select id="getcsFalseCount" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM MEMBER
+	WHERE MEM_CD = 'MCC01000'
+	AND MEM_YN = 'AYN01003'
+</select>
+
+<select id="getTotalEnter" parameterType="hashMap" resultType="int">
+	 SELECT COUNT(*)
+	 FROM MEMBER a, ENT_APRV b , ENTERPRISE c
+	 WHERE  MEM_CD = 'MCC01001'
+	 AND MEM_YN = 'AYN01001' 
+     AND a.MEM_ID = b.MEM_ID
+     AND b.ENT_NO = c.ENT_NO
+</select>
+
+<select id="getTotalEnterOffer" parameterType="hashMap" resultType="int">
+	 SELECT COUNT(*)
+	 FROM MEMBER a, ENT_APRV b , ENTERPRISE c
+	 WHERE  MEM_CD = 'MCC01001'
+	 AND (MEM_YN = 'AYN01001' OR MEM_YN = 'AYN01002' OR MEM_YN = 'AYN01003')
+     AND a.MEM_ID = b.MEM_ID
+     AND b.ENT_NO = c.ENT_NO
+	<include refid="where"></include>
+</select>
+
+<select id="getEnterWaitCount" parameterType="hashMap" resultType="int">
+	 SELECT COUNT(*)
+	 FROM MEMBER a, ENT_APRV b , ENTERPRISE c
+	 WHERE  MEM_CD = 'MCC01001'
+	 AND MEM_YN = 'AYN01002' 
+     AND a.MEM_ID = b.MEM_ID
+     AND b.ENT_NO = c.ENT_NO
+</select>
+
+<select id="getEnterFalseCount" parameterType="hashMap" resultType="int">
+ 	 SELECT COUNT(*)
+	 FROM MEMBER a, ENT_APRV b , ENTERPRISE c
+	 WHERE  MEM_CD = 'MCC01001'
+	 AND MEM_YN = 'AYN01003' 
+     AND a.MEM_ID = b.MEM_ID
+     AND b.ENT_NO = c.ENT_NO
+</select>
+
+<select id="getTotalRecruit" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM RECRUIT A, ENTERPRISE B
+	WHERE A.ENT_NO = B.ENT_NO
+	<if test='keyWord != null and !keyWord.equals("null")'>
+	AND (ENT_NM LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+<select id="getTotalReport" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM REPORT
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	WHERE (REP_SUB_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getReport" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM REPORT
+	WHERE REP_RESULT_CD = 'AYN01001'
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")' >
+	AND (REP_SUB_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getReportWationg" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM REPORT
+	WHERE REP_RESULT_CD = 'AYN01002'
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	AND (REP_SUB_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getReportNo" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM REPORT
+	WHERE REP_RESULT_CD = 'AYN01003'
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	AND (REP_SUB_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getBlackLists" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BLACKLIST
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	WHERE (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getTotalNotice" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM NOTICE_BOARD
+	<if test='keyWord != null and !keyWord.equals("null") and !keyWord.equals("null")'>
+	WHERE (BOARD_TITLE LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+<select id="getTotalInquiry" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_INQUIRY
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	WHERE (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getTotalWaitInquiry" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_INQUIRY
+	WHERE BOARD_ADMIN_ANSWER IS NULL
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	AND (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getTotalPosibleInquiry" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_INQUIRY
+	WHERE BOARD_ADMIN_ANSWER IS NOT NULL
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	AND (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getTotalQNA" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_QNA
+	<if test='keyword != null and !keyword.equals("null") and !keyword.equals("null")'>
+	WHERE (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<select id="getTotalInterview" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_INCUMBENT_INTER
+	<if test='keyWord != null and !keyWord.equals("null") and !keyWord.equals("null")'>
+	WHERE (INTER_ENT_NM LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+<select id="getTotalClass" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_CLASS
+	<if test='keyWord != null and !keyWord.equals("null") and !keyWord.equals("null")'>
+	WHERE (BOARD_TITLE LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+<select id="getTotalNews" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_EMPL_NEWS
+	<if test='keyWord != null and !keyWord.equals("null") and !keyWord.equals("null")'>
+	WHERE (BOARD_TITLE LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+<select id="getTotalConsult" parameterType="hashMap" resultType="int">
+	SELECT COUNT(*)
+	FROM BOARD_EMPL_CONSULT
+	<if test='keyWord != null and !keyWord.equals("null") and !keyWord.equals("null")'>
+	WHERE (MEM_ID LIKE '%' || #{keyWord} || '%')
+	</if>
+</select>
+
+
+	<resultMap type="memberVO" id="memberMap">
+		<result property="memId" column="MEM_ID"/>
+		<result property="memPass" column="MEM_PASS"/>
+		<result property="memNm" column="MEM_NM"/>
+		<result property="memPostno" column="MEM_POSTNO"/>
+		<result property="memAddr" column="MEM_ADDR"/>
+		<result property="memAddr2" column="MEM_ADDR2"/>
+		<result property="memTel" column="MEM_TEL"/>
+		<result property="memRegDt" column="MEM_REG_DT"/>
+		<result property="memOpenResume" column="MEM_OPEN_RESUME"/>
+		<result property="memStateCd" column="MEM_STATE_CD"/>
+		<result property="memBirth" column="MEM_BIRTH"/>
+		<result property="memGen" column="MEM_GEN"/>
+		<result property="memEmail" column="MEM_EMAIL"/>
+		<result property="memCd" column="MEM_CD"/>
+		<result property="memYn" column="MEM_YN"/>
+		<result property="memIntrcn" column="MEM_INTRCN"/>
+		<result property="memNcnm" column="MEM_NCNM"/>
+		<result property="memAfId" column="MEM_AF_ID"/>
+		<result property="memWishJobCate" column="MEM_WISH_JOB_CATE"/>
+		<result property="memWishJob" column="MEM_WISH_JOB"/>
+		<result property="enabled" column="ENABLED"/>
+		<result property="memIntWord" column="MEM_INT_WORD"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="ptflNo" column="PTFL_NO"/>
+		<result property="freeYn" column="FREE_YN"/>
+		<result property="basicYn" column="BASIC_YN"/>
+		<association property="comCodeInfoVO" resultMap="comCodeInfoVOMap"></association>
+	</resultMap>
+	
+	<resultMap type="comCodeInfoVO" id="comCodeInfoVOMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+		<association property="comDetCodeInfoVO2" resultMap="comDetCodeInfoMap"></association>
+	</resultMap>
+	
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeInfoMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+
+
+<select id="getMem" parameterType="hashMap" resultMap="memberMap">
+		SELECT a.MEM_ID
+			  ,a.MEM_PASS
+			  ,a.MEM_NM
+			  ,a.MEM_POSTNO
+			  ,a.MEM_ADDR
+			  ,a.MEM_ADDR2
+			  ,a.MEM_TEL
+			  ,a.MEM_REG_DT
+			  ,a.MEM_OPEN_RESUME
+			  ,a.MEM_STATE_CD
+			  ,a.MEM_BIRTH
+			  ,a.MEM_GEN
+			  ,a.MEM_EMAIL
+			  ,a.MEM_CD
+			  ,a.MEM_YN
+			  ,a.MEM_INTRCN
+			  ,a.MEM_NCNM
+			  ,a.MEM_AF_ID
+			  ,a.MEM_WISH_JOB_CATE
+			  ,a.MEM_WISH_JOB
+			  ,a.ENABLED
+			  ,a.MEM_INT_WORD
+              ,c.ENT_SECTOR
+			  ,c.ENT_INT_WORD
+			  ,c.ENT_INTRCN
+		FROM MEMBER a,ENT_APRV b, ENTERPRISE c
+		WHERE a.MEM_ID =#{memId}
+        AND a.MEM_ID = b.MEM_ID
+        AND b.ENT_NO = c.ENT_NO
+        AND a.MEM_CD = 'MCC01001'
+        AND a.MEM_YN = 'AYN01001'
+</select>
+
+<select id="getCMem" parameterType="hashMap" resultMap="memberMap">
+		SELECT a.MEM_ID
+			  ,a.MEM_PASS
+			  ,a.MEM_NM
+			  ,a.MEM_POSTNO
+			  ,a.MEM_ADDR
+			  ,a.MEM_ADDR2
+			  ,a.MEM_TEL
+			  ,a.MEM_REG_DT
+			  ,a.MEM_OPEN_RESUME
+			  ,a.MEM_STATE_CD
+			  ,a.MEM_BIRTH
+			  ,a.MEM_GEN
+			  ,a.MEM_EMAIL
+			  ,a.MEM_CD
+			  ,a.MEM_YN
+			  ,a.MEM_INTRCN
+			  ,a.MEM_NCNM
+			  ,a.MEM_AF_ID
+			  ,a.MEM_WISH_JOB_CATE
+			  ,a.MEM_WISH_JOB
+			  ,a.ENABLED
+			  ,a.MEM_INT_WORD
+			 ,b.COM_CD_NM
+             ,b.COM_CD
+             ,c.COM_DET_CD_NM
+             ,c.COM_DET_CD
+		FROM MEMBER a , COM_CODE_INFO b, COM_DET_CODE_INFO c
+        WHERE a.MEM_ID =#{memId}
+        <if test='memWishJob !=null and memWishJob !="" and !memWishJob.equals("null") '>
+        AND a.MEM_WISH_JOB = #{memWishJob}
+        </if>
+        AND a.MEM_WISH_JOB_CATE = #{memWishJobCate}
+        AND a.MEM_WISH_JOB_CATE = c.COM_DET_CD
+        AND a.MEM_WISH_JOB_CATE = b.COM_CD
+  
+        
+</select>
+
+<select id="getMem2" parameterType="hashMap" resultMap="memberMap">
+		SELECT a.MEM_ID
+			  ,a.MEM_PASS
+			  ,a.MEM_NM
+			  ,a.MEM_POSTNO
+			  ,a.MEM_ADDR
+			  ,a.MEM_ADDR2
+			  ,a.MEM_TEL
+			  ,a.MEM_REG_DT
+			  ,a.MEM_OPEN_RESUME
+			  ,a.MEM_STATE_CD
+			  ,a.MEM_BIRTH
+			  ,a.MEM_GEN
+			  ,a.MEM_EMAIL
+			  ,a.MEM_CD
+			  ,a.MEM_YN
+			  ,a.MEM_INTRCN
+			  ,a.MEM_NCNM
+			  ,a.MEM_AF_ID
+			  ,a.MEM_WISH_JOB_CATE
+			  ,a.MEM_WISH_JOB
+			  ,a.ENABLED
+			  ,a.MEM_INT_WORD
+			  ,b.COM_CD
+			  ,b.COM_CD_NM
+			  ,b.COM_CD_DESCRIPTIONS
+			 
+		FROM MEMBER a,COM_CODE_INFO b
+		WHERE a.MEM_ID =#{memId}
+        AND a.MEM_CD = 'MCC01000'
+        AND a.MEM_WISH_JOB_CATE = #{memWishJobCate}
+		AND a.MEM_WISH_JOB_CATE = b.COM_CD
+		
+		
+	  
+</select>
+
+<select id="getMem3" parameterType="hashMap" resultMap="memberMap">
+		SELECT a.MEM_ID
+			  ,a.MEM_PASS
+			  ,a.MEM_NM
+			  ,a.MEM_POSTNO
+			  ,a.MEM_ADDR
+			  ,a.MEM_ADDR2
+			  ,a.MEM_TEL
+			  ,a.MEM_REG_DT
+			  ,a.MEM_OPEN_RESUME
+			  ,a.MEM_STATE_CD
+			  ,a.MEM_BIRTH
+			  ,a.MEM_GEN
+			  ,a.MEM_EMAIL
+			  ,a.MEM_CD
+			  ,a.MEM_YN
+			  ,a.MEM_INTRCN
+			  ,a.MEM_NCNM
+			  ,a.MEM_AF_ID
+			  ,a.MEM_WISH_JOB_CATE
+			  ,a.MEM_WISH_JOB
+			  ,a.ENABLED
+			  ,a.MEM_INT_WORD
+			  ,b.COM_CD
+			  ,b.COM_CD_NM
+			  ,b.COM_CD_DESCRIPTIONS
+			  ,c.COM_DET_CD
+			  ,c.COM_CD
+			  ,c.COM_DET_CD_NM
+			  ,c.COM_DET_DESCRIPTIONS
+		FROM MEMBER a,COM_CODE_INFO b,COM_DET_CODE_INFO c
+		WHERE a.MEM_ID =#{memId}
+        AND a.MEM_CD = 'MCC01002'
+        AND a.MEM_WISH_JOB_CATE = #{memWishJobCate}
+		AND a.MEM_WISH_JOB_CATE = b.COM_CD
+		AND a.MEM_WISH_JOB_CATE = c.COM_CD
+		AND a.MEM_WISH_JOB = #{memWishJob}
+	    AND a.MEM_WISH_JOB = c.COM_DET_CD
+</select>
+
+<delete id="deleteSchedule" parameterType="String">
+	DELETE
+	FROM SCHEDULE
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteInterestEnt">
+	DELETE
+	FROM INTEREST_ENTERPRISE
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteAlarm">
+	DELETE
+	FROM ALARM
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteCertificate">
+	DELETE
+	FROM CERTIFICATE
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deletePortfolio">
+	DELETE
+	FROM PORTFOLIO
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteInterestRecruit">
+	DELETE
+	FROM INTEREST_RECRUIT
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteAuth">
+	DELETE
+	FROM AUTH
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteProduct">
+	DELETE
+	FROM PAYMENT
+	WHERE PAY_USER_ID = #{memId}
+</delete>
+
+<delete id="deleteAjax" parameterType="String">
+	DELETE 
+	FROM MEMBER
+	WHERE MEM_ID = #{memId}
+</delete>
+
+<delete id="deleteBoardInquiry" parameterType="String">
+	DELETE 
+	FROM BOARD_INQUIRY
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteQnA" parameterType="String">
+	DELETE 
+	FROM BOARD_QNA
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteInterview" parameterType="String">
+	DELETE 
+	FROM BOARD_INCUMBENT_INTER
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteClass" parameterType="String">
+	DELETE 
+	FROM BOARD_CLASS
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteNews" parameterType="String">
+	DELETE 
+	FROM BOARD_EMPL_NEWS
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteNotice" parameterType="String">
+	DELETE 
+	FROM NOTICE_BOARD
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteConsulting" parameterType="String">
+	DELETE 
+	FROM BOARD_EMPL_CONSULT
+	WHERE BOARD_ID = #{boardId}
+</delete>
+
+<delete id="deleteCItem" parameterType="String">
+	DELETE 
+	FROM ITEM
+	WHERE ITEM_NO = #{itemNo}
+</delete>
+
+<update id="updateYn" parameterType="hashMap">
+    UPDATE MEMBER
+    SET MEM_CD = 
+        CASE 
+            WHEN #{memYn} = 'AYN01001' THEN 'MCC01002'
+            WHEN #{memYn} IN ('AYN01002', 'AYN01003') THEN 'MCC01000'
+            ELSE MEM_CD
+        END,
+        MEM_YN = #{memYn}
+    WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateAuthC" parameterType="hashMap">
+    UPDATE AUTH
+    SET ROLE = 'ROLE_CONSULTANT'
+    WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateAuthM" parameterType="hashMap">
+    UPDATE AUTH
+    SET ROLE = 'ROLE_MEMBER'
+    WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateYn2" parameterType="hashMap">
+    UPDATE MEMBER
+    SET MEM_CD = 
+        CASE 
+            WHEN #{memYn} = 'AYN01001' THEN 'MCC01001'
+            WHEN #{memYn} IN ('AYN01002', 'AYN01003') THEN 'MCC01001'
+            ELSE MEM_CD
+        END,
+        MEM_YN = #{memYn}
+    WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateAuthE" parameterType="hashMap">
+    UPDATE AUTH
+    SET ROLE = 'ROLE_ENTERPRISE'
+    WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateConApr" parameterType="hashMap">
+	UPDATE CON_APRV
+	SET CON_APRV_UPDT = SYSDATE
+	WHERE MEM_ID = #{memId}
+</update>
+<update id="updateitemVO" parameterType="itemvo">
+	UPDATE ITEM
+	SET 
+	      ITEM_NM =#{itemNm}
+	    , ITEM_INTRCN =#{itemIntrcn}
+	    , ITEM_SALE_YN =#{itemSaleYn}
+	    , ITEM_SALE_QUANTITY =#{itemSaleQuantity}
+	    , ITEM_SALE_PRICE =#{itemSalePrice}
+	    , ITEM_INFO_UPDT_ID = 'ADMIN'
+	    , ITEM_INFO_UPDT_DT = SYSDATE
+	    , ITEM_COUNT = #{itemCount}
+	WHERE ITEM_NO = #{itemNo}
+</update>
+
+<update id="updateEnterprise" parameterType="hashMap">
+	UPDATE ENTERPRISE
+	SET ENT_APRV_DT = SYSDATE,
+		ENT_APRV 	= 'AYN01001'
+	WHERE ENT_NO = #{entNo}
+</update>
+
+<select id="getComCode" parameterType="hashMap" resultMap="comCodeInfoVOMap">
+	SELECT a.COM_CD_NM
+		   , b.COM_DET_CD_NM
+	FROM COM_CODE_INFO a,COM_DET_CODE_INFO b
+	WHERE a.COM_CD = b.COM_CD
+	AND a.COM_CD = #{recruitOtt}
+	AND  b.COM_DET_CD = #{recruitJob}
+</select>
+
+<delete id="deleteRecruitAjax" parameterType="String">
+	DELETE 
+	FROM RECRUIT
+	WHERE RECRUIT_NO = #{recruitNo}
+</delete>
+
+<update id="updateReportMem" parameterType="hashMap">
+    UPDATE MEMBER
+    <set>
+        MEM_YN = #{repResultCd},
+        MEM_STATE_CD =
+        <choose>
+            <when test="repResultCd == 'AYN01001'">
+                'MSC01002'
+            </when>
+            <otherwise>
+                MEM_STATE_CD
+            </otherwise>
+        </choose>
+    </set>
+    WHERE MEM_ID = #{repSubId}
+</update>
+
+<update id="updateReport" parameterType="hashMap">
+	UPDATE REPORT
+	SET REP_RESULT_CD = #{repResultCd}
+	WHERE REP_SUB_ID = #{repSubId}
+	AND REP_NO = #{repNo}
+</update>
+
+<update id="updateReportCnt" parameterType="hashMap">
+	UPDATE REPORT
+	SET REP_RESULT_CNTNT = #{repResultCntnt}
+	WHERE REP_NO = #{repNo}
+</update>
+
+<insert id="insertBlackList" parameterType="hashMap">
+	<selectKey resultType="String" order="BEFORE" keyProperty="bltNo">
+			SELECT 
+    		'BLL' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BLT_NO, 4))), 0) + 1, 5, '0') AS NEXT_BLT_NO
+			FROM  
+    		BLACKLIST
+	</selectKey>
+	
+	INSERT INTO
+	BLACKLIST(
+		  BLT_NO
+		, ADMIN_ID
+		, MEM_ID
+		, BLT_DT
+		, BLT_CLR_YN
+		, BLT_CLR_DT
+			)
+	VALUES(
+		#{bltNo},'ADMIN',#{repSubId},SYSDATE,'N',SYSDATE+7
+		)
+</insert>
+
+<select id="getBlackList" parameterType="hashMap" resultType="blackListVO">
+	SELECT BLT_NO
+		   , ADMIN_ID
+		   , MEM_ID
+		   , BLT_DT
+		   , BLT_CLR_DT
+		   , BLT_CLR_YN
+		   , BLT_NOTES
+	FROM BLACKLIST
+	<if test='keyword !=null and keyword !="" and !keyword.equals("null") '>
+		WHERE (MEM_ID LIKE '%' || #{keyword} || '%')
+	</if>
+</select>
+
+<update id="updateBlackListNote" parameterType="hashMap">
+	UPDATE BLACKLIST
+	SET BLT_NOTES = #{bltNotes}
+	WHERE BLT_NO = #{bltNo}
+</update>
+
+<update id="updateMemState" parameterType="hashMap">
+	UPDATE MEMBER
+	SET MEM_STATE_CD ='MSC01001'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateBlackList" parameterType="hashMap">
+    UPDATE BLACKLIST
+    SET BLT_CLR_YN ='Y',
+        BLT_CLR_DT = SYSDATE
+    WHERE MEM_ID = #{memId}
+    AND BLT_NO = #{bltNo}
+</update>
+
+<update id="updateBlackList2" parameterType="hashMap">
+    UPDATE BLACKLIST
+    SET BLT_CLR_YN ='Y'
+    WHERE MEM_ID = #{memId}
+    AND BLT_NO = #{bltNo}
+</update>
+
+<update id="updateBltClrDt" parameterType="hashMap">
+    UPDATE BLACKLIST
+    SET BLT_CLR_YN ='Y',
+        BLT_CLR_DT = #{bltClrDt} + INTERVAL '7' DAY
+    WHERE MEM_ID = #{memId}
+    AND BLT_NO = #{bltNo}
+</update>
+
+<update id="updateMemState2" parameterType="hashMap">
+    UPDATE MEMBER
+	SET MEM_STATE_CD ='MSC01002'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateBoardInquiry" parameterType="hashMap">
+    UPDATE BOARD_INQUIRY
+	SET BOARD_ADMIN_ANSWER = #{boardAdminAnswer}
+	WHERE BOARD_ID = #{boardId}
+</update>
+
+<select id="getNoticeBoardList" parameterType="hashMap" resultType="noticeBoardVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , NTBD_AF_ID
+		   , BOARD_CNT
+		   , BOARD_LIKE
+		   , BOARD_CNTNT
+	FROM NOTICE_BOARD
+	WHERE 1=1
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (BOARD_TITLE LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getBoardInquiry" parameterType="hashMap" resultType="boardInquiryVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY WIRT_DT) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , WIRT_DT
+		   , BOARD_UPDT_DT
+		   , EMPL_TIP_AF_ID
+		   , BOARD_ADMIN_ANSWER
+	FROM BOARD_INQUIRY
+	WHERE 1=1
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getWaitInquiryVOList" parameterType="hashMap" resultType="boardInquiryVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY WIRT_DT) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , WIRT_DT
+		   , BOARD_UPDT_DT
+		   , EMPL_TIP_AF_ID
+		   , BOARD_ADMIN_ANSWER
+	FROM BOARD_INQUIRY
+	WHERE BOARD_ADMIN_ANSWER IS NULL
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getPosibleInquiryVOList" parameterType="hashMap" resultType="boardInquiryVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY WIRT_DT) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , WIRT_DT
+		   , BOARD_UPDT_DT
+		   , EMPL_TIP_AF_ID
+		   , BOARD_ADMIN_ANSWER
+	FROM BOARD_INQUIRY
+	WHERE BOARD_ADMIN_ANSWER IS NOT NULL
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getBoardQNAVOList" parameterType="hashMap" resultType="boardQNAVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , QNA_AF_ID
+		   , BOARD_CNT
+		   , BOARD_LIKE
+	FROM BOARD_QNA
+	WHERE 1=1
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getBoardQNACntVOList" parameterType="hashMap" resultType="boardQNAVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_CNT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , QNA_AF_ID
+		   , BOARD_CNT
+		   , BOARD_LIKE
+	FROM BOARD_QNA
+	WHERE 1=1
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getBoardQNALikeVOList" parameterType="hashMap" resultType="boardQNAVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_LIKE DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , QNA_AF_ID
+		   , BOARD_CNT
+		   , BOARD_LIKE
+	FROM BOARD_QNA
+	WHERE 1=1
+	<if test='keyword != null and !keyword.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyword} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getInterviewList" parameterType="hashMap" resultType="boardInterViewVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , INTER_JOB_CD
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , INTER_NM
+		   , INTER_ENT_NM
+		   , INTER_DEPT_NM
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , INTV_AF_ID
+		   , BOARD_CNT
+		   , BOARD_SE_TITLE
+	FROM BOARD_INCUMBENT_INTER
+	WHERE 1=1
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (INTER_ENT_NM LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getClassList" parameterType="hashMap" resultType="brdclsVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , CLASS_AF_ID
+		   , CLASS_URL
+		   , BOARD_CNT
+		   , JOB_CATEGORY_CD
+	FROM BOARD_CLASS
+	WHERE 1=1
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (BOARD_TITLE LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="getcode" parameterType="String" resultType="String">
+	SELECT COM_CD_NM
+	FROM COM_CODE_INFO
+	WHERE COM_CD = #{code}
+</select>
+
+<select id="getNewsList" parameterType="hashMap" resultType="boardNewsVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , EMPL_NEWS_AF_ID
+		   , BOARD_CNT
+		   , BOARD_CNTNT
+	FROM BOARD_EMPL_NEWS
+	WHERE 1=1
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (BOARD_TITLE LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+<select id="adminBoardConsult" parameterType="hashMap" resultType="boardEmplConsultVO">
+	SELECT T.*
+	FROM(
+	SELECT ROW_NUMBER() OVER(ORDER BY BOARD_WRITING_DT DESC) RNUM 
+		   , BOARD_ID
+		   , MEM_ID
+		   , BOARD_TITLE
+		   , BOARD_CNTNT
+		   , BOARD_WRITING_DT
+		   , BOARD_UPDT_DT
+		   , EMPL_CONSULT_AF_ID
+		   , BOARD_CNT
+		   , BOARD_LIKE
+		   , JOB_CATEGORY_CD
+	FROM BOARD_EMPL_CONSULT
+	WHERE 1=1
+	<if test='keyWord != null and !keyWord.equals("null")'>
+		AND (MEM_ID LIKE '%' || #{keyWord} || '%')	
+	</if>
+	) T
+	WHERE 
+		T.RNUM BETWEEN ((#{currentPage} - 1) * 10 + 1) AND ((#{currentPage} * 10))
+</select>
+
+	<select id="setSubmitResumeNo" parameterType="String" resultType="String">
+		SELECT
+		    RESUME_NO
+		FROM
+		    CON_APRV
+		WHERE
+		    MEM_ID = #{memId}
+	</select>
+
+
+<select id="getEntSector" parameterType="String" resultType="String">
+	SELECT C.ENT_SECTOR
+	FROM MEMBER A, ENT_APRV B , ENTERPRISE C
+	WHERE A.MEM_ID = B.MEM_ID
+	AND A.MEM_ID = #{memberId}
+	AND B.ENT_NO = C.ENT_NO
+</select>
+
+<select id="getEnterDetail" parameterType="hashMap" resultMap="memberMap">
+		SELECT a.MEM_ID
+			  ,a.MEM_PASS
+			  ,a.MEM_NM
+			  ,a.MEM_POSTNO
+			  ,a.MEM_ADDR
+			  ,a.MEM_ADDR2
+			  ,a.MEM_TEL
+			  ,a.MEM_REG_DT
+			  ,a.MEM_OPEN_RESUME
+			  ,a.MEM_STATE_CD
+			  ,a.MEM_BIRTH
+			  ,a.MEM_GEN
+			  ,a.MEM_EMAIL
+			  ,a.MEM_CD
+			  ,a.MEM_YN
+			  ,a.MEM_INTRCN
+			  ,a.MEM_NCNM
+			  ,a.MEM_AF_ID
+			  ,a.ENABLED
+			  ,c.ENT_SECTOR
+			  ,c.ENT_INT_WORD
+			  ,c.ENT_INTRCN
+		FROM MEMBER a, ENT_APRV b , ENTERPRISE c
+		WHERE a.MEM_ID =#{memId}
+		AND a.MEM_ID = b.MEM_ID
+		AND b.ENT_NO = c.ENT_NO
+</select>
+
+<select id="getConsultList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD, ITEM_COUNT
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD =  'PDC01001'
+		AND 	(	ITEM_CD =  'PDC0100101'
+		         OR ITEM_CD =  'PDC0100102'
+		         OR ITEM_CD =  'PDC0100103')    
+</select>
+
+<select id="getEntertList" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD =  'PDC01002'
+		AND 		ITEM_CD =  'PDC0100201'
+</select>
+
+<select id="getEnterList2" resultType="itemVO">
+		SELECT   ITEM_NO, ITEM_CD, ITEM_NM, ITEM_INTRCN
+		       , ITEM_SALE_YN, ITEM_SALE_QUANTITY, ITEM_SALE_PRICE
+		       , ITEM_INFO_REG_ID, ITEM_INFO_REG_DT, ITEM_INFO_UPDT_ID
+		       , ITEM_INFO_UPDT_DT, ITEM_AF_ID, ITEM_CL_CD
+		FROM 	 ITEM
+		WHERE 	 ITEM_CL_CD =  'PDC01002'
+		AND 		ITEM_CD =  'PDC0100202'
+</select>
+
+<insert id="insertItemNo" parameterType="itemVO">
+    <selectKey resultType="String" order="BEFORE" keyProperty="itemNo">
+        SELECT 'PDCNO' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(ITEM_NO, 6))), 0) + 1, 3, '0') AS NEXT_ITEM_NO
+        FROM ITEM
+    </selectKey>
+    INSERT INTO ITEM (
+        ITEM_NO,
+        ITEM_CD,
+        ITEM_NM,
+        ITEM_INTRCN,
+        ITEM_SALE_YN,
+        ITEM_SALE_QUANTITY,
+        ITEM_SALE_PRICE,
+        ITEM_INFO_REG_ID,
+        ITEM_INFO_REG_DT,
+        ITEM_CL_CD,
+        ITEM_COUNT
+    )
+    VALUES (
+        #{itemNo},
+        'PDC0100101',
+        #{itemNm},
+        #{itemIntrcn},
+        #{itemSaleYn},
+        #{itemSaleQuantity},
+        #{itemSalePrice},
+        'ADMIN',
+        SYSDATE,
+        'PDC01001',
+        #{itemCount}
+    )
+</insert>
+
+<insert id="insertBItems" parameterType="itemVO">
+    <selectKey resultType="String" order="BEFORE" keyProperty="itemNo">
+        SELECT 'PDCEO' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(ITEM_NO, 6))), 0) + 1, 3, '0') AS NEXT_ITEM_NO
+        FROM ITEM
+    </selectKey>
+    INSERT INTO ITEM (
+        ITEM_NO,
+        ITEM_CD,
+        ITEM_NM,
+        ITEM_INTRCN,
+        ITEM_SALE_YN,
+        ITEM_SALE_QUANTITY,
+        ITEM_SALE_PRICE,
+        ITEM_INFO_REG_ID,
+        ITEM_INFO_REG_DT,
+        ITEM_CL_CD
+    )
+    VALUES (
+        #{itemNo},
+        'PDC0100202',
+        #{itemNm},
+        #{itemIntrcn},
+        #{itemSaleYn},
+        #{itemSaleQuantity},
+        #{itemSalePrice},
+        'ADMIN',
+        SYSDATE,
+        'PDC01002'
+    )
+</insert>
+
+<insert id="insertRItems" parameterType="itemVO">
+    <selectKey resultType="String" order="BEFORE" keyProperty="itemNo">
+        SELECT 'PDCEO' || LPAD(NVL(MAX(TO_NUMBER(SUBSTR(ITEM_NO, 6))), 0) + 1, 3, '0') AS NEXT_ITEM_NO
+        FROM ITEM
+    </selectKey>
+    INSERT INTO ITEM (
+        ITEM_NO,
+        ITEM_CD,
+        ITEM_NM,
+        ITEM_INTRCN,
+        ITEM_SALE_YN,
+        ITEM_SALE_QUANTITY,
+        ITEM_SALE_PRICE,
+        ITEM_INFO_REG_ID,
+        ITEM_INFO_REG_DT,
+        ITEM_CL_CD
+    )
+    VALUES (
+        #{itemNo},
+        'PDC0100201',
+        #{itemNm},
+        #{itemIntrcn},
+        #{itemSaleYn},
+        #{itemSaleQuantity},
+        #{itemSalePrice},
+        'ADMIN',
+        SYSDATE,
+        'PDC01002'
+    )
+</insert>
+
+<select id="adminEnterChart" resultType="memberVO">
+	   SELECT TO_CHAR(MEM_REG_DT,
+      'YYYY-MM') AS yyyyMM, COUNT(MEM_REG_DT) as
+      memberCount
+      from MEMBER
+      WHERE MEM_REG_DT BETWEEN TO_DATE('2023-01-01', 'YYYY-MM-DD') AND
+      TO_DATE('2023-12-31','YYYY-MM-DD')
+      AND MEM_CD = 'MCC01001'
+      AND MEM_YN = 'AYN01001'
+      GROUP BY
+      TO_CHAR(MEM_REG_DT, 'YYYY-MM')
+      order BY YYYYMM
+</select>
+
+<select id="getb1" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 200000
+</select>
+
+<select id="getb2" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 350000
+</select>
+
+<select id="getb3" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 600000
+</select>
+
+<select id="getr1" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 120000
+</select>
+
+<select id="getr2" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 250000
+</select>
+
+<select id="getr3" resultType="int">
+ 	  SELECT COUNT(*)
+      FROM PAYMENT
+      WHERE PAY_AMOUNT = 380000
+</select>
+
+<select id="enterInterList" resultType="interestEnterpriseVO">
+    <![CDATA[
+    SELECT *
+    FROM (
+        SELECT a.ENT_NO, b.ENT_NM, COUNT(*) AS COUNT_BY_ENT_NO
+        FROM INTEREST_ENTERPRISE a
+        JOIN ENTERPRISE b ON a.ENT_NO = b.ENT_NO
+        GROUP BY a.ENT_NO, b.ENT_NM
+        ORDER BY COUNT_BY_ENT_NO DESC
+    )
+    WHERE ROWNUM <= 5
+    ]]>
+</select>
+
+<select id="adminCounselChart" resultType="memberVO">
+	  <![CDATA[
+	SELECT *
+    FROM (
+	SELECT COUNT(*) AS COUNT, b.COM_CD_NM, a.MEM_WISH_JOB_CATE
+	FROM MEMBER a
+	JOIN COM_CODE_INFO b ON a.MEM_WISH_JOB_CATE = b.COM_CD
+	WHERE a.MEM_CD = 'MCC01002'
+	AND a.MEM_YN = 'AYN01001'
+	GROUP BY a.MEM_WISH_JOB_CATE, b.COM_CD_NM
+	ORDER BY COUNT(*) DESC
+	  )
+    WHERE ROWNUM <= 5
+    ]]>
+</select>
+
+<select id="adminCounselDChart" resultType="memberVO">
+	  <![CDATA[
+	SELECT *
+    FROM (
+	SELECT COUNT(*) AS COUNT, b.COM_CD_NM, a.MEM_WISH_JOB_CATE
+	FROM MEMBER a
+	JOIN COM_CODE_INFO b ON a.MEM_WISH_JOB_CATE = b.COM_CD
+	WHERE a.MEM_CD = 'MCC01002'
+	AND a.MEM_YN = 'AYN01001'
+	GROUP BY a.MEM_WISH_JOB_CATE, b.COM_CD_NM
+	ORDER BY COUNT(*) 
+	  )
+    WHERE ROWNUM <= 5
+    ]]>
+</select>
+
+<select id="getc1" resultType="int">
+ 	SELECT COUNT(*)
+    FROM PAYMENT
+    WHERE ITEM_COMPANY_NO = 'PDCNO001'
+</select>
+
+<select id="getc2" resultType="int">
+ 	SELECT COUNT(*)
+    FROM PAYMENT
+    WHERE ITEM_COMPANY_NO = 'PDCNO002'
+</select>
+
+<select id="getc3" resultType="int">
+ 	SELECT COUNT(*)
+    FROM PAYMENT
+    WHERE ITEM_COMPANY_NO = 'PDCNO003'
+</select>
+
+<select id="monthTotal" resultType="paymentVO">
+	SELECT TO_CHAR(PAY_STDT, 'YYYY-MM') AS PAY_MONTH,
+    SUM(PAY_AMOUNT) AS TOTAL_AMOUNT
+    FROM PAYMENT
+    WHERE PAY_STDT BETWEEN TO_DATE('2023-02-01','YYYY-MM-DD') AND
+    TO_DATE('2024-01-31','YYYY-MM-DD')
+    GROUP BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+    ORDER BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+</select>
+
+<select id="monthCoun" resultType="paymentVO">
+	SELECT TO_CHAR(PAY_STDT, 'YYYY-MM') AS PAY_MONTH2,
+    SUM(PAY_AMOUNT) AS TOTAL_AMOUNT2
+	FROM PAYMENT
+	WHERE PAY_STDT BETWEEN TO_DATE('2023-02-01','YYYY-MM-DD') AND TO_DATE('2024-01-31','YYYY-MM-DD')
+  	AND ITEM_COMPANY_NO LIKE 'PDCN%'
+	GROUP BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+	ORDER BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+</select>
+
+<select id="monthEnter" resultType="paymentVO">
+	SELECT TO_CHAR(PAY_STDT, 'YYYY-MM') AS PAY_MONTH3,
+    SUM(PAY_AMOUNT) AS TOTAL_AMOUNT3
+	FROM PAYMENT
+	WHERE PAY_STDT BETWEEN TO_DATE('2023-02-01','YYYY-MM-DD') AND TO_DATE('2024-01-31','YYYY-MM-DD')
+  	AND ITEM_COMPANY_NO LIKE 'PDCE%'
+	GROUP BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+	ORDER BY TO_CHAR(PAY_STDT, 'YYYY-MM')
+</select>
+
+<select id="enterRank" resultType="paymentVO">
+ <![CDATA[
+	SELECT *
+	FROM (
+	    SELECT A.PAY_USER_ID, COUNT(*) AS Total_Items_Purchased, C.ENT_NM
+	    FROM PAYMENT A, ENT_APRV B, ENTERPRISE C
+	    WHERE ITEM_COMPANY_NO LIKE 'PDCEO%'
+	      AND A.PAY_USER_ID = B.MEM_ID
+	      AND B.ENT_NO = C.ENT_NO
+	    GROUP BY A.PAY_USER_ID, C.ENT_NM
+	    ORDER BY Total_Items_Purchased DESC
+	)
+	WHERE ROWNUM <= 5
+]]>
+</select>
+
+<select id="counRank" resultType="paymentVO">
+ <![CDATA[
+	SELECT *
+	FROM (
+	    SELECT A.PAY_CON_ID, COUNT(*) AS Total_Items_Purchased, B.MEM_NM 
+		FROM PAYMENT A, MEMBER B
+		WHERE ITEM_COMPANY_NO LIKE 'PDCNO%'
+		AND A.PAY_CON_ID = B.MEM_ID
+		GROUP BY A.PAY_CON_ID, B.MEM_NM
+		ORDER BY Total_Items_Purchased DESC
+	)
+	WHERE ROWNUM <= 5
+]]>
+</select>
+
+<select id="counselItemRank" resultType="paymentVO">
+	SELECT B.ITEM_NM, SUM(B.ITEM_SALE_PRICE) AS Total_Sales, COUNT(*) AS Transaction_Count
+	FROM PAYMENT A, ITEM B
+	WHERE A.ITEM_COMPANY_NO = B.ITEM_NO
+	AND B.ITEM_NO LIKE 'PDCNO%'
+	GROUP BY B.ITEM_NM
+</select>
+
+<update id="updateAprv" parameterType="hashmap">
+	UPDATE ENT_APRV
+	SET ENT_YN = 'AYN01001'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateAprvW" parameterType="hashmap">
+	UPDATE ENT_APRV
+	SET ENT_YN = 'AYN01002'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateEnt" parameterType="hashmap">
+	UPDATE ENT_APRV
+	SET ENT_YN = 'AYN01002'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<update id="updateAprvC" parameterType="hashmap">
+	UPDATE ENT_APRV
+	SET ENT_YN = 'AYN01003'
+	WHERE MEM_ID = #{memId}
+</update>
+
+<select id="getEntNo" parameterType="String" resultType="String">
+	SELECT ENT_NO
+	FROM ENT_APRV
+	WHERE MEM_ID = #{memId}
+</select>
+
+<resultMap type="ConAprvVO" id="ConAprvMap">
+
+	<result property="memId" column="MEM_ID"/>
+	<result property="resumeNo" column="RESUME_NO"/>
+	<result property="ptflNo" column="PTFL_NO"/>
+	<result property="conAprvDt" column="CON_APRV_DT"/>
+	<result property="conAprvUpdt" column="CON_APRV_UPDT"/>
+	<result property="gubun" column="GUBUN"/>
+
+</resultMap>
+
+<select id="ConAprv" parameterType="hashmap" resultType="ConAprvVO">
+
+   SELECT 	A.PTFL_NO, 'BASIC' GUBUN
+   FROM 	PORTFOLIO A, PORTFOLIO_BASIC B
+   WHERE 	A.PTFL_NO 	= B.PTFL_NO
+   AND 		A.MEM_ID 	= #{memId}
+
+   UNION ALL
+
+   SELECT 	A.PTFL_NO, 'FREE' GUBUN
+   FROM 	PORTFOLIO A, PORTFOLIO_FREE B
+   WHERE 	A.PTFL_NO 	= B.PTFL_NO
+   AND 		A.MEM_ID 	= #{memId}
+   
+</select>
+
+</mapper>
+

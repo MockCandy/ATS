@@ -1,0 +1,119 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<link rel="stylesheet" type="text/css" href="/resources/css/mypage.css">
+<style>
+.check-start-day, .check-end-day{
+   padding: 4px; 
+   border-radius: 5px; 
+   border: 1px solid #ccc;
+   margin-bottom: 8px;
+   height: 30px;
+}
+.btn-write{
+   width: 56px;
+    height: 30px;
+}
+.check-day-box{
+   margin-bottom: 6px;
+}
+.pay-total{
+   margin-top: 6px;
+   display: flex;
+    justify-content: flex-end;
+}
+.pay-total * {
+   font-size: 18px;
+}
+</style>
+
+
+<div class="mypage-div">
+	<div class="mypage-left">
+		<div class="mypage-left-tit">프리미엄</div>
+		<ul>
+			<li><a href="/memberPremium/consultantLog">상담 내역</a></li>
+			<li><a href="/memberPremium/items">상품 목록</a></li>
+			<li class="active"><a href="/memberPremium/payitems">결제 목록</a></li>
+		</ul>
+	</div>
+	
+	
+	<div class="mypage-body-con">
+		
+	   <div class="sub-title-area">
+			<div class="body-sub-title">결제 목록</div>
+	   </div>
+	      <div class="body-sub-con">
+	<!--          <div class="check-day-box"> -->
+	<!--             <input type="date" class="check-start-day"> -->
+	<!--             <input type="date" class="check-end-day"> -->
+	<!--             <input type="button" class="btn btn-write check-submit" value="조회"> -->
+	<%--             <input type="hidden" class="" value="${memberVO.entNo}"> --%>
+	<!--          </div>       -->
+	         <table class="table1">
+	         <colgroup>
+	            <col width="12%">
+	            <col width="*">
+	            <col width="12%">
+	            <col width="15%">
+	            <col width="12%">
+	            <col width="12%">
+	         </colgroup>
+	         <thead>
+	            <tr>
+	               <th>번호</th>
+	               <th>구매 상품</th>
+	               <th>상담사</th>
+	               <th>결제 수단</th>
+	               <th>구매날짜</th>
+	               <th>잔여횟수</th>
+	            </tr>
+	         </thead>
+	         <tbody>
+	               <!-- 상품 이름, 결제 수단, 시작일, 종료일, 남은 날짜, -->
+	            <c:forEach var="paymentVO" items="${paymentVOList}" varStatus="stat">
+	               <tr class="pointer row">
+	                  <td>
+	                     ${stat.count}
+	                  </td>
+	                  <td>
+	                     ${paymentVO.itemNm}
+	                  </td>
+	                  <td>
+	                     ${paymentVO.conNm}
+	                  </td>
+	                  <td>
+	                     ${paymentVO.payMethod}
+	                  </td>
+	                  <td>
+	                     <fmt:formatDate value="${paymentVO.payDt}" pattern="yyyy-MM-dd"/>
+	                  </td>
+	                  <td>
+	                  	${paymentVO.payRemndrCnt}
+	                  </td>
+	               </tr>
+	            </c:forEach>
+	         </tbody>
+	      </table>
+	      
+	      <div class="pay-total mt-15">
+	         <div>총 구매 금액 : </div>
+	         <div class="ma-5">
+	             <fmt:formatNumber value="${memTotalPay.totalPayAmount}" pattern="#,###" />&nbsp;원 
+	         </div>
+	      </div>
+	         
+	       <div class="pagez">
+             ${info.getPagingArea()}
+            </div>  
+	         
+	      </div>
+	</div>
+
+</div>
+

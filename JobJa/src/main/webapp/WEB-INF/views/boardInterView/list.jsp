@@ -1,0 +1,402 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<!-- <link rel="stylesheet" href="/resources/css/boardlInterView.css"> -->
+<style>
+.page-ct{
+	background-color: white;
+	border: 1px solid #eaeaea;
+	border-top:1px solid #444;
+}
+
+.inter-ul-grid{
+	display:grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr; 
+	text-align:center; 
+}
+
+.page-ct ul li a{
+	display: block;
+	padding: 10px 0px;
+	cursor:pointer;
+	transition:all 0.1s;
+}
+.page-ct ul li a:hover{
+	text-decoration: underline;
+	font-weight:bold;
+	background-color:#efefef;
+}
+
+.search-Box{
+	padding-top: 30px;
+	padding-bottom: 10px;
+}
+
+.page-main-box{
+	border-radius: 30px;
+}
+
+.btn-keyword{
+	background-color: white;
+    border: 1px solid rgb(212, 212, 212);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0 13px;
+    height: 28px;
+}
+.page-main-box{
+	display:grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap : 20px;
+}
+
+.inner-box{
+	background-color: white;
+	padding: 40px 30px;
+    margin: 12px 0 0 12px;
+    border: 1px solid #ebebeb;
+}
+
+.inner-box:hover{
+	border-color:#5b72ec; 
+}
+
+.sub-title span{
+	color: #5b72ec !important; 
+}
+
+.box-info{
+	display: flex;
+    justify-content: space-between;
+}
+.interView-img img{
+	width: 98px;
+	height: 98px;
+	border-radius: 50%;
+	object-fit: cover;
+
+}
+.title-hr {
+	margin: 8px 0px;
+	width: 20px;
+}
+
+.title-bold {
+	font-weight: 800;
+	font-size: 20px;
+	width: 275px;
+	margin-bottom:20px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: -webkit-box;
+	word-break:keep-all;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.list-text-small {
+	color: #888;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.list-text-small-name {
+	color: #888;
+    font-size: 13px;
+    margin: 2px 0px;
+}
+
+.keyword{
+	width: 230px;
+	display: inline-block;
+    padding-left: 10px;
+    box-sizing: border-box;
+    color: #888;
+    letter-spacing: -1px;
+    border: 1px solid #ddd;
+    padding: 0 11px 1px 11px;
+    font-size: 13px;
+    background: #fff;
+}
+
+.btn-keyword-search{
+	padding-bottom: 4px;
+    height: 32px;
+    border: 0;
+    cursor: pointer;
+    box-sizing: border-box;
+    background-color: #6d82f3;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    vertical-align: top;
+    width: 52px;
+    border-radius: 0px;
+    margin-left: -4px;
+}
+.paging-in-ul{
+	display: flex;
+    justify-content: space-around;
+    
+}
+.board-pagi{
+    height: 30px;
+    margin: 0 auto;
+    margin-top:45px;
+
+}
+.paging-inner{
+	width: 250px;
+	margin: 0 auto;
+}
+.paging{
+	margin-top: 10px;
+}
+.inter-create-btn{
+	width: 100px;
+    height: 40px;
+    border : 1px solid #ccc;
+    border-radius: 10px;
+}
+.inter-create{
+	display: flex;
+	justify-content: flex-end;
+}
+body {
+	background-color:white;
+}
+</style>
+
+
+<div class="cen">
+	<p class="main-h1">현직자 인터뷰</p>
+	<div class="page-ct tab-con">
+		<ul class="inter-ul-grid">
+			<li><a href="/boardInterView/list" class="inter-on ">전체</a></li>
+			<c:forEach var="comCode" items="${comCodeList}" >
+<%-- 				<li><a class="interJobCode" href="/boardInterView/list?comCode=${comCode.comCd}" data-com-code="">${comCode.comCdNm}</a></li> --%>
+				<li>
+					<a class="interJobCode" data-com-code="${comCode.comCd}">
+						${comCode.comCdNm}<span>(${comCode.jobCount})</span>
+					</a>
+				</li>
+			</c:forEach>
+		</ul>
+	</div>
+	<div class="search-Box flex"  style="text-align: right;">
+		<form name="frm" method="get" class="flex ml-auto">
+			<input type="hidden" id="searchComDetCode" name="comDetCode" value="${param.comDetCode}" />
+			<input type="text" class="keyword input-ssm p-14" name="keyword" placeholder="검색어를 입력해주세요." value="${param.keyword}" />
+			<button  type="submit" class="p-14 btn btn-search btn-ssm"></button>
+		</form>
+	</div>
+	<div class="page-main-box">
+		<c:forEach var="interViewVO" items="${interViewList}">
+			<div class="div-main-box">
+				<a href="/boardInterView/detail?boardId=${interViewVO.boardId}">
+					<div class="inner-box">
+						<input type=hidden name="boardId" value="${interViewVO.boardId}"/>
+							<div class="sub-title">
+								<span>${interViewVO.boardTitle}</span>
+							</div>
+							<hr class="title-hr" />
+							<div class="title-bold">
+								${interViewVO.boardCntnt}
+							</div>
+							<div class="box-info">
+								<div class="text-detail">
+									<p>${interViewVO.interEntNm}</p>
+									<p class="list-text-small-name">${interViewVO.interDeptNm}</p>
+									<p class="list-text-small-name">${interViewVO.interNm}</p>
+									<div class="flex align-center">
+										<span class="list-text-small">
+											<fmt:formatDate value="${interViewVO.boardWritingDt}" pattern="yyyy-MM-dd"/>
+										</span> 
+										<div class="v-div-line ml-12 mr-12"></div>
+										<span class="list-text-small">
+											<i class="fa-regular fa-eye" style="color: #aaa;"></i>&nbsp;&nbsp;
+											${interViewVO.boardCnt}
+										</span>
+									</div>
+								</div>
+								<div class="img-view">
+								    <span class="interView-img">
+								        <c:choose>
+								            <c:when test="${not empty interViewVO.intvProfile}">
+								                <img alt="담당자사진" src="/resources/upload/${interViewVO.intvProfile}">
+								            </c:when>
+								            <c:otherwise>
+								                <img alt="" src="/resources/images/default_profile.png">
+								            </c:otherwise>
+								        </c:choose>									
+								    </span>
+								</div>
+
+							</div>
+						
+						</div>
+					</a>
+				</div>
+			</c:forEach>
+		</div>
+		<div class="board-pagi ">
+				${articlePage.getPagingArea2()}
+		</div>
+		<sec:authorize access="hasRole('ROLE_ADMIN')">
+			<div class="inter-create">
+				<button type="button" id="createBtn" class="inter-create-btn btn-write">등록</button>
+			</div>
+		</sec:authorize>
+	</div>
+<script>
+$(function(){
+    console.log("ㅎㅇㅎㅇ");
+    
+    
+    $("#createBtn").on("click",function(){
+    	
+    	window.location.href = "/boardInterView/create";
+    	
+    });
+    
+
+    let li = $(".paging-in-li");
+
+    for(let i = 0; i < li.length; i++){
+        if($(li[i]).hasClass("active")) {
+            // 만약 li가 active 클래스를 갖고 있다면 스타일을 변경합니다.
+            $(li[i]).css({
+            	"width": "10px",
+                "font-weight": "bold",
+                "border-bottom": "3px solid #5b72ec", // 파란색으로 변경된 underline
+                "padding-bottom": "2px", // 아래 여백 추가
+            });
+        }
+    }
+    
+    $(".interJobCode").on("click",function(){
+    	
+    	$("input[name='keyword']").val("");
+    	
+    	let comDetCode = $(this).data("comCode");
+    	
+    	$("#searchComDetCode").val(comDetCode);
+    	
+    	let data = {
+    			"comDetCd" : comDetCode
+    	}
+    	console.log("data : ", data);
+    	
+    	$.ajax({
+    		url: "/boardInterView/listAjax",
+    		contentType : "application/json;charset=utf-8",
+    		data : JSON.stringify(data),
+    		type: "POST",
+    		dataType : "json",
+    		beforeSend:function(xhr){
+				xhr.setRequestHeader("${_csrf.headerName}","${_csrf.token}");
+			},
+			success:function(result){
+				
+				let str = "";
+				console.log("result : " , result);
+				
+				$.each(result.content,function(idx,e){
+					console.log("e : ",e);
+					str += "<div class='div-main-box'>";
+ 					str += "<a href='/boardInterView/detail?boardId="+e.boardId+"'>";
+					str += "<div class='inner-box'>";
+					str += "<input type='hidden' name='boardId' value='"+e.boardId+"'/>";
+					str += "<div class='sub-title'>";
+					str += "<span>" + e.boardTitle + "</span>";
+					str += "</div>";
+					str += "<hr class='title-hr' />";
+					str += "<div class='title-bold'>";
+					str += "" + e.boardCntnt + "";
+					str += "</div>";
+					str += "<div class='box-info'>";
+					str += "<div class='text-detail'>";
+					str += "<p>회사명</p>";
+					str += "<p class='list-text-small-name'>" + e.interDeptNm + "</p>";
+					str += "<p class='list-text-small-name'>" + e.interNm + "</p>";
+					str += "<span class='list-text-small'>" + formatDate(e.boardWritingDt) + "</span>";
+					str += "<span class='list-text-small'>";
+					str += "<i class='fa-regular fa-eye' style='color: #88888;'></i>";
+					str += "" + e.boardCnt + "";
+					str += "</span>";
+					str += "</div>";
+					str += "<div class='img-view'>";
+					str += "<span class='interView-img'>";
+					
+					if(e.intvProfile !== null){
+						str +="<img alt='담당자사진' src='/resources/upload/"+e.intvProfile+"'>";
+					}else{
+						str +="<img alt='' src='/resources/images/default_profile.png'>";
+					}
+					str += "</span>";
+					str += "</div>";
+					str += "</div>";
+					str += "</div>";
+					str += "<input type='hidden' name='boardId' value='"+e.boardId+"' />";
+   					str += "</a>";
+					str += "</div>";
+					
+				});
+				
+				$(".page-main-box").empty();
+				$(".page-main-box").html(str);
+				
+				let paging = "";
+				
+				paging += result.pagingArea2;
+				console.log("새로생성");
+				$(".board-pagi").empty();
+				$(".board-pagi").html(paging);
+				
+				let li = $(".paging-in-li");
+
+			    for(let i = 0; i < li.length; i++){
+			        if($(li[i]).hasClass("active")) {
+			            // 만약 li가 active 클래스를 갖고 있다면 스타일을 변경합니다.
+			            $(li[i]).css({
+			            	"width": "10px",
+			                "font-weight": "bold",
+			                "border-bottom": "3px solid #5b72ec", // 파란색으로 변경된 underline
+			                "padding-bottom": "2px", // 아래 여백 추가
+			            });
+			        }
+			    }
+			},
+			error: function(xhr, status, error){
+		            console.log('Error:', xhr, status, error);
+		    }
+    		
+    	});
+    	
+    });
+    
+    
+ 	//formatDate 함수로 날짜 포맷 변환 처리
+    function formatDate(date) {
+        var newDate = new Date(date);
+        var year = newDate.getFullYear();
+        var month = ("0" + (newDate.getMonth() + 1)).slice(-2);
+        var day = ("0" + newDate.getDate()).slice(-2);
+        return year + "-" + month + "-" + day;
+    }
+
+    // boardForm 제출 시 CSRF 토큰 체크
+    $("#boardForm").submit(function() {
+        var token = $("input[name='${_csrf.parameterName}']").val();
+        // 토큰 사용하여 요청 처리
+        return true;
+    });
+    
+});
+
+</script>
+
+    

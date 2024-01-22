@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.likes.mapper.LikesMapper">
+
+	<insert id="like" parameterType="boardQNAVO">
+		INSERT INTO LIKES
+		(BOARD_ID, MEM_ID)
+		VALUES (#{boardId}, #{memId})
+	</insert>
+	
+	<delete id="unlike" parameterType="boardQNAVO">
+		DELETE FROM LIKES
+		WHERE BOARD_ID=#{boardId}
+			AND MEM_ID=#{memId}
+	</delete>
+	<insert id="entReviewLike" parameterType="boardEntReviewVO">
+		INSERT INTO LIKES
+		(BOARD_ID, MEM_ID)
+		VALUES (#{entRevNo}, #{memId})
+	</insert>
+	
+	<delete id="entReviewUnlike" parameterType="boardEntReviewVO">
+		DELETE FROM LIKES
+		WHERE BOARD_ID=#{entRevNo}
+			AND MEM_ID=#{memId}
+	</delete>
+	
+	<select id="getCount" parameterType="boardQNAVO" resultType="int">
+		SELECT COUNT(*) FROM LIKES 
+		WHERE BOARD_ID=#{boardId} 
+			AND MEM_ID=#{memId}
+	</select>
+	<select id="getEntReviewCount" parameterType="boardEntReviewVO" resultType="int">
+		SELECT COUNT(*) FROM LIKES 
+		WHERE BOARD_ID=#{entRevNo} 
+			AND MEM_ID=#{memId}
+	</select>
+	
+	<select id="getLikes" parameterType="String" resultType="likesVO">
+		SELECT 
+			  BOARD_ID
+			, MEM_ID 
+		FROM LIKES
+		WHERE BOARD_ID=#{boardId}
+	</select>
+
+</mapper>

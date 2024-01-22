@@ -1,0 +1,64 @@
+package jobJa.recruit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.common.vo.ComCodeInfoVO;
+import jobJa.common.vo.ComDetCodeInfoVO;
+import jobJa.member.vo.InterestRecruitVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.recruit.vo.BenefitsVO;
+import jobJa.recruit.vo.RecruitFormVO;
+import jobJa.recruit.vo.RecruitVO;
+
+public interface RecruitMapper {
+
+	public List<ComCodeInfoVO> getComCodeInfo();
+
+	public List<ComDetCodeInfoVO> getComDetCode(String comCd);
+
+	public List<ComDetCodeInfoVO> getComCodeInfoa();
+
+	public List<ComDetCodeInfoVO> getComCodeInfob();
+
+	public int createPost(RecruitVO recruitVO);
+
+	public int createBenefits(RecruitFormVO recruitFormVO);
+
+	public List<InterestRecruitVO> getInterestRecruit(MemberVO memberVO);
+
+	public List<RecruitVO> getList (Map<String,Object> map);
+
+	public String getEntNo(String memId);
+
+	public List<RecruitVO> getEntNm();
+
+	public List<RecruitVO> getByEntNo(Map<String, Object> map);
+	
+	// 디비 저장 안하고 uploadfile에만 저장
+	public int insertThumb(String result1);
+	
+	//썸네일에 주소 업데이트
+	public int updateThumb(RecruitVO recruitVO);
+	
+	//필터링
+	public List<RecruitVO> getFilterList(Map<String, Object> map);
+
+	//총행수 자기고오기
+	public int getTotal(Map<String, Object> map);
+
+	//스크랩순으로 가지고오기
+	public List<RecruitVO> getScrapList(Map<String, Object> map);
+
+	//마감순으로 가지고오기
+	public List<RecruitVO> getDeadlineList(Map<String, Object> map);
+
+	//조건에 맞는 총 행수 가지고오기
+	public int getConditionTotal(Map<String, Object> map);
+
+	// 채용공고 한건 가져오기
+	public RecruitVO getByRecNo(String recruitNo);
+
+	public List<BenefitsVO> getBenefits(String recruitNo);
+
+}

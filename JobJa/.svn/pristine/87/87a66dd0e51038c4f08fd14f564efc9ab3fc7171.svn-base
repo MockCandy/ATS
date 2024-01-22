@@ -1,0 +1,39 @@
+package jobja.board.vo;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.atchfile.vo.AtchFileVO;
+import lombok.Data;
+
+@Data
+public class BoardNewsVO {
+
+	private String boardId;
+	
+	private String memId;
+	
+	private String boardTitle;
+	
+	private String boardCntnt;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date boardWritingDt;
+	
+	private Date boardUpdtDt;
+	
+	private String emplNewsAfId;
+	
+	private int boardCnt;
+	
+	private MultipartFile[] uploadFile;
+	
+	private AtchFileVO atchFileVO;
+	
+	private String passedTime;
+	
+	
+}

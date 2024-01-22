@@ -1,0 +1,10 @@
+package jobja.mypage.member.mapper;
+
+import jobja.mypage.member.vo.AcademicCareerVO;
+
+public interface AcademicCareerMapper {
+	
+	//학력등록
+	public int ajaxinsertmyAcademic(AcademicCareerVO academicCarrerVO);
+
+}

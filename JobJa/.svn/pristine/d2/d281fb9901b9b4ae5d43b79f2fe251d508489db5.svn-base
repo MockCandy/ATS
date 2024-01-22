@@ -1,0 +1,42 @@
+package jobJa.member.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.member.vo.EnterpriseVO;
+import jobJa.member.vo.InterestEnterpriseVO;
+import jobJa.member.vo.InterestRecruitVO;
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface EnterpriseMapper {
+	
+	//기업회원등록.
+	public int createPost(EnterpriseVO enterpriseVO);
+
+	public List<EnterpriseVO> getAjaxEntList(EnterpriseVO enterpriseVO);
+
+	public List<EnterpriseVO> list(Map<String, Object> map);
+	
+	public List<EnterpriseVO> list5(Map<String, Object> map);     
+
+	public List<InterestEnterpriseVO> interestList(MemberVO memberVO);
+
+	public int ajaxInterestEnt(InterestEnterpriseVO interestEnterpriseVO);
+
+	public int ajaxInterestEntAdd(InterestEnterpriseVO interestEnterpriseVO);
+
+	public int ajaxInterestEntDel(InterestEnterpriseVO interestEnterpriseVO);
+
+	public int getStoredEnt(InterestEnterpriseVO interestEnterpriseVO);
+
+	public int count(Map<String, Object> map);
+
+	public EnterpriseVO getOne(Map<String, Object> map);
+
+	public EnterpriseVO getAjaxEntOne(EnterpriseVO enterpriseVO);
+
+	public List<EnterpriseVO> ajaxGetEntOneYearly(EnterpriseVO enterpriseVO);
+
+	public int getTotal(Map<String, Object> map);
+
+}

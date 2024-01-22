@@ -1,0 +1,42 @@
+package jobJa.admin.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface AdminMapper {
+
+	public List<MemberVO> getMember(Map<String,Object> map);
+
+	public int getTotalMem(Map<String,Object> map);
+
+	public MemberVO getMem(Map<String,Object> map);
+
+	public int deleteAjax(String memId);
+
+	public int deleteSchedule(String memId);
+
+	public int deleteInterestEnt(String memId);
+
+	public int deleteAlarm(String memId);
+
+	public int deleteCertificate(String memId);
+
+	public int deletePortfolio(String memId);
+
+	public int deleteInterestRecruit(String memId);
+
+	public int deleteAuth(String memId);
+
+	public int deleteProduct(String memId);
+
+	public int getTotalCounsel(Map<String, Object> map);
+
+	public List<MemberVO> getCounselor(Map<String, Object> map);
+
+	public int getTotalCounselOffer(Map<String, Object> map);
+
+	public List<MemberVO> getCounselorOffer(Map<String, Object> map);
+
+}

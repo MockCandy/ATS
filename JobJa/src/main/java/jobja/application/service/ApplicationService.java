@@ -1,0 +1,42 @@
+package jobja.application.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.member.vo.ApplicationVO;
+
+public interface ApplicationService {
+
+	int insert(ApplicationVO applicationVO);
+
+	int isApplicated(Map<String, Object> appMap);
+	
+	//마이페이지 내가 입사지원한공고 목록 가져오기.
+	public List<ApplicationVO> myApplication(Map<String, Object> map);
+	
+	//마이페이지 내가 입사지원한공고 총 갯수
+	public int getMyTotal(Map<String, Object> map);
+	
+	// 지원자 상태 공통코드
+	public List<ComDetCodeInfoVO> comDetCdState();
+
+	// 지원자 목록에 담길 채용 목록
+	public List<ApplicationVO> applicationVOList();
+
+	// 지원자 상태 수정
+	public int updatePost(ApplicationVO applicationVO);
+
+	// 지원자 목록
+	public List<ApplicationVO> applicationList(Map<String, Object> map);
+	
+	// 총 페이지 수
+	public int getTotal(Map<String, Object> map);
+
+	// 지원자 수
+	public int appTotal(Map<String, Object> map);
+	
+	//공고 당 입사지원 목록 가져오기
+	public List<ApplicationVO> getOneEntapplicationList(String recruitNo);
+
+}

@@ -1,0 +1,12 @@
+package jobja.member.service;
+
+import java.util.List;
+
+import jobja.member.vo.JobOfferVO;
+import jobja.mypage.member.vo.MemberVO;
+
+public interface JobOfferService {
+
+	List<JobOfferVO> getOffers(MemberVO memberVO);
+
+}

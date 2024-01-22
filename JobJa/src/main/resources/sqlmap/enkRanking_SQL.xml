@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.ranking.mapper.EntRankingMapper">
+
+	
+	<!-- keyword가 있으면 조건을 검 -->
+	<sql id="where">
+		<if test="keyword != null and keyword != ''">
+			AND      (RECRUIT_TITLE	   LIKE '%' || #{keyword} || '%' 
+					  OR RECRUIT_CNTNT LIKE '%' || #{keyword} || '%'
+					  OR RECRUIT_PART LIKE '%' || #{keyword} || '%'
+					  OR RECRUIT_WORK LIKE '%' || #{keyword} || '%')
+		</if>
+	</sql>
+	<!-- sort가 있으면 조건을 검 -->
+	<sql id="order">
+		<choose>
+			<when test = "sort=='chances'">
+				ORDER BY SUM_ENT_REV_CHANCES DESC
+			</when>
+			<when test = "sort=='welfare'">
+				ORDER BY SUM_ENT_REV_WELFARE DESC
+			</when>
+			<when test = "sort=='balance'">
+				ORDER BY SUM_ENT_REV_BALANCE DESC
+			</when>
+			<when test = "sort=='culture'">
+				ORDER BY SUM_ENT_REV_CULTURE DESC
+			</when>
+			<when test = "sort=='manager'">
+				ORDER BY SUM_ENT_REV_MANAGER DESC
+			</when>
+			<when test = "sort=='avgScore'">
+				ORDER BY ENT_AVG_RATE DESC
+			</when>
+			<when test = "sort=='reviewCount'">
+				ORDER BY REVIEW_COUNT DESC
+			</when>
+		</choose>
+	</sql>
+
+	<select id="entWelfareDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY SUM_ENT_REV_WELFARE DESC NULLS LAST
+	</select>
+
+	<select id="entChancesDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY SUM_ENT_REV_CHANCES DESC NULLS LAST
+	</select>
+
+
+	<select id="entBalanceDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY SUM_ENT_REV_BALANCE DESC NULLS LAST
+	</select>
+
+
+	<select id="entCultureDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY SUM_ENT_REV_CULTURE DESC NULLS LAST
+	</select>
+
+
+	<select id="entManagerDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY SUM_ENT_REV_MANAGER DESC NULLS LAST
+	</select>
+
+
+	<select id="entAvgDesc" resultType="enterpriseVO">
+		SELECT ent.*
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent 
+          ORDER BY ENT_AVG_RATE DESC NULLS LAST
+	</select>
+	
+	<resultMap type="enterpriseVO" id="enterpriseComCodeMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+		
+		<result property="reviewCount" column="REVIEW_COUNT"/>
+		<result property="sumEntRevChances" column="SUM_ENT_REV_CHANCES"/>
+		<result property="sumEntRevWelfare" column="SUM_ENT_REV_WELFARE"/>
+		<result property="sumEntRevBalance" column="SUM_ENT_REV_BALANCE"/>
+		<result property="sumEntRevCulture" column="SUM_ENT_REV_CULTURE"/>
+		<result property="sumEntRevManager" column="SUM_ENT_REV_MANAGER"/>
+		<result property="sumEntRevCeoView" column="SUM_ENT_REV_CEO_VIEW"/>
+		<result property="sumEntRevPotential" column="SUM_ENT_REV_POTENTIAL"/>
+		<result property="sumEntRevRecomendYn" column="SUM_ENT_REV_RECOMEND_YN"/>
+		
+		<association property="comDetCodeInfoVOList" resultMap="comDetCodeMap"></association>
+	</resultMap>
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	<select id="getList" parameterType="hashMap" resultMap="enterpriseComCodeMap">
+		SELECT e.*,
+	        com.COM_DET_CD, 
+	        com.COM_CD, 
+	        com.COM_DET_CD_NM, 
+	        com.COM_DET_DESCRIPTIONS
+		FROM
+		(SELECT ROW_NUMBER() OVER(<include refid="order"></include>) RNUM, AA.*
+		FROM 
+		(SELECT
+		    A.*,
+    		nvl(REVIEW_COUNT, 0) AS REVIEW_COUNT,
+		    nvl(B.ENT_REV_CHANCES,0) AS SUM_ENT_REV_CHANCES,
+		    nvl(B.ENT_REV_WELFARE,0) SUM_ENT_REV_WELFARE,
+		    nvl(B.ENT_REV_BALANCE,0) SUM_ENT_REV_BALANCE,
+		    nvl(B.ENT_REV_CULTURE,0) SUM_ENT_REV_CULTURE,
+		    nvl(B.ENT_REV_MANAGER,0) SUM_ENT_REV_MANAGER,
+		    nvl(ENT_REV_CEO_VIEW,0) SUM_ENT_REV_CEO_VIEW,    
+		    nvl(ENT_REV_POTENTIAL,0) SUM_ENT_REV_POTENTIAL,    
+		    nvl(ENT_REV_RECOMEND_YN,0) SUM_ENT_REV_RECOMEND_YN,
+		    nvl(ENT_AVG_RATE,0) ENT_AVG_RATE
+		FROM
+		    ENTERPRISE A
+		    left outer join 
+		    (
+		        SELECT
+		            ENT_NO,
+		            COUNT(ENT_NO) AS REVIEW_COUNT,
+		            AVG(ENT_REV_CHANCES) ENT_REV_CHANCES,
+		            AVG(ENT_REV_WELFARE) ENT_REV_WELFARE,
+		            AVG(ENT_REV_BALANCE) ENT_REV_BALANCE,
+		            AVG(ENT_REV_CULTURE) ENT_REV_CULTURE,
+		            AVG(ENT_REV_MANAGER) ENT_REV_MANAGER,
+				    AVG(ENT_REV_CEO_VIEW) ENT_REV_CEO_VIEW,    
+				    AVG(ENT_REV_POTENTIAL) ENT_REV_POTENTIAL,    
+				    AVG(ENT_REV_RECOMEND_YN) ENT_REV_RECOMEND_YN,
+				  (
+					  AVG(ENT_REV_CHANCES)+ 
+					  AVG(ENT_REV_WELFARE)+ 
+					  AVG(ENT_REV_BALANCE)+ 
+					  AVG(ENT_REV_CULTURE)+  
+					  AVG(ENT_REV_MANAGER)
+				  )/5 AS ENT_AVG_RATE
+		        FROM
+		            ENT_REVIEW
+		        GROUP BY
+		            ENT_NO
+		    ) B
+		    on  A.ENT_NO = B.ENT_NO ) AA ) e
+		    LEFT OUTER JOIN COM_DET_CODE_INFO com ON e.ENT_SECTOR = com.COM_DET_CD
+			WHERE RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+		  
+	</select>
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		
+		SELECT COUNT(*)
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,     
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,     
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		  ) ent
+		  <include refid="order"></include>
+	</select>
+
+
+</mapper>

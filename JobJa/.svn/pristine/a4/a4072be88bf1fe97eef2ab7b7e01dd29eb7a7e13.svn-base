@@ -1,0 +1,436 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<link rel="stylesheet" type="text/css" href="/resources/css/enterprise.css">
+<link rel="stylesheet" href="/resources/css/mypage.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+
+<style>
+
+.mypage-body-con{
+	background-color: #fff;
+	border-radius: 30px;
+ 	padding: 24px; 
+ 	height: 800px;
+}
+.body-sub-title{
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.title-hr{
+	border: 1px solid #ccc;
+	margin-bottom: 8px;
+}
+
+.btn-custom{
+    margin-left: auto;
+}
+
+body{ 
+	background-color:#fff;
+}
+
+</style>
+
+
+<div class="mypage-body-con">
+	<div class="sub-con-area">
+		
+		<div class="body-sub-title">'${enterpriseVO.entNm}' 리뷰 목록</div>
+	</div>
+		
+	<div class="pt-40">
+		<p class="stat-tit">
+			<span class="txt-sig">전체 리뷰</span> 통계 (${totalReviewCount}명)
+		</p>
+		<div class="stat-wrap">
+			<div class="stat-left">
+			
+				<div class="rate-point">
+					<p class="tot-avg-rate">
+						<fmt:formatNumber value="${enterpriseVO.entAvgRate }" pattern="0.0"/>
+					</p>
+					<div class="flex align-center justify-center ml-9">
+						<span class="star star-sm"> ★★★★★ 
+							<span style="width: 20%;">★★★★★</span> 
+						</span> 
+					</div>
+				</div>
+				
+				<div class="sep-rate">
+					<div class="welfare">
+						<p class="sep-tit">복지 및 급여</p>
+						<div class="sep-rate-sec">
+							<div class="bar-rate">
+								<span class="bar-rate-val"></span>
+							</div>
+							<span class="sep-rate-point"><fmt:formatNumber value="${enterpriseVO.sumEntRevWelfare }" pattern="0.0"/></span>
+						</div>
+					</div>
+					
+					<div class="welfare">
+						<p class="sep-tit">업무와 삶의 균형</p>
+						<div class="sep-rate-sec">
+							<div class="bar-rate">
+								<span class="bar-rate-val"></span>
+							</div>
+							<span class="sep-rate-point"><fmt:formatNumber value="${enterpriseVO.sumEntRevBalance }" pattern="0.0"/></span>
+						</div>
+					</div>
+					
+					<div class="welfare">
+						<p class="sep-tit">사내문화</p>
+						<div class="sep-rate-sec">
+							<div class="bar-rate">
+								<span class="bar-rate-val"></span>
+							</div>
+							<span class="sep-rate-point"><fmt:formatNumber value="${enterpriseVO.sumEntRevCulture }" pattern="0.0"/></span>
+						</div>
+					</div>
+					
+					<div class="welfare">
+						<p class="sep-tit">승진 기회 및 가능성</p>
+						<div class="sep-rate-sec">
+							<div class="bar-rate">
+								<span class="bar-rate-val"></span>
+							</div>
+							<span class="sep-rate-point"><fmt:formatNumber value="${enterpriseVO.sumEntRevChances }" pattern="0.0"/></span>
+						</div>
+					</div>
+					
+					<div class="welfare">
+						<p class="sep-tit">경영진</p>
+						<div class="sep-rate-sec">
+							<div class="bar-rate">
+								<span class="bar-rate-val"></span>
+							</div>
+							<span class="sep-rate-point"><fmt:formatNumber value="${enterpriseVO.sumEntRevManager }" pattern="0.0"/></span>
+						</div>
+					</div>
+				</div>
+			
+			</div>
+			
+			<div class="stat-right">
+				<div class=''>
+					<div class="chart-box">
+						<div class="chart chart-recomm">
+							<span class="center"><fmt:parseNumber value="${enterpriseVO.sumEntRevRecomendYn *100 }" integerOnly="true" />%</span>
+						</div>
+						<p class="p-14 bold ml-12">기업 추천율</p>
+					</div>
+					<div class="chart-box">
+						<div class="chart chart-ceo">
+							<span class="center"><fmt:parseNumber value="${enterpriseVO.sumEntRevCeoView *100 }" integerOnly="true" />%</span>
+						</div>
+						<p class="p-14 bold ml-12">CEO 지지율</p>
+					</div>
+					<div class="chart-box">
+						<div class="chart chart-poten">
+							<span class="center"><fmt:parseNumber value="${enterpriseVO.sumEntRevPotential *50 }" integerOnly="true" />%</span>
+						</div>
+						<p class="p-14 bold ml-12">성장 가능성</p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
+	</div>
+
+
+	<div class="review-sector">
+		
+			<p class="p-13 mt-25 mb-20">
+				총 <span class="txt-sig">${totalReviewCount}</span>개의 기업리뷰
+			</p>
+		</div>
+		
+		<table class="table1">
+         <colgroup>
+            <col width="10%">
+            <col width="15%">
+            <col width="20%">
+            <col width="20%">
+            <col width="20%">
+            <col width="15%">
+         </colgroup>
+         <thead>
+            <tr style="font-weight: bold;">
+               <th>번호</th>
+               <th>평점 평균</th>
+               <th>기업 추천</th>
+               <th>CEO 지지여부</th>
+               <th>성장가능성</th>
+               <th>작성일</th>
+            </tr>
+         </thead>
+         <tbody>
+         	<c:if test="${fn:length(brdEntReviewVOList) == 0}">
+         		<tr><td colspan="6">아직 작성된 리뷰가 없습니다<td></tr>
+         	</c:if>
+<%--          ${brdEntReviewVOList } --%>
+            <c:forEach var="reviewVO" items="${brdEntReviewVOList}">
+               <tr class="pointer" onclick="window.location.href='/entReview/reviewDetail?entRevNo=${reviewVO.entRevNo}'"> 
+                  <td>${reviewVO.rnum}</td>
+                  <td>${reviewVO.entReviewAvg}점</td>
+                  <td>
+                  	<c:if test="${reviewVO.entRevRecomendYn==1}">추천</c:if>
+                  	<c:if test="${reviewVO.entRevRecomendYn==0}">비추천</c:if>
+                 </td>
+                  <td>
+                  	<c:if test="${reviewVO.entRevCeoView==1}">지지함</c:if>
+                  	<c:if test="${reviewVO.entRevCeoView==0}">지지하지 않음</c:if>
+                  </td>
+                  <td>
+					<c:if test="${reviewVO.entRevPotential == 2 }">성장</c:if>	
+					<c:if test="${reviewVO.entRevPotential == 1 }">그대로</c:if>	
+					<c:if test="${reviewVO.entRevPotential == 0 }">하락</c:if>
+				 </td>
+                  <td><fmt:formatDate value="${reviewVO.regDate}" pattern="yyyy-MM-dd"/> </td>
+               </tr>
+            </c:forEach>
+         </tbody>
+      </table>
+		
+       	<c:choose>
+       		<c:when  test="${fn:length(brdEntReviewVOList) == 0}">
+       		</c:when>
+       		<c:otherwise>
+				<div class="pagez mt-30">${data.getPagingArea()}</div>
+       		</c:otherwise>
+       	</c:choose>
+		
+		<div id="endList"></div>
+		
+<%-- 		</c:if> --%>
+</div>
+
+	
+<script type="text/javascript">
+$(function(){
+	
+// 통계 그리는 부분 @@@
+let entNo = "${enterpriseVO.entNo}";
+let memId = "${getCurrentLoginVO.memId}";
+console.log(entNo);
+console.log(memId);
+
+function drawRate(){		
+	let rate = document.querySelector(".tot-avg-rate");
+//		console.log(rate.nextElementSibling.children[0].children[0]);
+	let star = rate.nextElementSibling.children[0].children[0];
+	star.style.width = rate.innerText * 20 +'%'; 
+	
+	let barRate = document.querySelectorAll(".sep-rate-point");
+	
+//		console.dir(barRate[0].previousElementSibling.children[0]);
+	for(let i = 0; i < barRate.length; i++){
+		let bar = barRate[i].previousElementSibling.children[0];
+		bar.style.width = barRate[i].innerText * 20 + '%'
+	}
+	
+	let revRate = document.querySelectorAll(".rev-avg-rate");
+	for(let i = 0; i < revRate.length; i++){
+		let star = revRate[i].nextElementSibling.children[0];
+		star.style.width = revRate[i].value * 20 +'%'; 
+	}
+}
+
+drawRate();
+
+
+const chartRecomm = document.querySelector('.chart-recomm');
+const chartCeo = document.querySelector('.chart-ceo');
+const chartPoten = document.querySelector('.chart-poten');
+
+let recVal = chartRecomm.children[0].innerText.replace(/[^0-9]/g,'');
+let ceoVal = chartCeo.children[0].innerText.replace(/[^0-9]/g,'');
+let potenVal = chartPoten.children[0].innerText.replace(/[^0-9]/g,'');
+console.log(recVal);
+console.log(ceoVal);
+console.log(potenVal);
+
+const makeChart = (percent, classname, color) => {
+  let i = 1;
+  let chartFn = setInterval(function() {
+    if (i <= percent) { // < 에서 <=로 수정
+      colorFn(i, classname, color);
+      i++;
+    } else {
+      clearInterval(chartFn);
+    }
+  }, 10);
+}
+
+const colorFn = (i, classname, color) => { //js로 css 적용
+  classname.style.background = "conic-gradient(" + color + " 0% " + i + "%, #dedede " + i + "% 100%)";
+}
+
+const replay = () => {
+  makeChart(recVal, chartRecomm, '#374D9A');
+  makeChart(ceoVal, chartCeo, '#374D9A');
+  makeChart(potenVal, chartPoten, '#374D9A');
+}
+
+makeChart(recVal, chartRecomm, '#374D9A');
+makeChart(ceoVal, chartCeo, '#374D9A');
+makeChart(potenVal, chartPoten, '#374D9A');
+
+// 신고 모달 설정 & 초기화하는 부분
+$("#modal-custom").iziModal({
+    title: '',
+    subtitle: '',
+    headerColor: '#88A0B9',
+    background: null,
+    theme: '',  // light
+    icon: null,
+    iconText: null,
+    iconColor: '',
+    rtl: false,
+    width: 400,
+    top: null,
+    bottom: null,
+    borderBottom: true,
+    padding: 0,
+    radius: 3,
+    zindex: 999,
+    iframe: false,
+    iframeHeight: 400,
+    iframeURL: null,
+    focusInput: true,
+    group: '',
+    loop: false,
+    arrowKeys: true,
+    navigateCaption: true,
+    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+    history: false,
+    restoreDefaultContent: false,
+    autoOpen: 0, // Boolean, Number
+    bodyOverflow: false,
+    fullscreen: false,
+    openFullscreen: false,
+    closeOnEscape: true,
+    closeButton: true,
+    appendTo: 'body', // or false
+    appendToOverlay: 'body', // or false
+    overlay: true,
+    overlayClose: true,
+    overlayColor: 'rgba(0, 0, 0, 0.4)',
+    timeout: false,
+    timeoutProgressbar: false,
+    pauseOnHover: false,
+    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+    transitionIn: 'comingIn',
+    transitionOut: 'comingOut',
+    transitionInOverlay: 'fadeIn',
+    transitionOutOverlay: 'fadeOut',
+    onFullscreen: function(){},
+    onResize: function(){},
+    onOpening: function(){},
+    onOpened: function(){},
+    onClosing: function(){},
+    onClosed: function(){},
+    afterRender: function(){}
+});
+});
+
+// console.log("${getCurrentLoginVO.memId}");
+
+// 신고대상자 아이디
+let repSubId = document.querySelector("#repSubId");
+// 신고 게시글 번호
+let repBoardId = document.querySelector("#repBoardId");
+// 신고접수자 아이디
+let reporterId = "${getCurrentLoginVO.memId}";
+// 신고사유
+var repReason = $("textarea[id='repReason']").val();
+
+// 신고버튼 기능
+$(".btn-report").on("click", function(e) {
+	
+	// 로그인 한 아이디 값이 없으면 신고 불가
+	event.preventDefault();
+
+	if(reporterId =='' || reporterId == null){
+		alert("로그인 한 회원만 신고기능을 이용하실 수 있습니다.");
+		return;
+	}
+	// 	console.log(e);
+// 	console.log(e.target);
+// 	console.log(e.target.nextElementSibling.value);
+
+	// ** nextElementSibling => 다음 요소를 반환해주는 메소드
+	
+// 	repSubId.value = e.target.nextElementSibling.nextElementSibling.value;
+// 	repBoardId.value = e.target.nextElementSibling.value;
+
+// @@@ 여기서 값 넣어주는지 확인해!!@!!@@!!@
+
+repSubId.value = document.querySelector('.repSubId').value;
+repBoardId.value = document.querySelector('.entRevNo').value;
+
+console.log("repReason: ", repReason);
+// repReason = document.getElementById('repReason');
+	
+		$('#modal-custom').iziModal('open');
+});
+console.log(document.querySelectorAll("input[name=repType]"));
+
+$(document).on("click",".submit", function(e) {
+	event.preventDefault();
+	
+	 //		repReason.value = ;
+	// 신고유형 코드
+	let repTypeCd = document.querySelector("input[name=repType]:checked").value;
+	console.log(repSubId.value);
+	console.log(repBoardId.value);
+	console.log($("#repReason").val());
+	console.log(reporterId);
+	console.log(repTypeCd);
+	
+	let data = {
+		"repSubId" : repSubId.value,
+		"repReason" : $("#repReason").val(),
+		"repBoardId" : repBoardId.value,
+		"reporterId" : reporterId,
+		"repTypeCd" : repTypeCd
+	}
+	
+	/*
+	{"repSubId": "c111","repBoardId": "REV00014","reporterId": "po123","repTypeCd": "RCC01001"}
+	*/
+	console.log("data : ", data);
+	$.ajax({
+		url : "/report/ajaxReport",
+		contentType : "application/json; charset=UTF-8",
+		data : JSON.stringify(data),
+		dataType : "json",
+		type : "post",
+		beforeSend : function(xhr) {
+			xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+		},
+		success : function(res) {
+			console.log("res : ", res);
+
+			if(res == 1){
+				alert("신고가 정상적으로 접수되었습니다.");
+				document.querySelectorAll("input[name=repType]")[0].checked = true;
+				document.querySelector("#repReason").value = '';
+			}else{
+				alert("신고 접수에 실패하였습니다.");
+				document.querySelectorAll("input[name=repType]")[0].checked = true;
+				document.querySelector("#repReason").value = '';
+			};
+		}
+	});//end ajax
+});
+
+</script>

@@ -1,0 +1,727 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/css/iziModal.css">
+<script src="/resources/js/jquery-3.6.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.6.1/js/iziModal.min.js"></script>
+<!-- PortOne SDK -->
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<!-- 결제 API위한 js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+
+<style>
+.modal-title{
+   text-align: center;
+   font-size: 24px;
+   font-weight: 800;
+}
+#modal-custom{
+	max-width: 640px !important;
+}
+.iziModal-wrap{
+	width: 240px;
+}
+.modal-con{
+	padding: 20px;
+}
+.btn-parent{
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 24px;
+	padding-bottom: 24px; 
+}
+.payment-modal-inner{
+	margin-bottom: 24px;
+}
+.naemo{
+	margin: 30px;
+}
+.naemo tr {
+    margin-bottom: 10px; /* 원하는 간격으로 조정하세요 */
+}
+.kan{
+	margin: 20px;
+    width: 350px;
+}
+.check{
+	margin-left: 30px;
+}
+.oo{
+	margin-right: 7px;
+}
+.plu{
+	margin-bottom: 20px;
+}
+.mypage-body-con {
+    border-radius: 0px !important;
+}
+</style>
+<div class="mypage-body-con">
+	<div class="body-sub-con">
+		<div class="sub-con-area mb-30">
+			<div class="body-sub-title">기업 상품 목록</div>
+		</div>
+		<div class="body-sub-con-tit p-14 flex mb-15" style="align-items:flex-end">
+			<span class="p-18 mr-3 txt-skyblue bold">배너광고</span>
+			메인화면의 배너에 광고가 띄워집니다!
+			 <button  class="btn-sm btn-write ml-auto btn plus" id="modal-submit-btn"><i class="fa-duotone fa-plus"></i>&nbsp;상품 추가</button>
+		</div>
+		<div>
+			<c:forEach var="bitemVO" items="${enterItemVOList2}">
+				<div class="item">
+					<div class="item-top">
+						<p class="bold p-22">${bitemVO.itemNm}</p>
+						<p class="bold p-22 txt-red ml-auto">
+						<fmt:formatNumber value="${bitemVO.itemSalePrice}" pattern="#,###" />
+						<span class="p-15 txt-black ml-5">원</span></p>
+					</div>
+					<div class="item-bot">
+						<div>
+							<p class="p-14 mr-5 mb-7">
+								<span class="badge badge-nm bg-skyblue txt-skyblue">혜택</span>
+								${bitemVO.itemIntrcn}
+							</p>
+							<p class="p-14 mr-5">
+								<span class="badge badge-nm" style="background-color:#fff;border:1px solid #ddd">가격</span>
+									<fmt:formatNumber type="number" maxFractionDigits="0">${bitemVO.itemSalePrice / (fn:substring(fn:split(bitemVO.itemNm, " ")[1], 0,1) * 7) }</fmt:formatNumber>
+									원 / 일
+							</p>
+						</div>
+						<div class="ml-auto">
+							<button class="btn btn-sm hover_sig ml-auto update" data-itemNo="${bitemVO.itemNo}" data-itemnm="${bitemVO.itemNm}"
+											data-itemIntrcn="${bitemVO.itemIntrcn}" data-itemSaleYn="${bitemVO.itemSaleYn}" 
+											data-itemSaleQuantity="${bitemVO.itemSaleQuantity}" data-itemSalePrice="${bitemVO.itemSalePrice}" 
+											data-bs-toggle="modal" data-bs-target="#modalDialogScrollable">상품 수정</button>
+						<button class="btn btn-sm hover_red delete" data-itemcd="${bitemVO.itemCd}" data-itemnm="${bitemVO.itemNm}" >상품 삭제</button>
+						<input type="hidden" value="${bitemVO.itemNo}">
+						</div>
+					</div>
+				</div>
+			</c:forEach>
+		</div>
+		
+		<p class="body-sub-con-tit p-14 mt-40 mb-15 flex" style="align-items:flex-end">
+			<span class="p-18 mr-3 txt-skyblue bold">채용공고 상위노출</span>
+			채용공고 목록에서 해당 기업의 공고가 상위 노출됩니다!
+		 <button  class="btn-sm btn-write btn plus2 ml-auto" id="modal-submit-btn"><i class="fa-duotone fa-plus"></i>&nbsp;상품 추가</button>
+		</p>
+			<div>
+				<c:forEach var="ritemsVO" items="${enterItemVOList}">
+					<div class="item">
+						<div class="item-top">
+							<p class="bold p-22">${ritemsVO.itemNm}</p>
+							<p class="bold p-22 txt-red ml-auto">
+							<fmt:formatNumber value="${ritemsVO.itemSalePrice}" pattern="#,###" />
+							<span class="p-15 txt-black ml-5">원</span></p>
+						</div>
+						<div class="item-bot">
+							<div>
+								<p class="p-14 mr-5 mb-7">
+									<span class="badge badge-nm bg-skyblue txt-skyblue">혜택</span>
+									${ritemsVO.itemIntrcn}
+								</p>
+								<p class="p-14 mr-5">
+									<span class="badge badge-nm" style="background-color:#fff;border:1px solid #ddd">가격</span>
+										<fmt:formatNumber type="number" maxFractionDigits="0">${ritemsVO.itemSalePrice / (fn:substring(fn:split(ritemsVO.itemNm, " ")[1], 0,1) * 7) }</fmt:formatNumber>
+										원 / 일
+								</p>
+							</div>
+							<div class="ml-auto">
+								<div class="ml-auto">
+							<button class="btn btn-sm hover_sig ml-auto update" data-itemNo="${ritemsVO.itemNo}" data-itemnm="${ritemsVO.itemNm}"
+											data-itemIntrcn="${ritemsVO.itemIntrcn}" data-itemSaleYn="${ritemsVO.itemSaleYn}" 
+											data-itemSaleQuantity="${ritemsVO.itemSaleQuantity}" data-itemSalePrice="${ritemsVO.itemSalePrice}" 
+											data-bs-toggle="modal" data-bs-target="#modalDialogScrollable">상품 수정</button>
+							<button class="btn btn-sm hover_red delete2" data-itemcd="${ritemsVO.itemCd}" data-itemnm="${ritemsVO.itemNm}" >상품 삭제</button>
+							<input type="hidden" value="${ritemsVO.itemNo}">
+							</div>
+							</div>
+						</div>
+					</div>
+				</c:forEach>
+				
+			</div><!-- end item list -->
+			
+			<!-- 기업회원Id -->
+			<input type="hidden" value="${memberVO.memId}" name="memId">
+			<!-- 전화번호 -->
+		 	<input type="hidden" value="${memberVO.memTel}" name="memTel">
+			<!-- 기업회사 이름 -->
+		 	<input type="hidden" value="${memberVO.entNm}" name="entNm">
+		 	<!-- 기업회원 사업자 번호 -->
+		 	<input type="hidden" value="${memberVO.entNo}" name="entNo">
+		 	<!-- 기업 주소1 -->
+		 	<input type="hidden" value="${memberVO.entAddr} ${memberVO.entAddr2}" name="entAddr">
+		 	<!-- 기업 우편번호 -->
+		 	<input type="hidden" value="${memberVO.entPostNo}" name="entPostNo">
+		 	<!-- 기업회사 사장이름 -->
+		 	<input type="hidden" value="${memberVO.entCeoNm}" name="entCeoNm">
+		 	
+		 	
+		</div> <!-- end body sub con -->
+	</div><!-- end body -->
+			
+			<div id="modal-custom">
+		        <button data-izimodal-close="" class="icon-close"></button>
+		        <p class="modal-title">수정사항을 입력해주세요</p>
+		          <div class="modal-con">
+		          	
+		          	<div class="payment-modal-inner">
+		          		<table class="naemo">
+		          			<tr>
+		          				<td><input class="kan" type="hidden" name="itemNo" value=""></td>
+		          			</tr>
+		          			<tr>
+		          				<th>상품명</th>
+		          				<td><input class="kan"  type="text" name="itemNm" value="" ></td>
+		          			</tr>
+		          			<tr>
+		          				<th>상품설명</th>
+		          				<td><textarea class="kan"  rows="5" cols="25"name="itemIntrcn" > </textarea> </td>
+		          			</tr>
+		          			<tr>
+		          				<td>판매가격</td>
+		          				<td><input class="kan"  type="number" name="itemSalePrice"> </td>
+		          			</tr>
+		          			<tr>
+		          				<td>판매수량</td>
+		          				<td><input class="kan"  type="text" name="itemSaleQuantity"> </td>
+		          			</tr>
+		          			<tr>
+		          				<th>판매여부</th>
+		          				<td><input class="check"  type="checkbox" name="itemSaleYn"></td>
+		          			</tr>
+		          		</table>
+		          	</div>
+		          	
+		          </div><!-- end modal-con -->
+		      
+		        <div class="btn-parent">
+		           <button  class="btn-sm btn-write btn oo" id="modal-submit-btn">확인</button>
+		           <button  class="btn-sm btn-write btn xx" id="modal-submit-btn">닫기</button>
+		        </div>
+			</div>
+			
+			<div id="modal-plus">
+	        <button data-izimodal-close="" class="icon-close"></button>
+	        <p class="modal-title">새로 등록할 상품을 입력해주세요</p>
+	          <div class="modal-con">
+	          	
+	          	<div class="payment-modal-inner">
+	          		<table class="naemo">
+	          			<tr>
+	          				<th>상품명</th>
+	          				<td><input class="kan1 kan"  type="text" name="itemNm" value="" placeholder="상품명을 입력해주세요"  autocomplete="off"></td>
+	          			</tr>
+	          			<tr>
+	          				<th>상품설명</th>
+	          				<td><textarea class="kan2 kan"  rows="5" cols="25"name="itemIntrcn" placeholder="상품을 설명해주세요" ></textarea> </td>
+	          			</tr>
+	          			<tr>
+	          				<td>판매가격</td>
+	          				<td><input class="kan3 kan"  type="number" name="itemSalePrice" placeholder="판매가격을 입력해주세요"></td>
+	          			</tr>
+	          			<tr>
+	          				<td>판매수량</td>
+	          				<td><input class="kan4 kan"  type="text" name="itemSaleQuantity" placeholder="판매수량을 입력해주세요"> </td>
+	          			</tr>
+	          			<tr>
+	          				<th>판매여부</th>
+	          				<td><input class="check5 check"  type="checkbox" name="itemSaleYn" placeholder="판매여부를 체크해주세요"></td>
+	          			</tr>
+	          		</table>
+	          	</div>
+	          	
+	          </div><!-- end modal-con -->
+	      
+	        <div class="btn-parent">
+	           <button  class="btn-sm btn-write btn ooo" id="modal-submit-btn">확인</button>
+	           <button  class="btn-sm btn-write btn xxx" id="modal-submit-btn">닫기</button>
+	        </div>
+		</div>
+			
+			<div id="modal-plus2">
+	        <button data-izimodal-close="" class="icon-close"></button>
+	        <p class="modal-title">새로 등록할 상품을 입력해주세요</p>
+	          <div class="modal-con">
+	          	
+	          	<div class="payment-modal-inner">
+	          		<table class="naemo">
+	          			<tr>
+	          				<th>상품명</th>
+	          				<td><input class="kan6 kan"  type="text" name="itemNm" value="" placeholder="상품명을 입력해주세요"  autocomplete="off"></td>
+	          			</tr>
+	          			<tr>
+	          				<th>상품설명</th>
+	          				<td><textarea class="kan7 kan"  rows="5" cols="25"name="itemIntrcn" placeholder="상품을 설명해주세요" ></textarea> </td>
+	          			</tr>
+	          			<tr>
+	          				<td>판매가격</td>
+	          				<td><input class="kan8 kan"  type="number" name="itemSalePrice" placeholder="판매가격을 입력해주세요"></td>
+	          			</tr>
+	          			<tr>
+	          				<td>판매수량</td>
+	          				<td><input class="kan9 kan"  type="text" name="itemSaleQuantity" placeholder="판매수량을 입력해주세요"> </td>
+	          			</tr>
+	          			<tr>
+	          				<th>판매여부</th>
+	          				<td><input class="check10 check"  type="checkbox" name="itemSaleYn" placeholder="판매여부를 체크해주세요"></td>
+	          			</tr>
+	          		</table>
+	          	</div>
+	          	
+	          </div><!-- end modal-con -->
+	      
+	        <div class="btn-parent">
+	           <button  class="btn-sm btn-write btn oooo" id="modal-submit-btn">확인</button>
+	           <button  class="btn-sm btn-write btn xxxx" id="modal-submit-btn">닫기</button>
+	        </div>
+		</div>
+		<sec:csrfInput />
+		<!-- sweetalert -->
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#modal-custom').iziModal({
+	    title: '',
+	    subtitle: '',
+	    headerColor: '#88A0B9',
+	    background: null,
+	    theme: '',  // light
+	    icon: null,
+	    iconText: null,
+	    iconColor: '',
+	    rtl: false,
+	    width: 400,
+	    top: null,
+	    bottom: null,
+	    borderBottom: true,
+	    padding: 0,
+	    radius: 3,
+	    zindex: 999,
+	    iframe: false,
+	    iframeHeight: 400,
+	    iframeURL: null,
+	    focusInput: true,
+	    group: '',
+	    loop: false,
+	    arrowKeys: true,
+	    navigateCaption: true,
+	    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+	    history: false,
+	    restoreDefaultContent: false,
+	    autoOpen: 0, // Boolean, Number
+	    bodyOverflow: false,
+	    fullscreen: false,
+	    openFullscreen: false,
+	    closeOnEscape: true,
+	    closeButton: true,
+	    appendTo: 'body', // or false
+	    appendToOverlay: 'body', // or false
+	    overlay: true,
+	    overlayClose: true,
+	    overlayColor: 'rgba(0, 0, 0, 0.4)',
+	    timeout: false,
+	    timeoutProgressbar: false,
+	    pauseOnHover: false,
+	    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+	    transitionIn: 'comingIn',
+	    transitionOut: 'comingOut',
+	    transitionInOverlay: 'fadeIn',
+	    transitionOutOverlay: 'fadeOut',
+	    onFullscreen: function(){},
+	    onResize: function(){},
+	    onOpening: function(){},
+	    onOpened: function(){},
+	    onClosing: function(){},
+	    onClosed: function(){},
+	    afterRender: function(){}
+	});// end modal	
+	
+	$('#modal-plus').iziModal({
+	    title: '',
+	    subtitle: '',
+	    headerColor: '#88A0B9',
+	    background: null,
+	    theme: '',  // light
+	    icon: null,
+	    iconText: null,
+	    iconColor: '',
+	    rtl: false,
+	    width: 550,
+	    top: null,
+	    bottom: null,
+	    borderBottom: true,
+	    padding: 0,
+	    radius: 3,
+	    zindex: 999,
+	    iframe: false,
+	    iframeHeight: 400,
+	    iframeURL: null,
+	    focusInput: true,
+	    group: '',
+	    loop: false,
+	    arrowKeys: true,
+	    navigateCaption: true,
+	    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+	    history: false,
+	    restoreDefaultContent: false,
+	    autoOpen: 0, // Boolean, Number
+	    bodyOverflow: false,
+	    fullscreen: false,
+	    openFullscreen: false,
+	    closeOnEscape: true,
+	    closeButton: true,
+	    appendTo: 'body', // or false
+	    appendToOverlay: 'body', // or false
+	    overlay: true,
+	    overlayClose: true,
+	    overlayColor: 'rgba(0, 0, 0, 0.4)',
+	    timeout: false,
+	    timeoutProgressbar: false,
+	    pauseOnHover: false,
+	    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+	    transitionIn: 'comingIn',
+	    transitionOut: 'comingOut',
+	    transitionInOverlay: 'fadeIn',
+	    transitionOutOverlay: 'fadeOut',
+	    onFullscreen: function(){},
+	    onResize: function(){},
+	    onOpening: function(){},
+	    onOpened: function(){},
+	    onClosing: function(){},
+	    onClosed: function(){},
+	    afterRender: function(){}
+	});// end modal	
+	
+	$('#modal-plus2').iziModal({
+	    title: '',
+	    subtitle: '',
+	    headerColor: '#88A0B9',
+	    background: null,
+	    theme: '',  // light
+	    icon: null,
+	    iconText: null,
+	    iconColor: '',
+	    rtl: false,
+	    width: 550,
+	    top: null,
+	    bottom: null,
+	    borderBottom: true,
+	    padding: 0,
+	    radius: 3,
+	    zindex: 999,
+	    iframe: false,
+	    iframeHeight: 400,
+	    iframeURL: null,
+	    focusInput: true,
+	    group: '',
+	    loop: false,
+	    arrowKeys: true,
+	    navigateCaption: true,
+	    navigateArrows: true, // Boolean, 'closeToModal', 'closeScreenEdge'
+	    history: false,
+	    restoreDefaultContent: false,
+	    autoOpen: 0, // Boolean, Number
+	    bodyOverflow: false,
+	    fullscreen: false,
+	    openFullscreen: false,
+	    closeOnEscape: true,
+	    closeButton: true,
+	    appendTo: 'body', // or false
+	    appendToOverlay: 'body', // or false
+	    overlay: true,
+	    overlayClose: true,
+	    overlayColor: 'rgba(0, 0, 0, 0.4)',
+	    timeout: false,
+	    timeoutProgressbar: false,
+	    pauseOnHover: false,
+	    timeoutProgressbarColor: 'rgba(255,255,255,0.5)',
+	    transitionIn: 'comingIn',
+	    transitionOut: 'comingOut',
+	    transitionInOverlay: 'fadeIn',
+	    transitionOutOverlay: 'fadeOut',
+	    onFullscreen: function(){},
+	    onResize: function(){},
+	    onOpening: function(){},
+	    onOpened: function(){},
+	    onClosing: function(){},
+	    onClosed: function(){},
+	    afterRender: function(){}
+	});// end modal	
+	$(".update").on("click",function(){
+		 // 클릭한 수정 버튼에서 데이터 가져오기
+	    var itemNo = $(this).data('itemno');
+	    var itemNm = $(this).data('itemnm');
+	    var itemIntrcn = $(this).data('itemintrcn');
+	    var itemSaleYn = $(this).data('itemsaleyn');
+	    var itemSaleQuantity = $(this).data('itemsalequantity');
+	    var itemSalePrice = $(this).data('itemsaleprice');
+	    
+	    console.log("itemSaleYn",itemSaleYn);
+
+	    // 해당 데이터를 모달 내의 입력 필드에 배치
+	    $('[name="itemNo"]').val(itemNo);
+	    
+	    $('[name="itemNm"]').val(itemNm);
+	    
+	    $('[name="itemIntrcn"]').val(itemIntrcn);
+	    
+	    if(itemSaleYn === 'Y'){
+	    	$('[name="itemSaleYn"]').prop('checked', itemSaleYn); // 체크박스 처리
+	    }
+	    $('[name="itemSaleQuantity"]').val(itemSaleQuantity);
+	    
+	    $('[name="itemSalePrice"]').val(itemSalePrice);
+
+	    
+		$('#modal-custom').iziModal('open');
+		});
+	
+	$(".oo").on("click",function(){
+		var updatedItemNo = $('[name="itemNo"]').val();
+        var updatedItemNm = $('[name="itemNm"]').val();
+        var updatedItemIntrcn = $('[name="itemIntrcn"]').val();
+        var updatedItemSaleYn = $('[name="itemSaleYn"]').is(":checked") ? 'Y' : 'N';
+        var updatedItemSaleQuantity = $('[name="itemSaleQuantity"]').val();
+        var updatedItemSalePrice = $('[name="itemSalePrice"]').val();
+
+        console.log("updatedItemNo:", updatedItemNo);
+        console.log("Updated Item Name:", updatedItemNm);
+        console.log("Updated Item Description:", updatedItemIntrcn);
+        console.log("Updated Item Sale YN:", updatedItemSaleYn);
+        console.log("Updated Item Sale Quantity:", updatedItemSaleQuantity);
+        console.log("Updated Item Sale Price:", updatedItemSalePrice);
+        
+        var data = {
+        		"itemNo" : updatedItemNo,
+        		"itemNm" : updatedItemNm,
+        		"itemIntrcn" : updatedItemIntrcn,
+        		"itemSaleYn" : updatedItemSaleYn,
+        		"itemSaleQuantity" : updatedItemSaleQuantity,
+        		"itemSalePrice" : updatedItemSalePrice
+        }
+        $.ajax({
+        	 url: "/admin/updateItems",
+             contentType: "application/json;charset=utf-8",
+             data: JSON.stringify(data), 
+             type: "post",
+             dataType: "json",
+             beforeSend: function(xhr) {
+                 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+             },
+             success: function(result) {
+            	 
+            	 console.log("result",result);
+            	 
+            	 alert("수정이 완료되었습니다.");
+            	 $('#modal-custom').iziModal('close');
+            	 
+            	 window.location.href="/admin/adminEnterItemsList";
+            	 
+             	}
+        	});
+    	});
+
+	$(".xx").on("click",function(){
+		 $('#modal-custom').iziModal('close');
+	})
+	
+	$(".xxx").on("click",function(){
+		 $('#modal-plus').iziModal('close');
+	})
+	
+	$(".xxxx").on("click",function(){
+		 $('#modal-plus2').iziModal('close');
+	})
+	
+	$(".plus").on("click",function(){
+			$('#modal-plus').iziModal('open');
+		})
+	
+	$(".plus2").on("click",function(){
+			$('#modal-plus2').iziModal('open');
+		})	
+	
+		$(".ooo").on("click",function(){
+			var updatedItemNm = $('.kan1').val(); // 상품명
+			var updatedItemIntrcn = $('.kan2').val(); // 상품설명
+			var updatedItemSalePrice = $('.kan3').val(); // 판매가격
+			var updatedItemSaleQuantity = $('.kan4').val(); // 판매수량
+			var updatedItemSaleYn = $('.check5').is(":checked") ? 'Y' : 'N'; // 판매여부
+
+	        console.log("updatedItemNm:", updatedItemNm);
+	        console.log("Updated Item updatedItemIntrcn:", updatedItemIntrcn);
+	        console.log("Updated Item updatedItemSalePrice:", updatedItemSalePrice);
+	        console.log("Updated Item Sale updatedItemSaleQuantity:", updatedItemSaleQuantity);
+	        console.log("Updated Item Sale updatedItemSaleYn:", updatedItemSaleYn);
+	        
+	        var data = {
+	        		"itemNm" : updatedItemNm,
+	        		"itemIntrcn" : updatedItemIntrcn,
+	        		"itemSaleYn" : updatedItemSaleYn,
+	        		"itemSaleQuantity" : updatedItemSaleQuantity,
+	        		"itemSalePrice" : updatedItemSalePrice
+	        }
+	        $.ajax({
+	        	 url: "/admin/insertBItems",
+	             contentType: "application/json;charset=utf-8",
+	             data: JSON.stringify(data), 
+	             type: "post",
+	             dataType: "json",
+	             beforeSend: function(xhr) {
+	                 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	             },
+	             success: function(result) {
+	            	 
+	            	 console.log("result",result);
+	            	 
+	            	 alert("등록이 완료되었습니다.");
+	            	 $('#modal-plus').iziModal('close');
+	            	 
+	            	 window.location.href="/admin/adminEnterItemsList";
+	            	 
+	             	}
+	        	});
+	    	});
+	
+		$(".oooo").on("click",function(){
+			var updatedItemNm = $('.kan6').val(); // 상품명
+			var updatedItemIntrcn = $('.kan7').val(); // 상품설명
+			var updatedItemSalePrice = $('.kan8').val(); // 판매가격
+			var updatedItemSaleQuantity = $('.kan9').val(); // 판매수량
+			var updatedItemSaleYn = $('.check10').is(":checked") ? 'Y' : 'N'; // 판매여부
+
+	        console.log("updatedItemNm:", updatedItemNm);
+	        console.log("Updated Item updatedItemIntrcn:", updatedItemIntrcn);
+	        console.log("Updated Item updatedItemSalePrice:", updatedItemSalePrice);
+	        console.log("Updated Item Sale updatedItemSaleQuantity:", updatedItemSaleQuantity);
+	        console.log("Updated Item Sale updatedItemSaleYn:", updatedItemSaleYn);
+	        
+	        var data = {
+	        		"itemNm" : updatedItemNm,
+	        		"itemIntrcn" : updatedItemIntrcn,
+	        		"itemSaleYn" : updatedItemSaleYn,
+	        		"itemSaleQuantity" : updatedItemSaleQuantity,
+	        		"itemSalePrice" : updatedItemSalePrice
+	        }
+	        $.ajax({
+	        	 url: "/admin/insertRItems",
+	             contentType: "application/json;charset=utf-8",
+	             data: JSON.stringify(data), 
+	             type: "post",
+	             dataType: "json",
+	             beforeSend: function(xhr) {
+	                 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+	             },
+	             success: function(result) {
+	            	 
+	            	 console.log("result",result);
+	            	 
+	            	 alert("등록이 완료되었습니다.");
+	            	 $('#modal-plus2').iziModal('close');
+	            	 
+	            	 window.location.href="/admin/adminEnterItemsList";
+	            	 
+	             	}
+	        	});
+	    	});
+		$(".delete").on("click",function(){
+			var itemNo = $(this).next().val();
+			
+			console.log("itemNo",itemNo)
+			data = {
+				"itemNo" : itemNo
+			}
+			
+			Swal.fire({
+				title: '상품을 삭제하시겠습니까?',
+	            text:  '한번 삭제하면 복구할수 없습니다',
+	            icon: 'question',
+	            showCancelButton: true, // cancel버튼 보이기
+	            confirmButtonColor: '#0ABAB5',
+	            cancelButtonColor: '#FF4040',
+	            confirmButtonText: '확인',
+	            cancelButtonText: '취소',
+			}).then(result => {
+				
+				if (result.isConfirmed) { 
+					 Swal.fire({
+	                     title: '해제가 완료되었습니다',
+	                     icon: 'success',
+	                     confirmButtonColor: '#0ABAB5',
+	                     confirmButtonText: '확인'
+	                  }).then(result => {
+	                	  
+	                  
+					$.ajax({
+						 url:"/admin/deleteCItem",
+                         contentType:"application/json;charset=utf-8",
+                         data: JSON.stringify(data),
+                         type:"post",
+                         dataType:"json",
+                         beforeSend:function(xhr){
+                        	 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+                         },
+                         success: function(result) {
+                        	 window.location.href = "/admin/adminEnterItemsList";
+                         }
+						});
+					});
+				}
+			});
+		});
+		
+		$(".delete2").on("click",function(){
+			var itemNo = $(this).next().val();
+			
+			console.log("itemNo",itemNo)
+			data = {
+				"itemNo" : itemNo
+			}
+			
+			Swal.fire({
+				title: '상품을 삭제하시겠습니까?',
+	            text:  '한번 삭제하면 복구할수 없습니다',
+	            icon: 'question',
+	            showCancelButton: true, // cancel버튼 보이기
+	            confirmButtonColor: '#0ABAB5',
+	            cancelButtonColor: '#FF4040',
+	            confirmButtonText: '확인',
+	            cancelButtonText: '취소',
+			}).then(result => {
+				
+				if (result.isConfirmed) { 
+					 Swal.fire({
+	                     title: '해제가 완료되었습니다',
+	                     icon: 'success',
+	                     confirmButtonColor: '#0ABAB5',
+	                     confirmButtonText: '확인'
+	                  }).then(result => {
+	                	  
+	                  
+					$.ajax({
+						 url:"/admin/deleteCItem",
+                         contentType:"application/json;charset=utf-8",
+                         data: JSON.stringify(data),
+                         type:"post",
+                         dataType:"json",
+                         beforeSend:function(xhr){
+                        	 xhr.setRequestHeader("${_csrf.headerName}", "${_csrf.token}");
+                         },
+                         success: function(result) {
+                        	 window.location.href = "/admin/adminEnterItemsList";
+                         }
+						});
+					});
+				}
+			});
+		});
+});
+</script>

@@ -1,0 +1,864 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.member.mapper.EnterpriseMapper">
+	
+	<!-- keyword가 있으면 조건을 검 / keyword 없으면 조건을 걸지 않고 검색 -->
+	<sql id="where">
+		<if test="keyword != null and keyword != ''">
+			AND      (ENT_NM	   LIKE '%' || #{keyword} || '%' )
+		</if>
+	</sql>
+	
+	<!-- keyword로 조건을 검 / keyword 없으면 검색결과 없음 -->
+	<sql id="whereElse">
+		<choose>
+			<when test="keyword != null and keyword != ''">
+				AND      (ENT_NM	   LIKE '%' || #{keyword} || '%' )
+			</when>
+			<otherwise>
+				AND 1 = 2
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<!-- sort가 있으면 조건을 검 -->
+	<sql id="order">
+		<choose>
+			<when test = "sort=='avgScoreDesc'">
+				ORDER BY ENT_AVG_RATE DESC
+			</when>
+			<when test = "sort=='avgScoreAsc'">
+				ORDER BY ENT_AVG_RATE ASC
+			</when>
+			<when test = "sort=='reviewCountDesc'">
+				ORDER BY REVIEW_COUNT DESC
+			</when>
+			<when test = "sort=='reviewCountAsc'">
+				ORDER BY REVIEW_COUNT ASC
+			</when>
+		</choose>
+	</sql>
+	
+	
+	<!--기업회원등록-->
+	<insert id="createPost" parameterType="enterpriseVO">
+		INSERT INTO ENTERPRISE(
+		        ENT_NO, ENT_NM, ENT_APRV, ENT_REG_DT, 
+		        ENT_INTRCN, ENT_URL, ENT_SALES,ENT_SECTOR, 
+		        ENT_EMPCNT, ENT_BDAY, ENT_FAX, ENT_CEONM, ENT_LOGO, ENT_INT_WORD,
+		        ENT_POSTNO, ENT_ADDR, ENT_ADDR2)
+	    VALUES(
+		        #{entNo},#{entNm},'AYN01002',SYSDATE,
+		        #{entIntrcn},#{entUrl},#{entSales},#{entSector},
+		        #{entEmpcnt},#{entBday},#{entFax},#{entCeonm},#{entLogo},#{entIntWord},
+		        #{entPostno},#{entAddr},#{entAddr2}
+	    )
+	</insert>
+	
+	<!-- 기업승인테이블 등록 -->
+	<insert id="insertEntAprv" parameterType="entAprvVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="entAprvNo">
+			SELECT 'EAP' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(ENT_APRV_NO),4) + 1,'0000')),'0001')
+			FROM   ENT_APRV
+		</selectKey>
+	
+		INSERT INTO ENT_APRV
+				   (ENT_APRV_NO
+				  , MEM_ID
+				  , ENT_NO
+				  , ENT_YN
+				  , ENT_MG_POSITION)
+					VALUES
+				  ( #{entAprvNo}
+				  , #{memId}
+			      , #{entNo}
+			      , 'AYN01002'
+			      , #{entMgPosition}
+				  )
+	</insert>
+	   
+	<resultMap type="enterpriseVO" id="enterpriseMap">
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+		<collection property="comCodeInfoVOList" resultMap="comCodeInfoMap"></collection>
+	</resultMap>
+	<resultMap type="comCodeInfoVO" id="comCodeInfoMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+	</resultMap>
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<select id="getAjaxEntList" parameterType="enterpriseVO" resultMap="enterpriseMap">
+		SELECT ENT_NO
+			, ENT_NM
+			, ENT_APRV
+			, ENT_REG_DT
+			, ENT_APRV_DT
+			, ENT_INTRCN
+			, ENT_URL
+			, ENT_SALES
+			, ENT_SECTOR
+			, ENT_EMPCNT
+			, ENT_BDAY
+			, ENT_FAX
+			, ENT_CEONM
+			, ENT_LOGO
+			, ENT_INT_WORD
+            , B.AFD_SEQ
+            , B.AF_ID
+            , B.AFD_ORIGIN_NM
+            , B.AFD_SAVE_NM
+            , B.AFD_FILE_SIZE, AFD_SAVE_PATH
+            , B.AFD_EXTSN
+            , B.AFD_CNTNT
+            , B.AFD_UPLOAD_DT
+            , C.COM_CD
+            , C.COM_CD_NM
+            , C.COM_CD_DESCRIPTIONS
+		FROM ENTERPRISE A, ATCH_FILE_DETAIL B, COM_CODE_INFO C
+		WHERE A.ENT_NO = B.AF_ID(+)
+        AND A.ENT_SECTOR = C.COM_CD
+		AND ENT_NM LIKE '%' || #{entNm} || '%'
+	</select>
+	
+	
+	
+	<select id="list" parameterType="hashMap" resultType="enterpriseVO">
+		SELECT *
+        FROM
+        (SELECT 
+            ROW_NUMBER() OVER(<include refid="order"></include>) RNUM,
+            ent.*
+            FROM
+            (SELECT
+                A.ENT_NO, 
+                A.ENT_NM, 
+                A.ENT_APRV, 
+                A.ENT_REG_DT, 
+                A.ENT_APRV_DT, 
+                A.ENT_INTRCN, 
+                A.ENT_URL, 
+                A.ENT_SALES, 
+                A.ENT_SECTOR, 
+                A.ENT_EMPCNT, 
+                A.ENT_BDAY, 
+                A.ENT_FAX, 
+                A.ENT_CEONM, 
+                A.ENT_LOGO, 
+                A.ENT_INT_WORD, 
+                A.ENT_POSTNO, 
+                A.ENT_ADDR, 
+                A.ENT_ADDR2,
+                nvl(REVIEW_COUNT, 0) AS REVIEW_COUNT,
+                nvl(B.ENT_REV_CHANCES,0) SUM_ENT_REV_CHANCES,
+                nvl(B.ENT_REV_WELFARE,0) SUM_ENT_REV_WELFARE,
+                nvl(B.ENT_REV_BALANCE,0) SUM_ENT_REV_BALANCE,
+                nvl(B.ENT_REV_CULTURE,0) SUM_ENT_REV_CULTURE,
+                nvl(B.ENT_REV_MANAGER,0) SUM_ENT_REV_MANAGER,
+                nvl(B.ENT_REV_CEO_VIEW,0) SUM_ENT_REV_CEO_VIEW,    
+                nvl(B.ENT_REV_POTENTIAL,0) SUM_ENT_REV_POTENTIAL,    
+                nvl(B.ENT_REV_RECOMEND_YN,0) SUM_ENT_REV_RECOMEND_YN,
+                nvl(B.ENT_AVG_RATE,0) ENT_AVG_RATE
+            FROM
+                ENTERPRISE A
+                left outer join 
+                (
+                    SELECT
+                        ENT_NO,
+                        COUNT(ENT_NO) AS REVIEW_COUNT,
+                        AVG(ENT_REV_CHANCES) ENT_REV_CHANCES,
+                        AVG(ENT_REV_WELFARE) ENT_REV_WELFARE,
+                        AVG(ENT_REV_BALANCE) ENT_REV_BALANCE,
+                        AVG(ENT_REV_CULTURE) ENT_REV_CULTURE,
+                        AVG(ENT_REV_MANAGER) ENT_REV_MANAGER,
+                        AVG(ENT_REV_CEO_VIEW) ENT_REV_CEO_VIEW,    
+                        AVG(ENT_REV_POTENTIAL) ENT_REV_POTENTIAL,    
+                        AVG(ENT_REV_RECOMEND_YN) ENT_REV_RECOMEND_YN,
+                      (
+                          AVG(ENT_REV_CHANCES)+ 
+                          AVG(ENT_REV_WELFARE)+ 
+                          AVG(ENT_REV_BALANCE)+ 
+                          AVG(ENT_REV_CULTURE)+  
+                          AVG(ENT_REV_MANAGER)
+                      )/5 ENT_AVG_RATE
+                    FROM
+                        ENT_REVIEW
+                    GROUP BY
+                        ENT_NO
+                ) B
+                on  A.ENT_NO = B.ENT_NO 
+            ) ent
+            where 1=1
+            <include refid="where"></include>
+        )
+        WHERE RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	
+	</select>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int" >
+		SELECT COUNT(*)
+		FROM ENTERPRISE
+        where 1=1
+        <include refid="where"></include>
+	</select>
+	
+	<select id="list5" parameterType="hashMap" resultMap="enterpriseComCodeMap">
+		SELECT ent.*,
+			com.COM_DET_CD, 
+			com.COM_CD, 
+			com.COM_DET_CD_NM, 
+			com.COM_DET_DESCRIPTIONS
+		FROM
+		( SELECT 
+		  ep.*,
+		        COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,    
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,      
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+		      	  ORDER BY REVIEW_COUNT DESC
+		) ent 
+        LEFT OUTER JOIN COM_DET_CODE_INFO com ON ent.ENT_SECTOR = com.COM_DET_CD
+		WHERE 1=1
+		<include refid="whereElse"></include>
+		<![CDATA[ AND ROWNUM <= 5 ]]>
+	</select>
+	
+	<select id="interestList" parameterType="memberVO" resultType="interestEnterpriseVO">
+		SELECT
+			MEM_ID, 
+			ENT_NO, 
+			INTRST_ENT_REGDT 
+		FROM INTEREST_ENTERPRISE
+		WHERE MEM_ID=#{memId}
+	</select>
+	
+	<select id="getWord" parameterType="memberVO" resultType="String">
+		SELECT A.COM_DET_CD_NM
+		FROM COM_DET_CODE_INFO A, ENTERPRISE B
+		WHERE A.COM_DET_CD = B.ENT_INT_WORD
+		AND COM_DET_CD=#{comDetCd}
+		AND B.ENT_NO = #{entNo}
+	</select>
+	
+	<select id="ajaxInterestEnt" parameterType="interestEnterpriseVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM INTEREST_ENTERPRISE
+		WHERE MEM_ID=#{memId} AND ENT_NO=#{entNo}
+	</select>
+	
+	<insert id="ajaxInterestEntAdd" parameterType="interestEnterpriseVO">
+		INSERT INTO INTEREST_ENTERPRISE
+		(MEM_ID, ENT_NO, INTRST_ENT_REGDT)
+		VALUES (#{memId}, #{entNo}, SYSDATE)
+	</insert>
+	
+	<delete id="ajaxInterestEntDel" parameterType="interestEnterpriseVO">
+		DELETE FROM INTEREST_ENTERPRISE
+		WHERE MEM_ID=#{memId} AND ENT_NO=#{entNo}
+	</delete>
+	
+	<select id="getStoredEnt" parameterType="interestEnterpriseVO" resultType="int">
+		SELECT COUNT(*) 
+		FROM INTEREST_ENTERPRISE
+		WHERE MEM_ID=#{memId}
+	</select>
+
+	<select id="count" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) 
+		FROM ENTERPRISE
+		WHERE 1=1
+		<include refid="where"></include>
+	</select>
+
+	
+	<resultMap type="enterpriseVO" id="enterpriseComCodeMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+		
+		<result property="reviewCount" column="REVIEW_COUNT"/>
+		<result property="sumEntRevChances" column="SUM_ENT_REV_CHANCES"/>
+		<result property="sumEntRevWelfare" column="SUM_ENT_REV_WELFARE"/>
+		<result property="sumEntRevBalance" column="SUM_ENT_REV_BALANCE"/>
+		<result property="sumEntRevCulture" column="SUM_ENT_REV_CULTURE"/>
+		<result property="sumEntRevManager" column="SUM_ENT_REV_MANAGER"/>
+		<result property="sumEntRevCeoView" column="SUM_ENT_REV_CEO_VIEW"/>
+		<result property="sumEntRevPotential" column="SUM_ENT_REV_POTENTIAL"/>
+		<result property="sumEntRevRecomendYn" column="SUM_ENT_REV_RECOMEND_YN"/>
+		<result property="entAvgRate" column="ENT_AVG_RATE" />
+		
+		<association property="comDetCodeInfoVOList" resultMap="comDetCodeMap"></association>
+	</resultMap>
+
+	<select id="getOne" parameterType="hashMap" resultMap="enterpriseComCodeMap">
+		SELECT 
+			ent.*,
+			com.COM_DET_CD, 
+			com.COM_CD, 
+			com.COM_DET_CD_NM, 
+			com.COM_DET_DESCRIPTIONS
+		FROM
+		( SELECT 
+		  ep.*,
+          COUNT(er.ent_no) AS REVIEW_COUNT,
+		  SUM(ent_rev_chances)/count(*) AS sum_ent_rev_chances, 
+		  SUM(ent_rev_welfare)/count(*) AS sum_ent_rev_welfare, 
+		  SUM(ent_rev_balance)/count(*) AS sum_ent_rev_balance, 
+		  SUM(ent_rev_culture)/count(*) AS sum_ent_rev_culture, 
+		  SUM(ent_rev_manager)/count(*) AS sum_ent_rev_manager,   
+		  SUM(ENT_REV_CEO_VIEW)/count(*) AS sum_ENT_REV_CEO_VIEW,    
+		  SUM(ENT_REV_POTENTIAL)/count(*) AS sum_ENT_REV_POTENTIAL,    
+		  SUM(ENT_REV_RECOMEND_YN)/count(*) AS sum_ENT_REV_RECOMEND_YN,       
+		  (
+			  SUM(ent_rev_chances)/count(*)+ 
+			  SUM(ent_rev_welfare)/count(*)+ 
+			  SUM(ent_rev_balance)/count(*)+ 
+			  SUM(ent_rev_culture)/count(*)+  
+			  SUM(ent_rev_manager)/count(*)
+		  )/5 AS ent_avg_rate
+			  FROM ENTERPRISE ep LEFT OUTER JOIN ent_review er ON ep.ent_no = er.ent_no 
+			  GROUP BY  
+			  ep.ENT_NO
+			  , ep.ENT_NM
+			  , ep.ENT_APRV
+			  , ep.ENT_REG_DT
+			  , ep.ENT_APRV_DT
+			  , ep.ENT_INTRCN
+			  , ep.ENT_URL
+			  , ep.ENT_SALES
+			  , ep.ENT_SECTOR
+			  , ep.ENT_EMPCNT
+			  , ep.ENT_BDAY
+			  , ep.ENT_FAX
+			  , ep.ENT_CEONM
+			  , ep.ENT_LOGO
+			  , ep.ENT_INT_WORD 
+			  , ep.ENT_POSTNO
+			  , ep.ENT_ADDR
+			  , ep.ENT_ADDR2 
+        	  ORDER BY REVIEW_COUNT DESC
+		  ) ent 
+          LEFT OUTER JOIN COM_DET_CODE_INFO com ON ent.ENT_SECTOR = com.COM_DET_CD
+		  WHERE ENT_NO=#{entNo}
+	</select>
+
+	<resultMap type="enterpriseVO" id="ajaxEnterpriseMap">
+		<result property="entAddr" column="ENT_ADDR"/>
+		<result property="entAddr2" column="ENT_ADDR2"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="entNm" column="ENT_NM"/>
+		<result property="entAprv" column="ENT_APRV"/>
+		<result property="entRegDt" column="ENT_REG_DT"/>
+		<result property="entAprvDt" column="ENT_APRV_DT"/>
+		<result property="entIntrcn" column="ENT_INTRCN"/>
+		<result property="entUrl" column="ENT_URL"/>
+		<result property="entSales" column="ENT_SALES"/>
+		<result property="entSector" column="ENT_SECTOR"/>
+		<result property="entEmpcnt" column="ENT_EMPCNT"/>
+		<result property="entBday" column="ENT_BDAY"/>
+		<result property="entFax" column="ENT_FAX"/>
+		<result property="entCeonm" column="ENT_CEONM"/>
+		<result property="entLogo" column="ENT_LOGO"/>
+		<result property="entIntWord" column="ENT_INT_WORD"/>
+		<result property="entPostno" column="ENT_POSTNO"/>
+		
+		<result property="reviewCount" column="REVIEW_COUNT"/>
+		<result property="sumEntRevChances" column="SUM_ENT_REV_CHANCES"/>
+		<result property="sumEntRevWelfare" column="SUM_ENT_REV_WELFARE"/>
+		<result property="sumEntRevBalance" column="SUM_ENT_REV_BALANCE"/>
+		<result property="sumEntRevCulture" column="SUM_ENT_REV_CULTURE"/>
+		<result property="sumEntRevManager" column="SUM_ENT_REV_MANAGER"/>
+		<result property="sumEntRevCeoView" column="SUM_ENT_REV_CEO_VIEW"/>
+		<result property="sumEntRevPotential" column="SUM_ENT_REV_POTENTIAL"/>
+		<result property="sumEntRevRecomendYn" column="SUM_ENT_REV_RECOMEND_YN"/>
+		<result property="entAvgRate" column="ENT_AVG_RATE"/>
+		
+		<collection property="boardEntReviewVOList" resultMap="entReviewMap"></collection>
+		<collection property="recruitVOList" resultMap="recruitMap"></collection>
+	</resultMap>
+	<resultMap type="boardEntReviewVO" id="entReviewMap">
+		<result property="boardLike" column="BOARD_LIKE"/>
+		<result property="entRevNo" column="ENT_REV_NO"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="entRevWorkYn" column="ENT_REV_WORK_YN"/>
+		<result property="entRevWorkLoc" column="ENT_REV_WORK_LOC"/>
+		<result property="jobCategoryCd" column="JOB_CATEGORY_CD"/>
+		<result property="jobCd" column="JOB_CD"/>
+		<result property="entRevEmplType" column="ENT_REV_EMPL_TYPE"/>
+		<result property="entRevShortReview" column="ENT_REV_SHORT_REVIEW"/>
+		<result property="entRevPros" column="ENT_REV_PROS"/>
+		<result property="entRevCons" column="ENT_REV_CONS"/>
+		<result property="entRevWishes" column="ENT_REV_WISHES"/>
+		<result property="entRevChances" column="ENT_REV_CHANCES"/>
+		<result property="entRevWelfare" column="ENT_REV_WELFARE"/>
+		<result property="entRevBalance" column="ENT_REV_BALANCE"/>
+		<result property="entRevCulture" column="ENT_REV_CULTURE"/>
+		<result property="entRevManager" column="ENT_REV_MANAGER"/>
+		<result property="entRevCeoView" column="ENT_REV_CEO_VIEW"/>
+		<result property="entRevPotential" column="ENT_REV_POTENTIAL"/>
+		<result property="entRevRecomendYn" column="ENT_REV_RECOMEND_YN"/>
+		<result property="regDate" column="REG_DATE"/>
+		
+		<association property="comCodeVO" resultMap="comCodeVOMap"></association>
+		<association property="comDetCodeVO" resultMap="comDetCodeMap"></association>
+	</resultMap>
+	<resultMap type="recruitVO" id="recruitMap">
+		<result property="recruitNo" column="RECRUIT_NO"/>
+		<result property="recruitStdt" column="RECRUIT_STDT"/>
+		<result property="recruitEddt" column="RECRUIT_EDDT"/>
+		<result property="recruitTitle" column="RECRUIT_TITLE"/>
+		<result property="recruitCntnt" column="RECRUIT_CNTNT"/>
+		<result property="recruitWork" column="RECRUIT_WORK"/>
+		<result property="recruitQlf" column="RECRUIT_QLF"/>
+		<result property="recruitPrefer" column="RECRUIT_PREFER"/>
+		<result property="recruitPart" column="RECRUIT_PART"/>
+		<result property="recruitSalary" column="RECRUIT_SALARY"/>
+		<result property="recruitLocation" column="RECRUIT_LOCATION"/>
+		<result property="recruitAfId" column="RECRUIT_AF_ID"/>
+		<result property="entNo" column="ENT_NO"/>
+		<result property="recruitLevel" column="RECRUIT_LEVEL"/>
+		<result property="recruitWorkType" column="RECRUIT_WORK_TYPE"/>
+		<result property="recruitAcdmCr" column="RECRUIT_ACDM_CR"/>
+		<result property="recruitCareer" column="RECRUIT_CAREER"/>
+		<result property="recruitCount" column="RECRUIT_COUNT"/>
+		<result property="recruitThumb" column="RECRUIT_THUMB"/>
+		<result property="recruitOtt" column="RECRUIT_OTT"/>
+		<result property="recruitJob" column="RECRUIT_JOB"/>
+		<result property="recruitSkill" column="RECRUIT_SKILL"/>
+		<result property="remainingDate" column="REMAINING_DATE"/>
+	</resultMap>
+	<resultMap type="comCodeInfoVO" id="comCodeVOMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+	</resultMap>
+	<resultMap type="comDetCodeInfoVO" id="comDetCodeMap">
+		<result property="comDetCd" column="COM_DET_CD"/>
+		<result property="comCd" column="COM_CD"/>
+		<result property="comDetCdNm" column="COM_DET_CD_NM"/>
+		<result property="comDetDescriptions" column="COM_DET_DESCRIPTIONS"/>
+	</resultMap>
+	<select id="getAjaxEntOne" resultMap="ajaxEnterpriseMap">
+		SELECT
+		    A.ENT_NO, 
+            A.ENT_NM, 
+            A.ENT_APRV, 
+            A.ENT_REG_DT, 
+            A.ENT_APRV_DT, 
+            A.ENT_INTRCN, 
+            A.ENT_URL, 
+            A.ENT_SALES, 
+            A.ENT_SECTOR, 
+            A.ENT_EMPCNT, 
+            A.ENT_BDAY, 
+            A.ENT_FAX, 
+            A.ENT_CEONM, 
+            A.ENT_LOGO, 
+            A.ENT_INT_WORD, 
+            A.ENT_POSTNO, 
+            A.ENT_ADDR, 
+            A.ENT_ADDR2,
+		    nvl(REVIEW_COUNT, 0) AS REVIEW_COUNT,
+		    nvl(B.ENT_REV_CHANCES,0) SUM_ENT_REV_CHANCES,
+		    nvl(B.ENT_REV_WELFARE,0) SUM_ENT_REV_WELFARE,
+		    nvl(B.ENT_REV_BALANCE,0) SUM_ENT_REV_BALANCE,
+		    nvl(B.ENT_REV_CULTURE,0) SUM_ENT_REV_CULTURE,
+		    nvl(B.ENT_REV_MANAGER,0) SUM_ENT_REV_MANAGER,
+		    nvl(B.ENT_REV_CEO_VIEW,0) SUM_ENT_REV_CEO_VIEW,    
+		    nvl(B.ENT_REV_POTENTIAL,0) SUM_ENT_REV_POTENTIAL,    
+		    nvl(B.ENT_REV_RECOMEND_YN,0) SUM_ENT_REV_RECOMEND_YN,
+		    nvl(B.ENT_AVG_RATE,0) ENT_AVG_RATE,
+		    C.RECRUIT_NO, 
+            C.RECRUIT_STDT, 
+            C.RECRUIT_EDDT, 
+            C.RECRUIT_TITLE, 
+            C.RECRUIT_CNTNT, 
+            C.RECRUIT_WORK, 
+            C.RECRUIT_QLF, 
+            C.RECRUIT_PREFER, 
+            C.RECRUIT_SALARY, 
+            C.RECRUIT_LOCATION, 
+            C.RECRUIT_AF_ID, 
+            C.RECRUIT_LEVEL, 
+            C.RECRUIT_WORK_TYPE, 
+            C.RECRUIT_ACDM_CR, 
+            C.RECRUIT_CAREER, 
+            C.RECRUIT_COUNT, 
+            C.RECRUIT_PART, 
+            C.RECRUIT_THUMB, 
+            C.RECRUIT_OTT, 
+            C.RECRUIT_JOB, 
+            C.RECRUIT_SKILL,
+            (TO_DATE(C.RECRUIT_EDDT) - TO_DATE(SYSDATE)) as REMAINING_DATE,
+		    D.ENT_REV_NO, 
+            D.MEM_ID, 
+            D.ENT_REV_WORK_YN, 
+            D.ENT_REV_WORK_LOC, 
+            D.JOB_CATEGORY_CD, 
+            D.JOB_CD, 
+            D.ENT_REV_EMPL_TYPE, 
+            D.ENT_REV_SHORT_REVIEW, 
+            D.ENT_REV_PROS, 
+            D.ENT_REV_CONS, 
+            D.ENT_REV_WISHES, 
+            D.ENT_REV_CHANCES, 
+            D.ENT_REV_WELFARE, 
+            D.ENT_REV_BALANCE, 
+            D.ENT_REV_CULTURE, 
+            D.ENT_REV_MANAGER, 
+            D.ENT_REV_CEO_VIEW, 
+            D.ENT_REV_POTENTIAL, 
+            D.ENT_REV_RECOMEND_YN, 
+            D.REG_DATE, 
+            D.BOARD_LIKE,
+            E.COM_CD, 
+            E.COM_CD_NM, 
+            E.COM_CD_DESCRIPTIONS,
+            F.COM_DET_CD, 
+            F.COM_DET_CD_NM, 
+            F.COM_DET_DESCRIPTIONS
+		FROM
+		    ENTERPRISE A
+		    left outer join 
+		    (
+		        SELECT
+		            ENT_NO,
+		            COUNT(ENT_NO) AS REVIEW_COUNT,
+		            AVG(ENT_REV_CHANCES) ENT_REV_CHANCES,
+		            AVG(ENT_REV_WELFARE) ENT_REV_WELFARE,
+		            AVG(ENT_REV_BALANCE) ENT_REV_BALANCE,
+		            AVG(ENT_REV_CULTURE) ENT_REV_CULTURE,
+		            AVG(ENT_REV_MANAGER) ENT_REV_MANAGER,
+				    AVG(ENT_REV_CEO_VIEW) ENT_REV_CEO_VIEW,    
+				    AVG(ENT_REV_POTENTIAL) ENT_REV_POTENTIAL,    
+				    AVG(ENT_REV_RECOMEND_YN) ENT_REV_RECOMEND_YN,
+				  (
+					  AVG(ENT_REV_CHANCES)+ 
+					  AVG(ENT_REV_WELFARE)+ 
+					  AVG(ENT_REV_BALANCE)+ 
+					  AVG(ENT_REV_CULTURE)+  
+					  AVG(ENT_REV_MANAGER)
+				  )/5 ENT_AVG_RATE
+		        FROM
+		            ENT_REVIEW
+		        GROUP BY
+		            ENT_NO
+		    ) B
+		    on  A.ENT_NO = B.ENT_NO 
+		left outer join RECRUIT C
+		    on  A.ENT_NO = C.ENT_NO 
+		left outer join ENT_REVIEW D
+		    on  A.ENT_NO = D.ENT_NO 
+        	AND ( (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) > 0 OR (TO_DATE(RECRUIT_EDDT) - TO_DATE(SYSDATE)) IS NULL )
+		left outer join COM_CODE_INFO E
+		    on  D.JOB_CATEGORY_CD = E.COM_CD 
+		left outer join COM_DET_CODE_INFO F
+		    on  D.JOB_CD = F.COM_DET_CD 
+		where A.ENT_NO = #{entNo}
+		ORDER BY BOARD_LIKE DESC
+	</select>
+
+	<select id="ajaxGetEntOneYearly" parameterType="enterpriseVO" resultType="enterpriseVO">
+	
+		
+		SELECT 
+		    A.ENT_NO,
+		    nvl(B.ENT_AVG_RATE,0) ENT_AVG_RATE,
+		    B.REG_YEAR
+		FROM
+		    ENTERPRISE A
+		    left outer join 
+		    (
+		        SELECT
+		            ENT_NO,
+		            TO_CHAR(REG_DATE,'yyyy') as REG_YEAR,
+		          (
+		              AVG(ENT_REV_CHANCES)+ 
+		              AVG(ENT_REV_WELFARE)+ 
+		              AVG(ENT_REV_BALANCE)+ 
+		              AVG(ENT_REV_CULTURE)+  
+		              AVG(ENT_REV_MANAGER)
+		          )/5 ENT_AVG_RATE
+		        FROM
+		            ENT_REVIEW
+		        GROUP BY
+		            ENT_NO,
+		            TO_CHAR(REG_DATE,'yyyy')
+		    ) B
+	    	on  A.ENT_NO = B.ENT_NO
+		WHERE A.ENT_NO = #{entNo}
+	
+	</select>
+	
+	<!-- 마이페이지 내가 스크랩했던 관심기업 가져오기. -->
+	<select id="myEntList" parameterType="hashMap" resultType="enterpriseVO">
+		SELECT T.* FROM (
+			  SELECT
+			        ROW_NUMBER() OVER(ORDER BY A.ENT_NO DESC) RNUM,
+			        A.ENT_NO,
+			        A.ENT_NM,
+			        A.ENT_APRV,
+			        A.ENT_REG_DT,
+			        A.ENT_APRV_DT,
+			        A.ENT_INTRCN,
+			        A.ENT_URL,
+			        A.ENT_SALES,
+			        A.ENT_SECTOR,
+			        A.ENT_EMPCNT,
+			        A.ENT_BDAY,
+			        A.ENT_FAX,
+			        A.ENT_CEONM,
+			        A.ENT_LOGO,
+			        A.ENT_INT_WORD,
+			        A.ENT_POSTNO,
+			        A.ENT_ADDR,
+			        A.ENT_ADDR2,
+			        NVL(REVIEW_COUNT, 0) AS REVIEW_COUNT,
+			        NVL(B.ENT_REV_CHANCES, 0) SUM_ENT_REV_CHANCES,
+			        NVL(B.ENT_REV_WELFARE, 0) SUM_ENT_REV_WELFARE,
+			        NVL(B.ENT_REV_BALANCE, 0) SUM_ENT_REV_BALANCE,
+			        NVL(B.ENT_REV_CULTURE, 0) SUM_ENT_REV_CULTURE,
+			        NVL(B.ENT_REV_MANAGER, 0) SUM_ENT_REV_MANAGER,
+			        NVL(B.ENT_REV_CEO_VIEW, 0) SUM_ENT_REV_CEO_VIEW,
+			        NVL(B.ENT_REV_POTENTIAL, 0) SUM_ENT_REV_POTENTIAL,
+			        NVL(B.ENT_REV_RECOMEND_YN, 0) SUM_ENT_REV_RECOMEND_YN,
+			        NVL(B.ENT_AVG_RATE, 0) ENT_AVG_RATE,
+			        C.MEM_ID,
+			        C.INTRST_ENT_REGDT
+			    FROM ENTERPRISE A
+			    LEFT OUTER JOIN (
+			        SELECT
+			            ENT_NO,
+			            COUNT(ENT_NO) AS REVIEW_COUNT,
+			            AVG(ENT_REV_CHANCES) ENT_REV_CHANCES,
+			            AVG(ENT_REV_WELFARE) ENT_REV_WELFARE,
+			            AVG(ENT_REV_BALANCE) ENT_REV_BALANCE,
+			            AVG(ENT_REV_CULTURE) ENT_REV_CULTURE,
+			            AVG(ENT_REV_MANAGER) ENT_REV_MANAGER,
+			            AVG(ENT_REV_CEO_VIEW) ENT_REV_CEO_VIEW,
+			            AVG(ENT_REV_POTENTIAL) ENT_REV_POTENTIAL,
+			            AVG(ENT_REV_RECOMEND_YN) ENT_REV_RECOMEND_YN,
+			            (
+			                AVG(ENT_REV_CHANCES) +
+			                AVG(ENT_REV_WELFARE) +
+			                AVG(ENT_REV_BALANCE) +
+			                AVG(ENT_REV_CULTURE) +
+			                AVG(ENT_REV_MANAGER)
+			            ) / 5 ENT_AVG_RATE
+			        FROM ENT_REVIEW
+			        GROUP BY ENT_NO
+			    ) B ON A.ENT_NO = B.ENT_NO
+			    LEFT OUTER JOIN INTEREST_ENTERPRISE C ON A.ENT_NO = C.ENT_NO
+			    WHERE C.MEM_ID = #{memId}
+			) T
+			WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<!-- 마이페이지 스크랩했던 관심기업 총 갯수 -->
+	<select id="getMytotal" parameterType="hashMap" resultType="int">
+		SELECT    COUNT(*)
+		FROM 	  INTEREST_ENTERPRISE
+		WHERE     MEM_ID = #{memId}
+	</select>
+	
+	<delete id="ajaxdeleteEnterprise" parameterType="interestEnterpriseVO">
+		DELETE FROM    INTEREST_ENTERPRISE
+        	   WHERE   ENT_NO = #{entNo}
+               AND 	   MEM_ID = #{memId}
+	</delete>
+	
+	<insert id="ajaxinsertEnterprise" parameterType="interestEnterpriseVO">
+		INSERT INTO INTEREST_ENTERPRISE
+				    (
+					  MEM_ID
+					, ENT_NO
+					, INTRST_ENT_REGDT
+					)
+			 VALUES (
+			 		  #{memId}
+			 		, #{entNo}
+			 		, SYSDATE
+	    		    )
+	</insert>
+	
+	
+	<!-- 기업 리뷰 통계 -->
+	<select id="entReviewAvg"  parameterType="String" resultMap="ajaxEnterpriseMap">
+		/* ENTERPRISE REVIEW */
+		
+		SELECT
+			ENT.*
+	            FROM
+	            (SELECT
+	                A.ENT_NO, 
+	                A.ENT_NM, 
+	                A.ENT_APRV, 
+	                A.ENT_REG_DT, 
+	                A.ENT_APRV_DT, 
+	                A.ENT_INTRCN, 
+	                A.ENT_URL, 
+	                A.ENT_SALES, 
+	                A.ENT_SECTOR, 
+	                A.ENT_EMPCNT, 
+	                A.ENT_BDAY, 
+	                A.ENT_FAX, 
+	                A.ENT_CEONM, 
+	                A.ENT_LOGO, 
+	                A.ENT_INT_WORD, 
+	                A.ENT_POSTNO, 
+	                A.ENT_ADDR, 
+	                A.ENT_ADDR2,
+	                NVL(REVIEW_COUNT, 0) AS REVIEW_COUNT,
+	                ROUND(NVL(B.ENT_REV_CHANCES,0),1) SUM_ENT_REV_CHANCES,
+	                ROUND(NVL(B.ENT_REV_WELFARE,0),1) SUM_ENT_REV_WELFARE,
+	                ROUND(NVL(B.ENT_REV_BALANCE,0),1) SUM_ENT_REV_BALANCE,
+	                ROUND(NVL(B.ENT_REV_CULTURE,0),1) SUM_ENT_REV_CULTURE,
+	                ROUND(NVL(B.ENT_REV_MANAGER,0),1) SUM_ENT_REV_MANAGER,
+	                ROUND(NVL(B.ENT_REV_CEO_VIEW,0),1) SUM_ENT_REV_CEO_VIEW,    
+	                ROUND(NVL(B.ENT_REV_POTENTIAL,0),1) SUM_ENT_REV_POTENTIAL,    
+	                ROUND(NVL(B.ENT_REV_RECOMEND_YN,0),1) SUM_ENT_REV_RECOMEND_YN,
+	                ROUND(NVL(B.ENT_AVG_RATE,0),1) ENT_AVG_RATE
+	            FROM
+	                ENTERPRISE A
+	                LEFT OUTER JOIN 
+                	(
+	                    SELECT
+	                        ENT_NO,
+	                        COUNT(ENT_NO) AS REVIEW_COUNT,
+	                        AVG(ENT_REV_CHANCES) ENT_REV_CHANCES,
+	                        AVG(ENT_REV_WELFARE) ENT_REV_WELFARE,
+	                        AVG(ENT_REV_BALANCE) ENT_REV_BALANCE,
+	                        AVG(ENT_REV_CULTURE) ENT_REV_CULTURE,
+	                        AVG(ENT_REV_MANAGER) ENT_REV_MANAGER,
+	                        AVG(ENT_REV_CEO_VIEW) ENT_REV_CEO_VIEW,    
+	                        AVG(ENT_REV_POTENTIAL) ENT_REV_POTENTIAL,    
+	                        AVG(ENT_REV_RECOMEND_YN) ENT_REV_RECOMEND_YN,
+	                      (
+	                          AVG(ENT_REV_CHANCES)+ 
+	                          AVG(ENT_REV_WELFARE)+ 
+	                          AVG(ENT_REV_BALANCE)+ 
+	                          AVG(ENT_REV_CULTURE)+  
+	                          AVG(ENT_REV_MANAGER)
+	                      )/5 ENT_AVG_RATE
+	                      
+	                    FROM		ENT_REVIEW
+	                    GROUP BY	ENT_NO
+	                ) B
+	                
+	                ON A.ENT_NO = B.ENT_NO 
+	            ) ENT
+	            
+	            WHERE 	ENT_NO = (SELECT ENT_NO FROM ENT_APRV WHERE MEM_ID = #{memId})
+
+	</select>
+	
+	<select id="getEntNm" parameterType="String" resultType="String">
+		SELECT ENT_NM
+		FROM ENTERPRISE
+		WHERE ENT_NO = #{entNo}
+	</select>
+	
+	<select id="getEntOfferList" parameterType="String" resultType="enterpriseVO">
+		SELECT 
+		       a.MEM_ID
+		     , a.ENT_NO
+		     , a.ENT_YN
+		     , b.ENT_APRV
+		     , b.ENT_REG_DT
+		     , b.ENT_APRV_DT
+		     , b.ENT_NM
+		FROM ENT_APRV a , ENTERPRISE b
+		WHERE MEM_ID = #{memId}
+		AND a.ENT_NO = b.ENT_NO
+	</select>
+
+	<select id="getReportVO" parameterType="String" resultType="reportVO">
+	SELECT A.REP_NO
+	  ,A.REP_SUB_ID
+	  ,A.REP_DT
+	  ,A.REP_REASON
+	  ,A.REP_TYPE_CD
+	  ,A.REPORTER_ID
+	  ,A.ADMIN_ID
+	  ,A.REP_RESULT_CD
+	  ,A.REP_RESULT_CNTNT
+	  ,A.REP_BOARD_ID
+	  ,B.MEM_CD
+	FROM MEMBER B,REPORT A
+	WHERE A.REPORTER_ID = B.MEM_ID
+	AND A.REPORTER_ID =#{memId}
+</select>
+</mapper>

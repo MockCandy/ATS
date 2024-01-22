@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardClassMapper">
+
+	<resultMap type="brdclsVO" id="brdClsMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="classAfId" column="CLASS_AF_ID"/>
+		<result property="classUrl" column="CLASS_URL"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="jobCategoryCd" column="JOB_CATEGORY_CD"/>
+		<association property="atchFileVO" resultMap="atchFileMap"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"/>
+		<collection property="comCodeInfoVOList" resultMap="comCodeInfoMap"/>
+	</resultMap>
+
+	<resultMap type="atchFileVO" id="atchFileMap">
+		<result property="afId" column="AF_ID"/>
+		<result property="afCreatDt" column="AF_CREAT_DT"/>
+		<result property="afYn" column="AF_YN"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"/>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<resultMap type="comCodeInfoVO" id="comCodeInfoMap">
+		<result property="comCd" column="COM_CD"/>
+		<result property="comCdNm" column="COM_CD_NM"/>
+		<result property="comCdDescriptions" column="COM_CD_DESCRIPTIONS"/>
+	</resultMap>
+
+	<!-- 공지사항 수정 목록 -->
+	<select id="updatelist" parameterType="String" resultMap="brdClsMap">
+
+		SELECT	A.BOARD_ID, A.MEM_ID, A.BOARD_TITLE,
+				A.BOARD_CNTNT, A.BOARD_WRITING_DT,
+				A.BOARD_UPDT_DT, A.CLASS_AF_ID, A.CLASS_URL,
+				A.BOARD_CNT, A.JOB_CATEGORY_CD,
+				B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM,
+				B.AFD_SAVE_NM, B.AFD_FILE_SIZE,
+				B.AFD_SAVE_PATH, B.AFD_EXTSN,
+				B.AFD_CNTNT, B.AFD_UPLOAD_DT
+		FROM 	BOARD_CLASS A, ATCH_FILE_DETAIL B
+		WHERE 	A.BOARD_ID = B.AF_ID
+		AND 	A.BOARD_ID = #{boardId}
+
+	</select>
+	
+	<!-- 목록 -->
+	<select id="list" parameterType="hashMap" resultMap="brdClsMap">
+
+		SELECT T.*
+			FROM
+			(
+				SELECT  ROW_NUMBER() OVER(ORDER BY BOARD_ID) RNUM,
+						A.BOARD_ID, A.MEM_ID, A.BOARD_TITLE, A.BOARD_CNTNT, A.BOARD_WRITING_DT,
+						A.BOARD_UPDT_DT, A.CLASS_AF_ID, A.CLASS_URL, A.BOARD_CNT,
+						A.JOB_CATEGORY_CD,
+						B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM, B.AFD_FILE_SIZE,
+						B.AFD_SAVE_PATH, B.AFD_EXTSN, B.AFD_CNTNT, B.AFD_UPLOAD_DT
+				FROM 	BOARD_CLASS A, ATCH_FILE_DETAIL B
+				WHERE 	A.BOARD_ID = B.AF_ID(+)
+		
+		<if test="jobCategoryCd!=null and jobCategoryCd!=''">
+			AND A.JOB_CATEGORY_CD = #{jobCategoryCd}
+		</if>
+		) T
+
+		WHERE T.RNUM BETWEEN (#{currentPage} * 16) - (16-1) AND (#{currentPage} * 16)
+
+	</select>
+
+	<!-- 전체행의 수(검색 포함) -->
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+
+		SELECT COUNT(*) FROM BOARD_CLASS WHERE 1 = 1 
+		
+		<if test="jobCategoryCd!=null and jobCategoryCd!=''">
+			AND JOB_CATEGORY_CD = #{jobCategoryCd}
+		</if>
+		
+	</select>
+
+	<!-- 다음 기본키 값 가져오기 -->
+	<select id="getBoardId" resultType="String">
+
+		 SELECT 'CLS' || TO_CHAR(COALESCE(MAX(TO_NUMBER(SUBSTR(BOARD_ID, 4))),0) + 1, 'FM00000')
+		 FROM BOARD_CLASS
+
+	</select>
+
+	<!-- 강의클래스 등록 -->
+	<insert id="createForm" parameterType="brdclsVO">
+
+		INSERT INTO BOARD_CLASS (
+					BOARD_ID,
+					MEM_ID,
+					BOARD_TITLE,
+					BOARD_CNTNT,
+					BOARD_WRITING_DT,
+					BOARD_UPDT_DT,
+					CLASS_AF_ID,
+					CLASS_URL,
+					BOARD_CNT,
+					JOB_CATEGORY_CD
+		)
+		VALUES (#{boardId}, #{memId}, #{boardTitle}, #{boardCntnt}, SYSDATE,
+		SYSDATE, #{classAfId}, #{classUrl}, #{boardCnt},#{jobCategoryCd})
+
+	</insert>
+
+	<!-- 공통코드에서 직군코드 가져오기 -->
+	<select id="comJob" resultType="comCodeInfoVO">
+	/* comCode Job */
+	
+		 SELECT		COM_CD,
+	                COM_CD_NM,
+	                COALESCE((
+	                    SELECT COUNT(*) 
+	                    FROM BOARD_CLASS
+	                    WHERE JOB_CATEGORY_CD = COM_CODE_INFO.COM_CD
+	                ), 0) AS JOB_COUNT,
+	                COM_CD_DESCRIPTIONS
+	                
+        FROM		COM_CODE_INFO
+        WHERE		COM_CD LIKE 'MWJ010%'
+
+	</select>
+
+	<!-- 강의클래스 수정 -->
+	<update id="updatePost" parameterType="brdclsVO">
+
+		UPDATE	BOARD_CLASS
+		SET 	BOARD_TITLE 	= #{boardTitle},
+				BOARD_CNTNT 	= #{boardCntnt},
+				BOARD_UPDT_DT 	= SYSDATE,
+				CLASS_AF_ID 	= #{classAfId},
+				CLASS_URL 		= #{classUrl},
+				JOB_CATEGORY_CD = #{jobCategoryCd}
+		WHERE 	BOARD_ID 		= #{boardId}
+
+	</update>
+
+	<!-- 수정시 첨부파일 수정 할 때 첨부파일 상세 테이블 데이터 먼저 삭제 -->
+	<delete id="delAtch" parameterType="String">
+
+		DELETE FROM ATCH_FILE
+		WHERE AF_ID = #{afId}
+
+	</delete>
+
+	<!-- 강의클래스 삭제 -->
+	<delete id="delete" parameterType="brdclsVO">
+
+		DELETE FROM BOARD_CLASS
+		WHERE BOARD_ID = #{boardId}
+
+	</delete>
+
+	<!-- 업데이트시 조회 / 아이디 값으로 꺼내오기 -->
+	<select id="selectOne" parameterType="String" resultMap="brdClsMap">
+
+		SELECT	BOARD_ID,
+				MEM_ID,
+				BOARD_TITLE,
+				BOARD_CNTNT,
+				BOARD_WRITING_DT,
+				BOARD_UPDT_DT,
+				CLASS_AF_ID,
+				CLASS_URL,
+				BOARD_CNT,
+				JOB_CATEGORY_CD
+		FROM 	BOARD_CLASS
+		WHERE 	BOARD_ID = #{boardId}
+
+	</select>
+
+	<!-- 직군과 연결된 하위리스트 ajax -->
+	<select id="listAjax" parameterType="String" resultMap="brdClsMap">
+		/* JOB AJAX LIST */
+			SELECT	
+					A.BOARD_ID, A.MEM_ID, A.BOARD_TITLE, A.BOARD_CNTNT, A.BOARD_WRITING_DT,
+					A.BOARD_UPDT_DT, A.CLASS_AF_ID, A.CLASS_URL, A.BOARD_CNT,
+					A.JOB_CATEGORY_CD,
+					B.AFD_SEQ, B.AF_ID, B.AFD_ORIGIN_NM, B.AFD_SAVE_NM, B.AFD_FILE_SIZE,
+					B.AFD_SAVE_PATH, B.AFD_EXTSN, B.AFD_CNTNT, B.AFD_UPLOAD_DT
+			FROM 	BOARD_CLASS A, ATCH_FILE_DETAIL B
+			WHERE 	A.BOARD_ID = B.AF_ID
+
+		<if test="cateCd!=null and cateCd!=''">
+			AND JOB_CATEGORY_CD = #{cateCd}
+		</if>
+	</select>
+
+</mapper>

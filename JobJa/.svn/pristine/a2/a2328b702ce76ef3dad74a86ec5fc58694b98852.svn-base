@@ -1,0 +1,239 @@
+package jobja.member.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jobja.member.service.PortfolioService;
+import jobja.member.vo.PortfolioBasicVO;
+import jobja.member.vo.PortfolioFreeVO;
+import jobja.member.vo.PortfolioVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.util.ArticlePage;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/portfolio")
+@Controller
+public class PortfolioController {
+	
+	@Autowired
+	PortfolioService portfolioService;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	// 자기소개서 목록
+	@GetMapping("/list")
+	public String list(PortfolioVO portfolioVO, Model model,
+			@RequestParam(value="keyword",required=false) String keyword,
+			@RequestParam(value="currentPage",required=false,defaultValue="1") int currentPage
+			) {
+		
+		log.info("list->keyword : " + keyword);
+		log.info("list->currentPage : " + currentPage);
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("keyword",keyword);
+		map.put("currentPage",currentPage);
+		map.put("memId",memId);
+		
+		
+		List<PortfolioVO> portfolioVOList = this.portfolioService.list(map);
+		
+		log.info("list -> portfolioVOList : "+portfolioVOList);
+		
+		int total = this.portfolioService.getTotal(map);
+		log.info("list->total : " + total);
+
+		ArticlePage<PortfolioVO> data 
+				= new ArticlePage<PortfolioVO>(total, currentPage, 10, portfolioVOList);
+		
+		data.setUrl("/portfolio/list");
+		
+		model.addAttribute("data",data);
+		model.addAttribute("keyword",keyword);
+		model.addAttribute("portfolioVOList",portfolioVOList);
+		
+		return "portfolio/list";
+	}
+	
+	@GetMapping("/create")
+	public String create(PortfolioVO portfolioVO, PortfolioBasicVO portfolioBasicVO, Model model) {
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		model.addAttribute("memId",memId);
+		
+		return "portfolio/create";
+	}
+	
+	@GetMapping("/freeCreate")
+	public String freeCreate(Model model) {
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		model.addAttribute("memId",memId);
+		
+		return "portfolio/freeCreate";
+	}
+	
+	// 자기소개서 등록
+	@PostMapping("/createForm")
+	public String createForm(PortfolioVO portfolioVO, PortfolioBasicVO portfolioBasicVO, Model model) {
+		
+		String ptflNo = this.portfolioService.getPtflNo();
+		log.info("createForm -> ptflNo : " + ptflNo);
+		 
+		portfolioVO.setPtflNo(ptflNo);
+		portfolioBasicVO.setPtflNo(ptflNo);
+		log.info("createForm -> ptflNo : " + ptflNo);
+		
+		portfolioVO.setPortfolioBasicVO(portfolioBasicVO);
+		
+		int result = this.portfolioService.createForm(portfolioVO);
+		log.info("createForm -> result : " + result);
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		model.addAttribute("memId",memId);
+		
+		return "redirect:/portfolio/list";
+	}
+
+	// 자기소개서 자유양식 등록
+	@PostMapping("/freeCreateForm")
+	public String freeCreateForm(PortfolioVO portfolioVO , Model model) {
+		//PortfolioVO(ptflNo=null, memId=a111, ptflTitle=자기소개서 제목, ptflWritingDt=null, ptflUpdtDt=null, rnum=null, uploadFile=null, portfolioBasicVO=null, portfolioFreeVOList=[
+		//	PortfolioFreeVO(ptflNo=null, memId=null, ptflFreeq=질문1, ptflFreea=답변2), 
+		//	PortfolioFreeVO(ptflNo=null, memId=null, ptflFreeq=질문2, ptflFreea=답변2)])
+		log.info("portfolioVO : " + portfolioVO);
+		
+		String ptflNo = this.portfolioService.getPtflNo();
+		log.info("freeCreateForm -> ptflNo : " + ptflNo);
+		portfolioVO.setPtflNo(ptflNo);
+		
+		PortfolioFreeVO portfolioFreeVO = new PortfolioFreeVO();
+		portfolioFreeVO.setPtflNo(ptflNo);
+		log.info("freeCreateForm -> ptflNo : " + ptflNo);	
+		
+		int result = this.portfolioService.freeCreateForm(portfolioVO);
+		log.info("freeCreateForm -> result : " + result);
+		
+		//redirect
+		return "redirect:/portfolio/list";
+	}
+	
+	// 자기소개서 상세보기
+	@GetMapping("/detail")
+	public String detail(PortfolioVO portfolioVO, Model model) {
+		log.info("portfolioVO -> detail : "+portfolioVO);
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		PortfolioVO portVO = this.portfolioService.detail(portfolioVO.getPtflNo());
+		log.info("portVO -> detail : "+portVO);
+		
+		model.addAttribute("memId",memId);
+		model.addAttribute("portfolioVO",portVO);
+		
+		 return "portfolio/detail";
+	}
+	
+	// 자기소개서 자유양식 상세보기
+	@GetMapping("freeDetail")
+	public String freeDetail(PortfolioVO portfolioVO, Model model) {
+		log.info("freeDetail -> detail : "+portfolioVO);
+		
+		MemberVO memberVO = this.modelAttributeUtil.getCurrentLoginName();
+		String memId = memberVO.getMemId();
+		
+		PortfolioVO portfolioFreeVO = this.portfolioService.freeDetail(portfolioVO.getPtflNo());
+		log.info("freeFormVO -> detail : "+portfolioFreeVO);
+
+		model.addAttribute("memId",memId);
+		model.addAttribute("portfolioVO",portfolioFreeVO);
+		
+		 return "portfolio/freeDetail";
+		
+	}
+	
+	// 자기소개서 수정 화면
+	@GetMapping("/update")
+	public String update(PortfolioVO portfolioVO, Model model) {
+		
+		PortfolioVO portfolioVO2 = this.portfolioService.detail(portfolioVO.getPtflNo());
+		log.info("portfolioVO -> update : "+portfolioVO2);
+		
+		model.addAttribute("portfolioVO",portfolioVO2);
+		
+		return "portfolio/update";
+	}
+	
+	// 자기소개서 수정
+	@PostMapping("/updatePost")
+	public String updatePost(PortfolioVO portfolioVO, PortfolioBasicVO portfolioBasicVO) {
+		log.info("updatePost->portfolioVO : " + portfolioVO);
+		
+		int result = this.portfolioService.updatePost(portfolioVO);
+		log.info("updatePost->result : " + result);
+		
+			result += this.portfolioService.portBasicUpdate(portfolioBasicVO);
+		
+		return "redirect:/portfolio/detail?ptflNo="+portfolioVO.getPtflNo();
+	}
+	
+	// 자기소개서 자유양식 수정 화면
+	@GetMapping("/freeUpdate")
+	public String freeUpdate(PortfolioVO portfolioVO, Model model) {
+			
+		PortfolioVO portfolioVO2 = this.portfolioService.freeDetail(portfolioVO.getPtflNo());
+		log.info("portfolioVO -> freeUpdate : "+portfolioVO2);
+		
+		model.addAttribute("portfolioVO",portfolioVO2);
+		
+		return "portfolio/freeUpdate";
+	}
+	
+	// 자기소개서 자유양식 수정
+	@PostMapping("/freeUpdatePost")
+	public String freeUpdatePost(PortfolioVO portfolioVO, PortfolioFreeVO portfolioFreeVO) {
+		log.info("freeUpdatePost->portfolioVO : " + portfolioVO);
+		
+		int result = this.portfolioService.freeUpdatePost(portfolioVO);
+		log.info("freeUpdatePost->result : " + result);
+		
+		result += this.portfolioService.portFreeUpdate(portfolioFreeVO);
+		System.out.println("portfree : "+portfolioFreeVO);
+		
+		return "redirect:/portfolio/freeDetail?ptflNo="+portfolioVO.getPtflNo();
+	}
+	
+	// 자기소개 삭제
+	@PostMapping("/deletePost")
+	public String deletePost(PortfolioVO portfolioVO) {
+		log.info("deletePost -> portfolioVO : " + portfolioVO);
+		
+		int result = this.portfolioService.deletePost(portfolioVO);
+		log.info("deletePost -> result : " + result);
+		
+		return "redirect:/portfolio/list";
+	}
+
+}

@@ -1,0 +1,112 @@
+package jobja.item.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobja.item.mapper.ConsultMapper;
+import jobja.item.service.ConsultService;
+import jobja.item.vo.ConsultantLogVO;
+import jobja.item.vo.ConsultantReviewVO;
+import jobja.item.vo.PaymentVO;
+import jobja.mypage.member.vo.MemberVO;
+
+@Service
+public class ConsultServiceImpl implements ConsultService {
+
+	@Autowired
+	ConsultMapper consultMapper;
+	
+	@Override
+	public List<ConsultantLogVO> getLogById(Map<String, Object> map) {
+		return consultMapper.getLogById(map);
+	}
+
+	@Override
+	public ConsultantLogVO getConsultBycnsltntNo(String cnsltntNo) {
+		return consultMapper.getConsultBycnsltntNo(cnsltntNo);
+	}
+	
+	//마이페이지 나의 상담기록 가져오기
+	@Override
+	public List<MemberVO> getMyConsultantLog(String memId) {
+		return this.consultMapper.getMyConsultantLog(memId);
+	}
+	
+	//가져온 상담 기록에서 기록 보기 눌렀을 때 상담사가 기록한 코멘트 보기
+	@Override
+	public ConsultantLogVO ajaxgetOneReview(String cnsltntNo) {
+		return this.consultMapper.ajaxgetOneReview(cnsltntNo);
+	}
+	
+	//마이페이지 리뷰 작성 전 info 가져옴.
+	@Override
+	public PaymentVO ajaxgetReviewInfo(String payNo) {
+		return this.consultMapper.ajaxgetReviewInfo(payNo);
+	}
+	//마이페이지 리뷰 등록
+	@Override
+	public int ajaxinsertReview(ConsultantReviewVO consultantReviewVO) {
+		return this.consultMapper.ajaxinsertReview(consultantReviewVO);
+	}
+
+	@Override
+	public int getTotalById(Map<String, Object> map) {
+		return consultMapper.getTotalById(map);
+	}
+
+	@Override
+	public List<ConsultantReviewVO> getCnsltntRevByCnsltntId(Map<String, Object> map) {
+		return consultMapper.getCnsltntRevByCnsltntId(map);
+	}
+
+	@Override
+	public int getRevTotalByCnsltntId(Map<String, Object> map) {
+		return consultMapper.getRevTotalByCnsltntId(map);
+	}
+
+	@Override
+	public List<MemberVO> consultantList(Map<String, Object> map) {
+		
+		return consultMapper.consultantList(map);
+	}
+	
+	//상담 기록 남기기 위해 pay정보 가져오기.
+	@Override
+	public PaymentVO getPayLog(Map<String, String> chatRoom) {
+		return consultMapper.getPayLog(chatRoom);
+	}
+	//상담 기록 등록
+	@Override
+	public int insertConsultantLog(ConsultantLogVO consultantLogVO) {
+		return consultMapper.insertConsultantLog(consultantLogVO);
+	}
+
+	@Override
+	public String getRepResumeNo(String memId) {
+		
+		return this.consultMapper.getRepResumeNo(memId);
+	}
+
+	@Override
+	public int totalCounsel(Map<String, Object> map) {
+		
+		return this.consultMapper.totalCounsel(map);
+	}
+
+	@Override
+	public List<ConsultantReviewVO> getConsultReview(Map<String, Object> map) {
+		return consultMapper.getConsultReview(map);
+	}
+
+	@Override
+	public ConsultantReviewVO getConsultRevByReviewNo(String reviewNo) {
+		return consultMapper.getConsultRevByReviewNo(reviewNo);
+	}
+	
+	
+	
+	
+}

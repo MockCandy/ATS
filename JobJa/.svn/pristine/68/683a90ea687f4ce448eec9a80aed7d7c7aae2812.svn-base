@@ -1,0 +1,29 @@
+package jobja.board.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.board.vo.BoardEntReviewVO;
+import jobja.member.vo.EnterpriseVO;
+
+public interface BoardEntReviewMapper {
+
+	int createPost(BoardEntReviewVO boardEntReviewVO);
+
+	List<BoardEntReviewVO> getByEntNo(Map<String, Object> map);
+
+	int ajaxLikeCancel(BoardEntReviewVO boardEntReviewVO);
+
+	int ajaxLikeUp(BoardEntReviewVO boardEntReviewVO);
+
+	int getTotalCount(String entNo);
+
+	EnterpriseVO ajaxGetEntInfo(EnterpriseVO enterpriseVO);
+
+	List<BoardEntReviewVO> getRecent();
+
+	// 리뷰 가져오기
+	public List<BoardEntReviewVO> brdEnterpriseVOList(String memId);
+
+	
+}

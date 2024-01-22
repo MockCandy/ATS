@@ -1,0 +1,138 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<style>
+.interView-create{
+    background-color: #fff;
+    width: 100%;
+    border-radius: 20px;
+}
+.interView-create-inner{
+	padding: 24px 40px;
+	width: 100%
+}
+.inter-textarea{
+	border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 100%;
+    height: 150px;
+    border-radius: 15px 15px;
+    padding: 8px;
+    resize: none;
+}
+.Q-title{
+	font-weight: 800;
+	font-size: 20px;
+	margin-bottom: 12px;
+	border: none;
+	
+}
+.interView-input{
+	width: 100%;
+	height: 40px;
+	border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.Q-button{
+    display: flex;
+    justify-content: center;
+
+}
+.Q-button-bnt{
+	width: 120px;
+    height: 40px;
+    border : 1px solid #ccc;
+    border-radius: 10px;
+    margin-top: 12px;
+}
+.inter-select{
+	width: 400px;
+	height: 32px;
+	border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.Q-file{
+	margin-bottom: 16px;
+}
+
+</style>
+
+<div class="cen" style="margin: 50px auto;">
+	<p class="main-h1">현직자 인터뷰 등록</p>
+	<div class="h-div-line"></div>
+	
+	
+	<form action="/boardInterView/createForm?${_csrf.parameterName}=${_csrf.token}" method="post" enctype="multipart/form-data">
+				<div class="interView-create">
+					<!-- //////////////////////////////// boardInterViewVO 시작 /////////////////////////////////// -->
+					<div class="interView-create-inner">
+						<p class="Q-title">직군</p>
+						<select name="interJobCd" class="inter-select">
+							<c:forEach var="comInfoVOList" items="${comCodeList}">
+								<option value="${comInfoVOList.comCd}">${comInfoVOList.comCdNm}</option>
+							</c:forEach>
+						</select>
+					</div>
+					<div class="interView-create-inner">
+						<p class="Q-title">이름</p>
+						<input type="text"  class="interView-input" name="interNm" value="" />
+					</div>
+					<div class="interView-create-inner">
+						<p class="Q-title">소속 회사</p>
+						<input type="text"  class="interView-input" name="interEntNm" value="" />
+					</div>
+					<div class="interView-create-inner">
+						<p class="Q-title">소속 부서</p>
+						<input type="text"  class="interView-input" name="interDeptNm" value="" />
+					</div>
+					
+					<div class="interView-create-inner">
+						<p class="Q-title">제목</p>
+						<input type="text"  class="interView-input" name="boardTitle" value="" />
+					</div>
+					
+					<div class="interView-create-inner">
+						<p class="Q-title">서브제목</p>
+						<input type="text"  class="interView-input" name="boardCntnt" value="" />
+					</div>
+					
+					<div class="interView-create-inner">
+						<p class="Q-title">좌우명</p>
+						<input type="text"  class="interView-input" name="boardSeTitle" value="" />
+					</div>
+					<!-- //////////////////////////////// boardInterViewVO 끝 /////////////////////////////////// -->
+					
+					
+					<!-- //////////////////////////////// boardInterViewVO.boardInterViewQNAVOList  boardInterViewQNAVO 시작 /////////////////////////////////// -->
+					
+					<c:forEach begin="0" end="11" var="i">
+						<div class="interView-create-inner">
+							<input type="hidden" value="${data[i].quCode}" name="boardInterViewQNAVOList[${i}].quCode">
+							<p class="Q-title">${data[i].quQuestionNm}${data[i].quQuestion}</p>
+							<textarea   class="inter-textarea" name="boardInterViewQNAVOList[${i}].quAnswer"></textarea>
+						</div>
+					</c:forEach>
+					
+					<!-- //////////////////////////////// boardInterViewQNAVO 끝 /////////////////////////////////// -->
+					
+					<div class="interView-create-inner">
+						<div class="Q-file">
+							<p class="Q-title">프로필 이미지 등록</p>	
+							<span><input type="file" value="사진을 선택해주세요." class="interView-File" name=uploadProFile multiple /></span>
+						</div>
+						<div class="Q-file">
+							<p class="Q-title">게시물 이미지 등록</p>	
+							<span><input type="file" value="사진을 선택해주세요." class="interView-File" name="uploadFile" multiple /></span>
+						</div>
+						
+						<div class="Q-button">
+							<button type="submit" class="Q-button-bnt btn-write">게시글 작성</button>
+						</div>
+					</div>
+				</div>
+		<sec:csrfInput />
+	</form>
+</div>

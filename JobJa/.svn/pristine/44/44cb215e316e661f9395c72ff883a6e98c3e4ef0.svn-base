@@ -1,0 +1,31 @@
+package jobJa.member.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import jobJa.member.mapper.ResumeMapper;
+import jobJa.member.service.ResumeService;
+import jobJa.member.vo.ApplicationVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.myPage.member.vo.ResumeVO;
+
+@Service
+public class ResumeServiceImpl implements ResumeService{
+
+	@Autowired
+	ResumeMapper resumeMapper;
+	
+	@Override
+	public List<ResumeVO> getResumes(MemberVO memberVO) {
+		return resumeMapper.getResumes(memberVO);
+	}
+
+	@Override
+	public List<ApplicationVO> getApplications(String resumeNo) {
+		return resumeMapper.getApplications(resumeNo);
+	}
+
+
+}

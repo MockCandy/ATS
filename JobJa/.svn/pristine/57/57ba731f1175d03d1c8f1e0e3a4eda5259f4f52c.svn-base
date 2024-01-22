@@ -1,0 +1,12 @@
+package jobJa.member.mapper;
+
+import java.util.List;
+
+import jobJa.member.vo.JobOfferVO;
+import jobJa.myPage.member.vo.MemberVO;
+
+public interface JobOfferMapper {
+
+	List<JobOfferVO> getOffers(MemberVO memberVO);
+
+}

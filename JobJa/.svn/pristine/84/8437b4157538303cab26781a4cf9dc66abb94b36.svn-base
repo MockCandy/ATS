@@ -1,0 +1,15 @@
+package jobJa.member.service;
+
+import java.util.List;
+
+import jobJa.member.vo.ApplicationVO;
+import jobJa.myPage.member.vo.MemberVO;
+import jobJa.myPage.member.vo.ResumeVO;
+
+public interface ResumeService {
+
+	List<ResumeVO> getResumes(MemberVO memberVO);
+
+	List<ApplicationVO> getApplications(String resumeNo);
+
+}

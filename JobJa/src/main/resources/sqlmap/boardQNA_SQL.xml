@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.board.mapper.BoardQNAMapper">
+
+	<sql id="where">
+		<if test="keyword!=null and keyword!=''">
+			AND (BOARD_TITLE  LIKE '%' || #{keyword} || '%' 
+				   OR BOARD_CNTNT LIKE '%' || #{keyword} || '%')
+		</if>
+	</sql>
+	
+	<sql id="order">
+		<choose>
+			<when test = "sortBy=='recent'">
+				ORDER BY BOARD_WRITING_DT DESC
+			</when>
+			<when test = "sortBy=='like'">
+				ORDER BY BOARD_LIKE DESC
+			</when>
+			<when test = "sortBy=='view'">
+				ORDER BY BOARD_CNT DESC
+			</when>
+			<otherwise>
+				ORDER BY BOARD_ID DESC
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="getBoardId" resultType="String">
+		SELECT 'QNA' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(BOARD_ID),4) + 1,'00000')),'00001')
+		FROM   BOARD_QNA
+	</select>
+
+	<insert id="createPost" parameterType="boardQNAVO">
+		INSERT INTO BOARD_QNA
+		(BOARD_ID, MEM_ID, BOARD_TITLE, BOARD_CNTNT, BOARD_WRITING_DT, BOARD_UPDT_DT)
+		VALUES
+		(#{boardId}, #{memId}, #{boardTitle}, #{boardCntnt}, SYSDATE, SYSDATE)
+	</insert>
+	
+	<select id="list" parameterType="hashMap" resultMap="boardQNAMap">
+		SELECT T.*
+		FROM
+		(
+		    SELECT ROW_NUMBER() OVER(<include refid="order"></include>) RNUM 
+		            ,BOARD_ID
+                    , A.MEM_ID
+                    , A.BOARD_TITLE
+                    , A.BOARD_CNTNT
+                    , A.BOARD_WRITING_DT
+                    , A.BOARD_UPDT_DT
+                    , A.QNA_AF_ID
+                    , A.BOARD_CNT
+                    , A.BOARD_LIKE
+                    , B.AFD_SEQ
+                    , B.AF_ID
+                    , B.AFD_ORIGIN_NM
+                    , B.AFD_SAVE_NM
+                    , B.AFD_FILE_SIZE, AFD_SAVE_PATH
+                    , B.AFD_EXTSN
+                    , B.AFD_CNTNT
+                    , B.AFD_UPLOAD_DT
+		    FROM  BOARD_QNA A, ATCH_FILE_DETAIL B
+		    WHERE 1 = 1
+            AND A.BOARD_ID = B.AF_ID(+)
+			<include refid="where"></include>
+		) T
+		WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM BOARD_QNA
+		WHERE 1 = 1
+		<include refid="where"></include>
+	</select>
+	
+	
+	<resultMap type="boardQNAVO" id="boardQNAMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="qnaAfId" column="QNA_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="boardLike" column="BOARD_LIKE"/>
+		<collection property="atchFileDetailVOList" resultMap="atchFileDetailMap"></collection>
+	</resultMap>
+	
+	<resultMap type="atchFileDetailVO" id="atchFileDetailMap">
+		<result property="afdSeq" column="AFD_SEQ"/>
+		<result property="afId" column="AF_ID"/>
+		<result property="afdOriginNm" column="AFD_ORIGIN_NM"/>
+		<result property="afdSaveNm" column="AFD_SAVE_NM"/>
+		<result property="afdFileSize" column="AFD_FILE_SIZE"/>
+		<result property="afdSavePath" column="AFD_SAVE_PATH"/>
+		<result property="afdExtsn" column="AFD_EXTSN"/>
+		<result property="afdCntnt" column="AFD_CNTNT"/>
+		<result property="afdUploadDt" column="AFD_UPLOAD_DT"/>
+	</resultMap>
+	
+	<select id="detail" parameterType="boardQNAVO" resultMap="boardQNAMap">
+		SELECT BOARD_ID
+			, A.MEM_ID
+			, A.BOARD_TITLE
+			, A.BOARD_CNTNT
+			, A.BOARD_WRITING_DT
+			, A.BOARD_UPDT_DT
+			, A.QNA_AF_ID
+			, A.BOARD_CNT
+			, A.BOARD_LIKE
+	        , B.AFD_SEQ, AF_ID
+	        , B.AFD_ORIGIN_NM
+	        , B.AFD_SAVE_NM
+	        , B.AFD_FILE_SIZE, AFD_SAVE_PATH
+	        , B.AFD_EXTSN
+	        , B.AFD_CNTNT
+	        , B.AFD_UPLOAD_DT
+		FROM   BOARD_QNA A, ATCH_FILE_DETAIL B
+		WHERE A.BOARD_ID = B.AF_ID(+)
+		AND    BOARD_ID = #{boardId}
+	</select>
+	
+	
+	<delete id="delete" parameterType="boardQNAVO">
+		DELETE FROM BOARD_QNA
+		WHERE BOARD_ID = #{boardId}
+	</delete>
+	
+	<update id="update" parameterType="boardQNAVO">
+		UPDATE BOARD_QNA SET BOARD_TITLE=#{boardTitle}, BOARD_CNTNT=#{boardCntnt}, BOARD_UPDT_DT=SYSDATE
+		WHERE BOARD_ID=#{boardId}
+	</update>
+	
+	<update id="countUp" parameterType="String">
+		UPDATE BOARD_QNA SET BOARD_CNT = BOARD_CNT + 1
+		WHERE BOARD_ID=#{boardId}
+	</update>
+	
+	<update id="ajaxLikeUp" parameterType="boardQNAVO">
+		UPDATE BOARD_QNA SET BOARD_LIKE = BOARD_LIKE + 1
+		WHERE BOARD_ID=#{boardId}
+	</update>
+	
+	<update id="ajaxLikeCancel" parameterType="boardQNAVO">
+		UPDATE BOARD_QNA SET BOARD_LIKE = BOARD_LIKE - 1
+		WHERE BOARD_ID=#{boardId}
+	</update>
+	
+	<!-- 마이페이지용 내가 쓴글 가져오기. myList -->
+	<select id="myList" parameterType="hashMap" resultType="boardQNAVO">
+		SELECT T.* FROM
+                 (
+               SELECT
+                     ROW_NUMBER() OVER(ORDER BY BOARD_ID DESC) RNUM,
+                     BOARD_ID
+                   , MEM_ID
+                   , BOARD_TITLE
+                   , BOARD_CNTNT
+                   , BOARD_WRITING_DT
+                   , BOARD_UPDT_DT
+                   , QNA_AF_ID
+                   , BOARD_CNT
+                   , BOARD_LIKE
+                FROM   BOARD_QNA
+                WHERE MEM_ID = #{memId}
+        )T
+        WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getMyTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+        FROM     BOARD_QNA
+        WHERE    MEM_ID = #{memId}
+	</select>
+	
+	<!-- 마이페이지용 내가 쓴 댓글 가져오기. myReplyList -->
+	<select id="myReplyList" parameterType="hashMap" resultType="replyVO">
+		 SELECT T.* FROM
+                 (
+		        SELECT 
+		                ROW_NUMBER() OVER(ORDER BY REPLY_NO DESC) RNUM,
+						REPLY_NO
+					  , PARENT_REPLY_NO
+					  , BOARD_ID, MEM_ID
+					  , REPLY_CNTNT
+					  , REPLY_WRITING_DT
+					  , DEL_YN
+				FROM  REPLY
+				WHERE MEM_ID = #{memId}
+		        )T
+		  WHERE T.RNUM BETWEEN (#{currentPage} * #{size}) - (#{size} - 1) and (#{currentPage} * #{size})
+	</select>
+	
+	<select id="getmyReplyTotal" parameterType="hashMap" resultType="int">
+		SELECT   COUNT(*)
+        FROM     REPLY
+        WHERE    MEM_ID = #{memId}
+	</select>
+	
+	
+	
+	
+	<resultMap type="boardQNAVO" id="boardQNAReplyMap">
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="boardTitle" column="BOARD_TITLE"/>
+		<result property="boardCntnt" column="BOARD_CNTNT"/>
+		<result property="boardWritingDt" column="BOARD_WRITING_DT"/>
+		<result property="boardUpdtDt" column="BOARD_UPDT_DT"/>
+		<result property="qnaAfId" column="QNA_AF_ID"/>
+		<result property="boardCnt" column="BOARD_CNT"/>
+		<result property="boardLike" column="BOARD_LIKE"/>
+		
+		<collection property="replys" resultMap="replyMap"></collection>
+	</resultMap>
+	<resultMap type="replyVO" id="replyMap">
+		<result property="replyNo" column="REPLY_NO"/>
+		<result property="parentReplyNo" column="PARENT_REPLY_NO"/>
+		<result property="boardId" column="BOARD_ID"/>
+		<result property="memId" column="MEM_ID"/>
+		<result property="replyCntnt" column="REPLY_CNTNT"/>
+		<result property="replyWritingDt" column="REPLY_WRITING_DT"/>
+		<result property="delYn" column="DEL_YN"/>
+	</resultMap>
+	
+	<select id="getPopular5" resultMap="boardQNAReplyMap">
+		SELECT T.*
+		FROM 
+		(
+		    SELECT DENSE_RANK() OVER(ORDER BY BOARD_LIKE DESC) RNUM,
+		        A.BOARD_ID, 
+		        A.MEM_ID, 
+		        A.BOARD_TITLE, 
+		        A.BOARD_CNTNT, 
+		        A.BOARD_WRITING_DT, 
+		        A.BOARD_UPDT_DT, 
+		        A.QNA_AF_ID, 
+		        A.BOARD_CNT, 
+		        A.BOARD_LIKE,
+		        B.REPLY_NO, 
+		        B.PARENT_REPLY_NO, 
+		        B.BOARD_ID AS REPLY_BOARD_ID, 
+		        B.MEM_ID AS REPLY_MEM_ID, 
+		        B.REPLY_CNTNT, 
+		        B.REPLY_WRITING_DT, 
+		        B.DEL_YN
+		    FROM BOARD_QNA A
+		    LEFT OUTER JOIN REPLY B
+		    ON A.BOARD_ID = B.BOARD_ID
+		) T
+		WHERE T.RNUM BETWEEN 1 AND 5
+	</select>
+	
+</mapper>

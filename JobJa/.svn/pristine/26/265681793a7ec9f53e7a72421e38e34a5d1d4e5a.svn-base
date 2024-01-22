@@ -1,0 +1,17 @@
+package jobja.application.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.member.vo.ApplicationVO;
+
+public interface ApplicationService {
+
+	int insert(ApplicationVO applicationVO);
+
+	int isApplicated(Map<String, Object> appMap);
+	
+	//마이페이지 내가 입사지원한공고 목록 가져오기.
+	public List<ApplicationVO> myApplication(String memId);
+
+}

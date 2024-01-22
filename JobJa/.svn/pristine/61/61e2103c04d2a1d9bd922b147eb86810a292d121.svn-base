@@ -1,0 +1,28 @@
+package jobja.mypage.member.vo;
+
+import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import lombok.Data;
+
+@Data
+public class CareerVO {
+
+	private String companyDetCareer;
+	private String companySalary;
+	private String companyDept;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date companyLeaveDt;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private Date companyEntranceDt;
+	
+	private String companyNm;
+	private String resumeNo;
+	private String careerNo;
+	private int careerSeq;
+	private String companyJob;
+	private String companyPosition;
+}

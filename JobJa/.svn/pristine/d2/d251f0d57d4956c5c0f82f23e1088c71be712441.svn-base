@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jobja.application.mapper.ApplicationMapper">
+
+
+	<insert id="insert" parameterType="applicationVO">
+		<selectKey resultType="String" order="BEFORE" keyProperty="appNo">
+			SELECT 'APP' || NVL(TRIM(TO_CHAR(SUBSTR(MAX(APP_NO),4) + 1,'00000')),'00001')
+			FROM   APPLICATION
+		</selectKey>
+		
+		INSERT INTO APPLICATION 
+		(
+			APP_NO, 
+			RECRUIT_NO, 
+			RESUME_NO, 
+			PTFL_NO, 
+			APP_STATE_CD, 
+			APP_APPLY_DT,
+			MEM_ID
+		)
+		VALUES
+		(
+			#{appNo},
+			#{recruitNo},
+			#{resumeNo},
+			#{ptflNo},
+			'APP01001',
+			SYSDATE,
+			#{memId}
+		)
+	</insert>
+
+	<select id="isApplicated" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*) FROM APPLICATION 
+		WHERE RECRUIT_NO = #{recruitNo} AND MEM_ID=#{memId}
+	</select>
+	
+	
+	<!-- 마이페이지 내가 입사지원한 목록 가져오기 -->
+	<select id="myApplication" parameterType="String" resultType="applicationVO">
+		SELECT   A.RECRUIT_TITLE AS RECRUIT_TITLE
+			   , A.RECRUIT_NO
+		       , B.APP_NO
+		       , B.RESUME_NO
+		       , B.APP_STDT
+		       , B.APP_STATE_CD
+		       , B.APP_STATE_DT
+		       , B.APP_APPLY_DT
+		       , B.MEM_ID
+		       , B.PTFL_NO
+               , C.COM_DET_CD_NM AS APP_STATE_NM
+		FROM     RECRUIT A, APPLICATION B, COM_DET_CODE_INFO c
+		WHERE    A.RECRUIT_NO = B.RECRUIT_NO
+        AND      B.APP_STATE_CD = C.COM_DET_CD
+		AND      B.MEM_ID = #{memId}
+	</select>
+</mapper>

@@ -1,0 +1,15 @@
+package jobja.common.vo;
+
+import lombok.Data;
+
+/** 공통코드상세
+ */
+@Data
+public class ComDetCodeInfoVO {
+	
+	private String comDetCd;			// 공통상세코드
+	private String comCd;				// 공통코드
+	private String comDetCdNm;			// 공통코드 상세 이름
+	private String comDetDescriptions;	// 공통코드 상세 설명
+
+}

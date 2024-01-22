@@ -1,0 +1,97 @@
+package jobja.recruit.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.common.vo.ComDetCodeInfoVO;
+import jobja.item.vo.PaymentVO;
+import jobja.member.vo.InterestRecruitVO;
+import jobja.mypage.member.vo.MemberVO;
+import jobja.recruit.vo.BenefitsVO;
+import jobja.recruit.vo.RecruitFormVO;
+import jobja.recruit.vo.RecruitVO;
+
+public interface RecruitMapper {
+
+	public List<ComCodeInfoVO> getComCodeInfo();
+
+	public List<ComDetCodeInfoVO> getComDetCode(String comCd);
+
+	public List<ComDetCodeInfoVO> getComCodeInfoa();
+
+	public List<ComDetCodeInfoVO> getComCodeInfob();
+	
+	// 공통코드 직급 가져오기
+	public List<ComDetCodeInfoVO> getComCodeInfod();
+
+	public int createPost(RecruitVO recruitVO);
+
+	public int createBenefits(RecruitFormVO recruitFormVO);
+
+	public List<InterestRecruitVO> getInterestRecruit(MemberVO memberVO);
+
+	public List<RecruitVO> getList (Map<String,Object> map);
+
+	public String getEntNo(String memId);
+
+	public List<RecruitVO> getEntNm();
+
+	public List<RecruitVO> getByEntNo(Map<String, Object> map);
+	
+	// 디비 저장 안하고 uploadfile에만 저장
+	public int insertThumb(String result1);
+	
+	//썸네일에 주소 업데이트
+	public int updateThumb(RecruitVO recruitVO);
+	
+
+	//총행수 자기고오기
+	public int getTotal(Map<String, Object> map);
+
+	//스크랩순으로 가지고오기
+	public List<RecruitVO> getScrapList(Map<String, Object> map);
+
+	//마감순으로 가지고오기
+	public List<RecruitVO> getDeadlineList(Map<String, Object> map);
+
+	//조건에 맞는 총 행수 가지고오기
+	public int getConditionTotal(Map<String, Object> map);
+
+	// 채용공고 한건 가져오기
+	public RecruitVO getByRecNo(String recruitNo);
+
+	public List<BenefitsVO> getBenefits(String recruitNo);
+	
+	//마이페이지 내가 스크랩한 채용 공고 가져오기.
+	public List<RecruitVO> myRecruitList(Map<String, Object> map);
+	
+	//마이페이지 내가 스트랩했던 채용 공고 삭제.
+	public int ajaxdeleteRecruit(InterestRecruitVO interestRecruitVO);
+	
+	//마이페이지 내가 스크랩했던 채용공고 삭제 후 북마크 체크하면 다시 등록
+	public int ajaxinsertRecruit(InterestRecruitVO interestRecruitVO);
+
+	public List<RecruitVO> getSrchList(Map<String, Object> map);
+
+	public int getSrchTotal(Map<String, Object> map);
+
+	public List<RecruitVO> getPopular5();
+
+	public List<RecruitVO> getPopularDesc();
+
+	// 목록
+	public List<RecruitVO> recruitList(Map<String, Object> map);
+	
+	//채용공고 구매한 기업List 랜덤으로 가져오기.
+	public List<PaymentVO> getRecruititemEntList();
+	
+	//마이페이지 내가 스크랩한 채용공고 총 갯수
+	public int getMyTotal(Map<String, Object> map);
+
+	public List<RecruitVO> recruitListByMap(Map<String, Object> map);
+
+	public int recruitListCount(Map<String, Object> map);
+
+
+}

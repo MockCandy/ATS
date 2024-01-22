@@ -1,0 +1,207 @@
+package jobja.board.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jobja.board.service.BoardClassService;
+import jobja.board.vo.BoardClassVO;
+import jobja.common.vo.ComCodeInfoVO;
+import jobja.util.ArticlePage;
+import jobja.util.ModelAttributeUtil;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequestMapping("/boardClass")
+@Controller
+public class BoardClassController {
+	
+	@Autowired
+	BoardClassService brdClsService;
+	
+	@Autowired
+	ModelAttributeUtil modelAttributeUtil;
+	
+	/**
+	 * 강의클래스 목록
+	 * @param model
+	 * @param currentPage
+	 * @param jobCategoryCd
+	 * @return
+	 */
+	// /boardClass/list?jobCategoryCd=MWJ01004
+	// /boardClass/list
+	@GetMapping("/list")
+	public String list(Model model,
+			@RequestParam(value="currentPage",required=false,defaultValue="1") int currentPage,
+			@RequestParam(value="jobCategoryCd",required=false) String jobCategoryCd
+			) {
+		log.info("list->currentPage : " + currentPage);
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("currentPage",currentPage);
+		map.put("jobCategoryCd",jobCategoryCd);
+		
+		List<BoardClassVO> brdClsVOList = this.brdClsService.list(map);
+		log.info("list->brdClsVOList : " + brdClsVOList);
+
+		int total = this.brdClsService.getTotal(map);
+		log.info("list->total : " + total);
+		
+		ArticlePage<BoardClassVO> data 
+		= new ArticlePage<BoardClassVO>(total, currentPage, 16, 5, brdClsVOList);
+
+		// 직군 공통코드 가져오기
+		List<ComCodeInfoVO> comCodeInfoVOList = this.brdClsService.comJob();
+		log.info("list -> comCodeInfoVOList : " + comCodeInfoVOList);
+		
+		data.setUrl("/boardClass/list");
+		
+		model.addAttribute("data",data);
+		model.addAttribute("brdClsVOList",brdClsVOList);
+		model.addAttribute("comCodeInfoVOList",comCodeInfoVOList);
+		
+		return "boardClass/list";
+	}
+	/**
+	 * 강의 클래스 등록 get
+	 * @param model
+	 * @return
+	 */
+	// 강의 클래스 등록
+	@GetMapping("/create")
+	public String create(Model model) {
+
+		List<ComCodeInfoVO> comCodeInfoVOList = this.brdClsService.comJob();
+		System.out.println("list -> comCodeInfoVOList : " + comCodeInfoVOList);
+		
+		model.addAttribute("comCodeInfoVOList",comCodeInfoVOList);
+		
+		return "boardClass/create";
+	}
+	
+	/**
+	 * 강의클래스 등록
+	 * @param boardClassVO
+	 * @return
+	 */
+	@PostMapping("/createForm")
+	public String createForm(BoardClassVO boardClassVO) {
+		
+		String boardId = this.brdClsService.getBoardId();
+		log.info("boardId : " + boardId);
+//		
+		boardClassVO.setBoardId(boardId);
+		log.info("brdClsVO : " + boardClassVO);
+		
+		int result = this.brdClsService.createForm(boardClassVO);
+		log.info("brdClsVO : " + result);
+		
+		return "redirect:/boardClass/list";
+	}
+	
+	/**
+	 * 강의클래스 수정 get
+	 * @param boardClassVO
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/update")
+	public String update(BoardClassVO boardClassVO, Model model) {
+		log.info("update -> boardClassVO : " + boardClassVO);
+		
+		BoardClassVO brdClassVO = this.brdClsService.updatelist(boardClassVO.getBoardId());
+		log.info("update ===> brdClassVO : " + brdClassVO);
+		
+		// 직군코드 - 불러오기 위해서
+		List<ComCodeInfoVO> comCodeInfoVOList = this.brdClsService.comJob();
+		log.info("list -> comCodeInfoVOList : " + comCodeInfoVOList);
+		
+		model.addAttribute("brdClassVO", brdClassVO);
+		model.addAttribute("comCodeInfoVOList",comCodeInfoVOList);
+		
+		return "boardClass/update";
+	}
+
+	/**
+	 * 강의클래스 수정
+	 * @param boardClassVO
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/updatePost")
+	public String updatePost(BoardClassVO boardClassVO, Model model) {
+		log.info("updatePost -> boardClassVO : " + boardClassVO);
+		
+		int result = this.brdClsService.updatePost(boardClassVO);
+		log.info("update -> result : " + result);
+		
+		//직군코드 - 저장해주려고
+		List<ComCodeInfoVO> comCodeInfoVOList = this.brdClsService.comJob();
+		System.out.println("list -> comCodeInfoVOList : " + comCodeInfoVOList);
+		
+		model.addAttribute("boardClassVO",boardClassVO);
+		
+		return "redirect:/boardClass/list";
+	}
+	
+	/**
+	 * 강의 클래스 삭제
+	 * @param boardClassVO
+	 * @return
+	 */
+	@GetMapping("/delete")
+	public String delete(BoardClassVO boardClassVO) {
+		log.info("delete ->boardClassVO: " + boardClassVO);
+		
+		// 첨부파일 테이블 삭제 후 근무 테이블 삭제하기
+		int result = this.brdClsService.delete(boardClassVO);
+		log.info("delete->result : " + result);
+		
+		return "redirect:/boardClass/list";
+	}
+	
+	/**
+	 * 강의클래스 ajax 목록
+	 * @param currentPage
+	 * @param jobCategoryCd
+	 * @return
+	 */
+	// /boardClass/listAjax?cateCd=MWJ01004
+	// /boardClass/listAjax
+	@ResponseBody
+	@GetMapping("/listAjax")
+	public ArticlePage<BoardClassVO> listAjax(
+			@RequestParam(value="currentPage",required=false,defaultValue="1") int currentPage,
+			@RequestParam(value="cateCd",required=false) String jobCategoryCd
+			) {
+		log.info("list->currentPage : " + currentPage);
+		
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("currentPage",currentPage);
+		map.put("jobCategoryCd",jobCategoryCd);
+		
+		List<BoardClassVO> brdClsVOList = this.brdClsService.list(map);
+		log.info("list->brdClsVOList : " + brdClsVOList);
+
+		int total = this.brdClsService.getTotal(map);
+		log.info("list->total : " + total);
+		
+		ArticlePage<BoardClassVO> data 
+		= new ArticlePage<BoardClassVO>(total, currentPage, 16, 5, brdClsVOList);
+
+		data.setUrl("/boardClass/list");
+		
+		return data;
+	}
+	
+}

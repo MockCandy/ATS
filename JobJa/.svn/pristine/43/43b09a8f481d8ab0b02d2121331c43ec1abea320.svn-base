@@ -1,0 +1,20 @@
+package jobja.item.service;
+
+import java.util.List;
+import java.util.Map;
+
+import jobja.item.vo.ConsultantReviewVO;
+
+public interface ConsultReviewService {
+	
+	//마이페이지 내가 쓴 리뷰 목록 가져오기.
+	public List<ConsultantReviewVO> getMyconsultReview(Map<String, Object> map);
+	
+	//마이페이지 총 갯수
+	public int getMyTotal(Map<String, Object> map);
+
+	public int getTotalByConId(Map<String, Object> map);
+
+	public List<ConsultantReviewVO> getConsultRevByConId(Map<String, Object> map);
+
+}

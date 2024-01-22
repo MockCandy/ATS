@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC 
+"-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" 
+"http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<!-- tiles 설정 -->
+<tiles-definitions>
+	
+	<!-- memMyPage layout : 상담사 mypage -->
+	<definition name="tiles-Admin-layout" template="/WEB-INF/views/tilesAdmin/index.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tilesAdmin/header.jsp" />
+		<put-attribute name="aside" value="/WEB-INF/views/tilesAdmin/aside.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tilesAdmin/footer.jsp" />
+	</definition>
+	<!-- 
+		return "admin/memberMyPage";
+		return "admin/myInfomation";
+	 -->
+	<definition name="admin/*" extends="tiles-Admin-layout">
+		<put-attribute name="body" value="/WEB-INF/views/admin/{1}.jsp" />
+	</definition>
+	
+	
+	<definition name="tiles-nohdft" template="/WEB-INF/views/notiles/index.jsp">
+		<put-attribute name="body" value="" />
+	</definition>
+	<!-- name의 */*은 body의 value에서 1과 2에 해당
+		controller에서 forwarding 시 return "comCode/1";
+	 -->
+	<definition name="*" extends="tiles-nohdft">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp" />
+	</definition>
+	
+	<!-- memMyPage layout : 상담사 mypage -->
+	<definition name="tiles-Con-layout" template="/WEB-INF/views/tilesCon/index.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tilesCon/header.jsp" />
+		<put-attribute name="aside" value="/WEB-INF/views/tilesCon/aside.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tilesCon/footer.jsp" />
+	</definition>
+	<!-- 
+		return "mypageCon/memberMyPage";
+		return "mypageCon/myInfomation";
+	 -->
+	<definition name="mypageCon/*" extends="tiles-Con-layout">
+		<put-attribute name="body" value="/WEB-INF/views/mypageCon/{1}.jsp" />
+	</definition>
+	
+	
+	<!-- memMyPage layout : 기업 mypage -->
+	<definition name="tiles-Ent-layout" template="/WEB-INF/views/tilesEnt/index.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tilesEnt/header.jsp" />
+		<put-attribute name="aside" value="/WEB-INF/views/tilesEnt/aside.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tilesEnt/footer.jsp" />
+	</definition>
+	<!-- 
+		return "mypageEnt/memberMyPage";
+		return "mypageEnt/myInfomation";
+	 -->
+	<definition name="mypageEnt/*" extends="tiles-Ent-layout">
+		<put-attribute name="body" value="/WEB-INF/views/mypageEnt/{1}.jsp" />
+	</definition>
+	
+	
+	
+	<!-- memMyPage layout : 개인 mypage -->
+	<definition name="tiles-mem-layout" template="/WEB-INF/views/tilesMem/index.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tilesMem/header.jsp" />
+		<put-attribute name="aside" value="/WEB-INF/views/tilesMem/aside.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tilesMem/footer.jsp" />
+	</definition>
+	<!-- 
+		return "mypageMem/memberMyPage";
+		return "mypageMem/myInfomation";
+	 -->
+	<definition name="mypageMem/*" extends="tiles-mem-layout">
+		<put-attribute name="body" value="/WEB-INF/views/mypageMem/{1}.jsp" />
+	</definition>
+	
+	
+	<!-- main layout -->
+	<definition name="tiles-layout" template="/WEB-INF/views/tiles/index.jsp">
+		<put-attribute name="header" value="/WEB-INF/views/tiles/header.jsp" />
+		<put-attribute name="aside" value="/WEB-INF/views/tiles/aside.jsp" />
+		<put-attribute name="body" value="" />
+		<put-attribute name="footer" value="/WEB-INF/views/tiles/footer.jsp" />
+	</definition>
+	<!-- name의 */*은 body의 value에서 1과 2에 해당
+		controller에서 forwarding 시 return "comCode/1";
+	 -->
+	<definition name="*/*" extends="tiles-layout">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/{2}.jsp" />
+	</definition>
+	
+</tiles-definitions>
+

@@ -1,0 +1,158 @@
+package jobja.board.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import jobja.atchfile.controller.FileController;
+import jobja.board.mapper.BoardQNAMapper;
+import jobja.board.vo.BoardQNAVO;
+import jobja.likes.mapper.LikesMapper;
+import jobja.reply.vo.ReplyVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class BoardQNAServiceImpl implements jobja.board.service.BoardQNAService {
+
+	@Autowired
+	BoardQNAMapper boardQNAMapper;
+
+	@Autowired
+	FileController fileController;
+
+	@Override
+	public String getBoardId() {
+		return boardQNAMapper.getBoardId();
+	}
+	
+	@Autowired
+	LikesMapper likesMapper;
+
+	@Override
+	public int createPost(BoardQNAVO boardQNAVO) {
+
+		log.info("createPost -> boardQNAVO : " + boardQNAVO);
+
+		int result = boardQNAMapper.createPost(boardQNAVO);
+
+		log.info("createPost -> boardQNAVO : " + result);
+
+		MultipartFile[] uploadFile = boardQNAVO.getUploadFile();
+
+		log.info("createPost -> uploadFile : " + uploadFile);
+
+		result += fileController.uploadFile(uploadFile, boardQNAVO.getBoardId());
+
+		return result;
+
+	}
+
+	@Override
+	public List<BoardQNAVO> list(Map<String, Object> map) {
+		return boardQNAMapper.list(map);
+	}
+
+	@Override
+	public int getTotal(Map<String, Object> map) {
+		return boardQNAMapper.getTotal(map);
+	}
+
+	@Override
+	public BoardQNAVO detail(BoardQNAVO boardQNAVO) {
+		return boardQNAMapper.detail(boardQNAVO);
+	}
+
+	@Transactional
+	@Override
+	public int delete(BoardQNAVO boardQNAVO) {
+
+		log.info("delete2 -> boardQNAVO : " + boardQNAVO);
+
+		int result = boardQNAMapper.delete(boardQNAVO);
+
+		result += fileController.deleteRelated(boardQNAVO);
+
+		log.info("delete -> result : " + result);
+
+		return boardQNAMapper.delete(boardQNAVO);
+	}
+
+	@Override
+	public int update(BoardQNAVO boardQNAVO) {
+		int result = boardQNAMapper.update(boardQNAVO);
+
+		log.info("update -> result : " + result);
+		log.info("update -> boardQNAVO : " + boardQNAVO);
+
+		MultipartFile[] uploadFile = boardQNAVO.getUploadFile();
+		
+		result += fileController.uploadFile(uploadFile, boardQNAVO.getBoardId());
+
+		return result;
+	}
+
+	@Override
+	public void countUp(String boardId) {
+		boardQNAMapper.countUp(boardId);
+	}
+
+	@Transactional
+	@Override
+	public int ajaxLikeUp(BoardQNAVO boardQNAVO) {
+		log.info("ajaxLikeUp -> boardQNAVO : " + boardQNAVO);
+		
+		int count = likesMapper.getCount(boardQNAVO);
+		
+		log.info("ajaxLikeUp -> count : " + count);
+		
+		int result = 0;
+		
+		if(count >= 1) {
+			result += boardQNAMapper.ajaxLikeCancel(boardQNAVO);
+			result += likesMapper.unlike(boardQNAVO);
+		}else {
+			result = boardQNAMapper.ajaxLikeUp(boardQNAVO);
+			result += likesMapper.like(boardQNAVO);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int ajaxLikeCancel(BoardQNAVO boardQNAVO) {
+		return boardQNAMapper.ajaxLikeCancel(boardQNAVO);
+	}
+	
+	//마이페이지 ->내가 쓴 취업QNA글 목록 가져오기.
+	@Override
+	public List<BoardQNAVO> myList(Map<String, Object> map) {
+		return this.boardQNAMapper.myList(map);
+	}
+	
+	//마이페이지 ->내가 쓴 취업QNA댓글 목록 가져오기.
+	@Override
+	public List<ReplyVO> myReplyList(Map<String, Object> map) {
+		return this.boardQNAMapper.myReplyList(map);
+	}
+
+	@Override
+	public List<BoardQNAVO> getPopular5() {
+		return boardQNAMapper.getPopular5();
+	}
+
+	@Override
+	public int getMyTotal(Map<String, Object> map) {
+		return boardQNAMapper.getMyTotal(map);
+	}
+
+	@Override
+	public int getmyReplyTotal(Map<String, Object> map) {
+		return boardQNAMapper.getmyReplyTotal(map);
+	}
+
+}

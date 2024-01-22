@@ -1,0 +1,54 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags"%>
+<link rel="stylesheet" href="/resources/css/common.css">
+   <header>
+        <div class="header-top">
+            <a class="header-top-logo" href="/main.html">
+                <img src="/resources/images/logo.svg" alt="">
+            </a>
+
+            <div class="header-top-menu">
+                <ul>
+                    <li><a href="/entRanking/list">기업 랭킹</a></li>
+                    <li><a href="/recruit/list">채용</a></li>
+                    <li><a href="/boardQNA/list">취업Q&A</a></li>
+                    <li><a href="#">커리어성장</a></li>
+                </ul>
+            </div>
+
+            <div class="header-top-right">
+            	
+            	<sec:authorize access="isAnonymous()">
+	                <a href="/login">로그인</a>
+	                <a href="/member/create">회원가입</a>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                	<!-- MemberVO memberVO = this.memberMapper.detail(username); -->
+                	<sec:authentication property="principal.memberVO" var="memberVO"/>
+                	<span>${memberVO.memNm}</span>
+                	
+	                	<form action="/logout" method="post">
+	                			<button type="submit" style="border:none; background: none;">로그아웃</button>
+	                		<sec:csrfInput/>
+	                	</form>
+                </sec:authorize>
+            </div>
+        </div>
+
+        <div class="header-bot">
+            <div class="schbar">
+                <input class="schbar-input" placeholder="기업, 채용공고를 검색해보세요." type="text" name="" id="">
+            </div>
+        </div>
+    </header>
+        
+    <header id="scroll-header">
+        <a class="header-top-logo" href="/main.html">
+            <img src="/resources/images/logo.svg" alt="">
+        </a>
+        <div class="schbar">
+            <input class="schbar-input" placeholder="기업, 채용공고를 검색해보세요." type="text" name="" id="">
+        </div>
+    </header>
+
